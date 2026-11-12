@@ -1,0 +1,12 @@
+{
+  "log_file": "evals\\ops\\phase-e-final\\api-baseline.log",
+  "event_count": 155,
+  "non_json_lines": 0,
+  "expectations_checked": 50,
+  "expectations_passed": 50,
+  "expectation_failures": [],
+  "forbidden_hits": [],
+  "missing_request_ids": [],
+  "duplicate_request_ids": {},
+  "passed": true
+}

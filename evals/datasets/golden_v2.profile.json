@@ -1,0 +1,17 @@
+{
+  "require_unique_questions": true,
+  "min_category_counts": {
+    "api_version_url": 5,
+    "identifier_shared": 3,
+    "insufficient_evidence": 4,
+    "long_noisy": 4,
+    "multi_chunk_source": 4,
+    "multi_source": 5,
+    "no_relevant_source": 1,
+    "paraphrase_no_rare_term": 5,
+    "sensitive_unanswerable": 1,
+    "status_vs_identifier": 3
+  },
+  "require_min_answerable": 29,
+  "require_min_unanswerable": 6
+}

@@ -1,0 +1,112 @@
+{
+  "generated_at": "2026-11-10T11:38:17.204887+00:00",
+  "duration_seconds": 0.897,
+  "throughput_rps": 111.43,
+  "successful_throughput_rps": 111.43,
+  "counts": {
+    "total": 100,
+    "ok": 100,
+    "errors": 0,
+    "client_errors": 0,
+    "canary_violations": 0
+  },
+  "error_rate": 0.0,
+  "status_counts": {
+    "200": 100
+  },
+  "latency_ms": {
+    "count": 100,
+    "p50_ms": 57.87,
+    "p95_ms": 131.72,
+    "p99_ms": 149.97,
+    "mean_ms": 68.22,
+    "min_ms": 39.7,
+    "max_ms": 162.13
+  },
+  "successful_latency_ms": {
+    "count": 100,
+    "p50_ms": 57.87,
+    "p95_ms": 131.72,
+    "p99_ms": 149.97,
+    "mean_ms": 68.22,
+    "min_ms": 39.7,
+    "max_ms": 162.13
+  },
+  "by_label": {
+    "a": {
+      "count": 100,
+      "ok": 100,
+      "error_rate": 0.0,
+      "latency": {
+        "count": 100,
+        "p50_ms": 57.87,
+        "p95_ms": 131.72,
+        "p99_ms": 149.97,
+        "mean_ms": 68.22,
+        "min_ms": 39.7,
+        "max_ms": 162.13
+      }
+    }
+  },
+  "config": {
+    "base_url": "http://127.0.0.1:8010",
+    "scenario": "answer_lexical",
+    "inner_scenario": "answer",
+    "requests": 100,
+    "concurrency": 8,
+    "warmup": 2,
+    "timeout_s": 30.0,
+    "request_prefix": "ov-answer-lexical-",
+    "labels": [
+      "a"
+    ]
+  },
+  "error_samples": [],
+  "stage_latency_ms": {
+    "matched_requests": 100,
+    "recorded_requests": 100,
+    "non_json_log_lines": 0,
+    "retrieval": {
+      "count": 100,
+      "p50_ms": 22.0,
+      "p95_ms": 56.2,
+      "p99_ms": 68.01,
+      "mean_ms": 25.72,
+      "min_ms": 15.0,
+      "max_ms": 69.0
+    },
+    "evidence": {
+      "count": 100,
+      "p50_ms": 0.0,
+      "p95_ms": 0.0,
+      "p99_ms": 0.01,
+      "mean_ms": 0.01,
+      "min_ms": 0.0,
+      "max_ms": 1.0
+    },
+    "generation": {
+      "count": 100,
+      "p50_ms": 0.0,
+      "p95_ms": 0.0,
+      "p99_ms": 0.0,
+      "mean_ms": 0.0,
+      "min_ms": 0.0,
+      "max_ms": 0.0
+    },
+    "total": {
+      "count": 100,
+      "p50_ms": 33.5,
+      "p95_ms": 75.1,
+      "p99_ms": 84.04,
+      "mean_ms": 37.81,
+      "min_ms": 21.0,
+      "max_ms": 88.0
+    }
+  },
+  "log_validation": {
+    "passed": true,
+    "expectations_checked": 100,
+    "failures": 0,
+    "forbidden_hits": 0
+  }
+}

@@ -1,0 +1,38 @@
+{
+  "mapping_version": 1,
+  "dataset_id": "golden_v1",
+  "sources": {
+    "runbook-payments-errors-v1": {
+      "source_key": "runbooks/payment-errors.md"
+    },
+    "postmortem-db-pool-2025-02": {
+      "source_key": "postmortems/db-pool-2025-02.md"
+    },
+    "runbook-postgres-pool-v1": {
+      "source_key": "runbooks/postgres-pool.md"
+    },
+    "api-payments-v3": {
+      "source_key": "api-specs/payments-v3.md"
+    },
+    "runbook-search-deploy-v1": {
+      "source_key": "runbooks/search-deploy.md"
+    },
+    "payment-api-runbook-v2": {
+      "source_key": "runbooks/payment-api.md",
+      "version_number": 2
+    },
+    "payments-migration-guide-v2": {
+      "source_key": "api-specs/payments.md",
+      "version_number": 2
+    },
+    "runbook-kafka-lag-v1": {
+      "source_key": "runbooks/kafka-consumer-lag.md"
+    },
+    "runbook-redis-failover-v1": {
+      "source_key": "runbooks/redis-failover.md"
+    },
+    "runbook-incident-escalation-v1": {
+      "source_key": "runbooks/incident-escalation.md"
+    }
+  }
+}

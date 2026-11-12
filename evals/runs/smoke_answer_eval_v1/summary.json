@@ -1,0 +1,21 @@
+{
+  "records_total": 1,
+  "records_ok": 1,
+  "records_error": 0,
+  "abstained": 0,
+  "conflicts": 0,
+  "provider_attempts_total": 1,
+  "provider_retries": 0,
+  "latency_ms": {
+    "p50": 5714,
+    "p95": 5714,
+    "mean": 5714.0,
+    "max": 5714
+  },
+  "tokens_estimate": {
+    "input": 1861,
+    "output": 224
+  },
+  "provider_usage_reported": 0,
+  "error_types": []
+}

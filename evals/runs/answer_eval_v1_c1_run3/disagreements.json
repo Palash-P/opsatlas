@@ -1,0 +1,58 @@
+[
+  {
+    "record_id": "answer-v1-endpoint-and-idempotency",
+    "metric": "faithfulness",
+    "scorer_a": 0.5,
+    "scorer_b": 1,
+    "adjudicated": 0.5,
+    "note": "The core endpoint, deprecation, and idempotency guidance is supported, but the answer overstates E4 as repeating the prohibition on repeated non-idempotent retries; E4 does not contain that sentence. This is a minor unsupported attribution, not a fabricated procedure."
+  },
+  {
+    "record_id": "answer-v1-deploy-outage-escalation",
+    "metric": "faithfulness",
+    "scorer_a": 1,
+    "scorer_b": 0.5,
+    "adjudicated": 0.5,
+    "note": "Both required procedures are supported by E2 and E1, but calling the separate payment-errors v1 runbook 'the older version' asserts a relative age the evidence does not establish. Minor unsupported detail."
+  },
+  {
+    "record_id": "answer-v1-deploy-outage-escalation",
+    "metric": "citation_correctness",
+    "scorer_a": 1,
+    "scorer_b": 0.5,
+    "adjudicated": 0.5,
+    "note": "The PAY-503 checklist is attributed to E1/E5, but E5 is the PAY-400/409 chunk and does not contain those checks. One citation is weak."
+  },
+  {
+    "record_id": "answer-v1-payment-errors-multi-code",
+    "metric": "faithfulness",
+    "scorer_a": 1,
+    "scorer_b": 0.5,
+    "adjudicated": 1.0,
+    "note": "Every factual claim is supported by supplied evidence: E1 contains both the PAY-400 and PAY-409 resolutions. The disputed E2 attachment is a weak citation, which belongs to citation correctness, not faithfulness."
+  },
+  {
+    "record_id": "answer-v1-payment-errors-multi-code",
+    "metric": "citation_correctness",
+    "scorer_a": 1,
+    "scorer_b": 0.5,
+    "adjudicated": 0.5,
+    "note": "The PAY-409 retrieve-and-reconcile sentence cites E2 and E1, but E2 states only that PAY-409 is a conflict and does not contain the reconcile instruction. One citation is weak."
+  },
+  {
+    "record_id": "answer-v1-runbook-version-difference",
+    "metric": "answer_relevance",
+    "scorer_a": 0.5,
+    "scorer_b": 1,
+    "adjudicated": 0.5,
+    "note": "Correctly names v2 and cites the database-connectivity step, but the required statement that v1 lacks the step is not made because payment-api v1 was not supplied. The answer explicitly limits its conclusion, so it is partial rather than wrong."
+  },
+  {
+    "record_id": "answer-v1-unans-incident-timestamp",
+    "metric": "faithfulness",
+    "scorer_a": 0,
+    "scorer_b": null,
+    "adjudicated": 0.0,
+    "note": "Generation failed before producing an abstention or answer, so there is no content to credit as faithful. This matches the prior failure-record policy."
+  }
+]

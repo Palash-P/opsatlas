@@ -1,0 +1,119 @@
+{
+  "evaluation": "answer_eval_v1",
+  "run_id": "20261102T113250Z",
+  "created_at": "2026-11-02T11:32:50.530883+00:00",
+  "dataset": {
+    "path": "evals\\datasets\\answer_eval_v1.jsonl",
+    "sha256": "68fcd05c7a289d6bf476ec7e29a0ff3d9dfb2f334f052224f18735999f121350",
+    "profile_path": "evals\\datasets\\answer_eval_v1.profile.json",
+    "profile_sha256": "6927fd9f915449270cc549722e9eb3de3f5b8218d362e739835c2cdd4bfd0cdb",
+    "rubric_path": "evals\\answer_eval_v1.scoring_rubric.md",
+    "rubric_sha256": "ec4ba01e8df4d46c9aa90a502424b002f5117fdb753a8e4134bfbdff2b027239",
+    "record_count": 26,
+    "limit_applied": null
+  },
+  "corpus": {
+    "id": "synthetic_v1",
+    "fingerprint": "c5cb44a83cd37560f004692ec4c702d509dde3f958a42966545480ca23fe6408",
+    "synthetic_only": true
+  },
+  "code": {
+    "git": {
+      "head": "4d59a74c9c59f23fd93250d4a570691c280b0f63",
+      "dirty": true,
+      "status_lines": 62
+    },
+    "pipeline_sha256": "000092cafae195e6fa4605af46b4fabc35e81e66b29c0b195b7f86b2e5a6327b",
+    "files": {
+      "app/api/answers.py": "dbb84597497ef15e56d00adbcd0d31c648f70f6e5a962ebb594548b03da5ee21",
+      "app/core/config.py": "1951380364d43836594dc4f1581532d22d249c8fffa5c7508d579fc86e58e19a",
+      "app/services/answer_generation.py": "033947913e870e70c5826503d8c7a22e31ce34cb5cdabf333b82e97399b7ce79",
+      "app/services/evidence.py": "30d5df702b476b198e816688595aa937c72f51489184d85d12635cf0016a051e",
+      "app/services/llm_providers.py": "9eb6210d44bbc61e7f5dda12ff16387d459289e3a3f6dabe71b8f0aab10ac970",
+      "app/services/retrieval.py": "0899a5581a580cf1e18f9a9e026b8fb7b5c3f59d8ad4870021c9c482f100d19f",
+      "app/services/embedding_client.py": "2fe92067947f0bbcb8603146f7dfa6e67192978cc174c5803dbcff83460d4bb0",
+      "evals/opencode_provider.py": "56087d66aeb93830b9d1adda72afa191a9af78e7ce6f45f94cc41f8c26f8c7fb"
+    }
+  },
+  "retrieval": {
+    "strategy": "hybrid",
+    "keyword_strategy": "and",
+    "fusion_strategy": "chunk",
+    "semantic_weight": 1.0,
+    "lexical_weight": 1.0,
+    "rrf_k": 60,
+    "limit": 5,
+    "embedding_model": "sentence-transformers/all-MiniLM-L6-v2",
+    "embedding_dimensions": 384,
+    "identifier_weight": 2.0
+  },
+  "evidence": {
+    "context_token_budget": 4000,
+    "max_evidence": 8,
+    "citation_excerpt_chars": 600,
+    "token_estimate": "ceil(len(text) / 4)"
+  },
+  "generation": {
+    "provider": "opencode_cli",
+    "model": "opencode/deepseek-v4.1-flash-free",
+    "temperature": 0.0,
+    "temperature_enforced": false,
+    "max_output_tokens": 700,
+    "max_output_tokens_enforced": "soft prompt limit only",
+    "timeout_seconds": 240.0,
+    "max_retries": 1,
+    "prompt_version": "grounded_answer_v1"
+  },
+  "tenant_id": "96e52951-46e1-4547-9103-b82de97e6822",
+  "scoring": {
+    "status": "completed",
+    "rubric": "evals\\answer_eval_v1.scoring_rubric.md",
+    "scorers": [
+      {
+        "id": "scorer_a",
+        "model": "opencode/glm-5.3-flash-free"
+      },
+      {
+        "id": "scorer_b",
+        "model": "opencode/mimo-v2.6-flash-free"
+      }
+    ],
+    "independence": "Each scorer runs in a separate OpenCode session and receives only the rubric, labels, and prediction. Neither scorer receives the other's scores.",
+    "model_deviations": [
+      {
+        "scorer_id": "scorer_b",
+        "configured": "opencode/flint-40b-free",
+        "used": "opencode/mimo-v2.6-flash-free"
+      }
+    ],
+    "template_disagreements": 9,
+    "adjudicated_disagreements": 9,
+    "configured_scorers": [
+      {
+        "id": "scorer_a",
+        "model": "opencode/glm-5.3-flash-free"
+      },
+      {
+        "id": "scorer_b",
+        "model": "opencode/flint-40b-free"
+      }
+    ]
+  },
+  "notes": [
+    "The OpenCode CLI provider is evaluation-only and is not a production provider.",
+    "Temperature and max output tokens cannot be enforced by the CLI adapter; max output tokens is a soft prompt instruction.",
+    "The corpus is synthetic."
+  ],
+  "latency_summary": {
+    "p50": 4161.5,
+    "p95": 6304.699999999998,
+    "mean": 4355.041666666667,
+    "max": 6927
+  },
+  "provider_attempts_total": 28,
+  "provider_retries": 2,
+  "tokens_estimate": {
+    "input": 42839,
+    "output": 3819
+  }
+}

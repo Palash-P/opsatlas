@@ -1,0 +1,17 @@
+{
+  "require_unique_questions": true,
+  "min_category_counts": {
+    "current_version_selection": 2,
+    "distractor_overlap": 3,
+    "exact_identifier": 3,
+    "identifier_in_natural_question": 2,
+    "insufficient_evidence": 3,
+    "keyword_heavy_rare_term": 2,
+    "multi_document": 2,
+    "no_relevant_source": 3,
+    "paraphrased_semantic": 2,
+    "sensitive_unanswerable": 2
+  },
+  "require_min_answerable": 16,
+  "require_min_unanswerable": 8
+}

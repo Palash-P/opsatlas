@@ -1,0 +1,127 @@
+{
+  "generated_at": "2026-11-10T11:38:25.005129+00:00",
+  "duration_seconds": 0.832,
+  "throughput_rps": 120.24,
+  "successful_throughput_rps": 120.24,
+  "counts": {
+    "total": 100,
+    "ok": 100,
+    "errors": 0,
+    "client_errors": 0,
+    "canary_violations": 0
+  },
+  "error_rate": 0.0,
+  "status_counts": {
+    "200": 100
+  },
+  "latency_ms": {
+    "count": 100,
+    "p50_ms": 56.63,
+    "p95_ms": 111.89,
+    "p99_ms": 179.44,
+    "mean_ms": 64.03,
+    "min_ms": 27.31,
+    "max_ms": 226.31
+  },
+  "successful_latency_ms": {
+    "count": 100,
+    "p50_ms": 56.63,
+    "p95_ms": 111.89,
+    "p99_ms": 179.44,
+    "mean_ms": 64.03,
+    "min_ms": 27.31,
+    "max_ms": 226.31
+  },
+  "by_label": {
+    "a": {
+      "count": 50,
+      "ok": 50,
+      "error_rate": 0.0,
+      "latency": {
+        "count": 50,
+        "p50_ms": 58.95,
+        "p95_ms": 112.8,
+        "p99_ms": 181.85,
+        "mean_ms": 68.17,
+        "min_ms": 41.36,
+        "max_ms": 226.31
+      }
+    },
+    "b1": {
+      "count": 50,
+      "ok": 50,
+      "error_rate": 0.0,
+      "latency": {
+        "count": 50,
+        "p50_ms": 53.5,
+        "p95_ms": 111.09,
+        "p99_ms": 153.24,
+        "mean_ms": 59.89,
+        "min_ms": 27.31,
+        "max_ms": 178.97
+      }
+    }
+  },
+  "config": {
+    "base_url": "http://127.0.0.1:8010",
+    "scenario": "multi_tenant",
+    "inner_scenario": "answer_lexical",
+    "requests": 100,
+    "concurrency": 8,
+    "warmup": 2,
+    "timeout_s": 30.0,
+    "request_prefix": "ov-multi-tenant-",
+    "labels": [
+      "a",
+      "b1"
+    ]
+  },
+  "error_samples": [],
+  "stage_latency_ms": {
+    "matched_requests": 100,
+    "recorded_requests": 100,
+    "non_json_log_lines": 0,
+    "retrieval": {
+      "count": 100,
+      "p50_ms": 15.0,
+      "p95_ms": 27.15,
+      "p99_ms": 49.14,
+      "mean_ms": 15.81,
+      "min_ms": 8.0,
+      "max_ms": 63.0
+    },
+    "evidence": {
+      "count": 100,
+      "p50_ms": 0.0,
+      "p95_ms": 0.0,
+      "p99_ms": 0.0,
+      "mean_ms": 0.0,
+      "min_ms": 0.0,
+      "max_ms": 0.0
+    },
+    "generation": {
+      "count": 100,
+      "p50_ms": 0.0,
+      "p95_ms": 0.0,
+      "p99_ms": 0.0,
+      "mean_ms": 0.0,
+      "min_ms": 0.0,
+      "max_ms": 0.0
+    },
+    "total": {
+      "count": 100,
+      "p50_ms": 24.0,
+      "p95_ms": 39.2,
+      "p99_ms": 65.14,
+      "mean_ms": 25.04,
+      "min_ms": 11.0,
+      "max_ms": 79.0
+    }
+  },
+  "log_validation": {
+    "passed": true,
+    "expectations_checked": 100,
+    "failures": 0,
+    "forbidden_hits": 0
+  }
+}

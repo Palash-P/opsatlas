@@ -1,0 +1,43 @@
+{
+  "dataset_id": "answer_eval_v1",
+  "dataset_version": 1,
+  "corpus_id": "synthetic_v1",
+  "corpus_fingerprint": "c5cb44a83cd37560f004692ec4c702d509dde3f958a42966545480ca23fe6408",
+  "synthetic_only": true,
+  "record_count": 26,
+  "answerable_records": 20,
+  "unanswerable_records": 6,
+  "min_category_counts": {
+    "single_source_factual": 9,
+    "multi_source": 3,
+    "multi_chunk": 2,
+    "version_conflict": 4,
+    "insufficient_evidence": 4,
+    "sensitive_unanswerable": 2,
+    "distractor": 2
+  },
+  "required_fields": [
+    "id",
+    "question",
+    "category",
+    "answerable",
+    "expected_behavior",
+    "expected_facts",
+    "expected_citations",
+    "min_required_citations",
+    "conflict_expected",
+    "abstention_reason",
+    "notes"
+  ],
+  "required_checks": [
+    "unique_ids",
+    "unique_questions",
+    "answerable_records_have_expected_facts",
+    "answerable_records_have_expected_citations",
+    "unanswerable_records_have_no_expected_citations",
+    "unanswerable_records_have_abstention_reason",
+    "citations_reference_known_source_keys",
+    "version_numbers_are_positive_integers_when_present"
+  ],
+  "notes": "Design-only evaluation dataset. No answer-quality metric has been measured or validated for this dataset yet. Source keys and version numbers must match evals/datasets/golden_v3.source_map.json and the synthetic corpus manifest."
+}

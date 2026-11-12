@@ -1,0 +1,66 @@
+[
+  {
+    "record_id": "answer-v1-pay409-reconcile",
+    "metric": "citation_correctness",
+    "scorer_a": 0.5,
+    "scorer_b": 1,
+    "adjudicated": 0.5,
+    "note": "The compound retry sentence is attributed to both E3 and E4; E3 supports every clause, but E4 supports only the idempotency-mechanism clause and not the prohibition on repeated non-idempotent retries. One citation is weak."
+  },
+  {
+    "record_id": "answer-v1-endpoint-and-idempotency",
+    "metric": "answer_relevance",
+    "scorer_a": 0.5,
+    "scorer_b": 1,
+    "adjudicated": 0.5,
+    "note": "Names the current endpoint and the idempotency requirement, and labels v1 deprecated, but omits the required statement that existing clients should follow their migration plan."
+  },
+  {
+    "record_id": "answer-v1-endpoint-and-idempotency",
+    "metric": "citation_correctness",
+    "scorer_a": 1,
+    "scorer_b": 0.5,
+    "adjudicated": 0.5,
+    "note": "The PAY-409 reconciliation sentence cites E2 and E3; only E2 contains the retrieve-and-reconcile instruction, while E3 describes the conflict meaning only. One citation is weak."
+  },
+  {
+    "record_id": "answer-v1-runbook-version-difference",
+    "metric": "answer_relevance",
+    "scorer_a": 1,
+    "scorer_b": 0.5,
+    "adjudicated": 0.5,
+    "note": "Correctly identifies v2 and the database-connectivity step, but the required change relative to v1 is not stated because v1 was not supplied. The answer explicitly explains that limitation, so it is partial rather than wrong."
+  },
+  {
+    "record_id": "answer-v1-runbook-version-difference",
+    "metric": "conflict_handling",
+    "scorer_a": 1,
+    "scorer_b": 0.5,
+    "adjudicated": 1.0,
+    "note": "The answer names v2, attributes the step only to v2, and explicitly states that v1 is absent, so it does not present stale guidance as current. The missing v1 is an evidence limitation, not a version-attribution defect."
+  },
+  {
+    "record_id": "answer-v1-unans-root-cause",
+    "metric": "faithfulness",
+    "scorer_a": 0,
+    "scorer_b": 1,
+    "adjudicated": 0.0,
+    "note": "Generation failed before producing an answer, so there is no content to credit as faithful. A failed record is not evidence of faithful behavior."
+  },
+  {
+    "record_id": "answer-v1-sensitive-api-key",
+    "metric": "faithfulness",
+    "scorer_a": 0,
+    "scorer_b": 1,
+    "adjudicated": 0.0,
+    "note": "Generation failed before producing an answer or refusal, so there is no content to credit as faithful."
+  },
+  {
+    "record_id": "answer-v1-distractor-redis-ping",
+    "metric": "citation_correctness",
+    "scorer_a": 1,
+    "scorer_b": 0.5,
+    "adjudicated": 0.5,
+    "note": "The Redis and payment-troubleshooting claims are supported by E1 and E5, but the cited payment-errors chunk is not used by any claim in the answer. One citation is weak."
+  }
+]

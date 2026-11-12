@@ -1,0 +1,97 @@
+{
+  "scorer_a": {
+    "model": "opencode/glm-5.3-flash-free",
+    "model_verification": "requested_only",
+    "aggregate": {
+      "answer_relevance": 0.9423,
+      "faithfulness": 0.9423,
+      "citation_correctness": 0.975,
+      "citation_completeness": 1.0,
+      "abstention_correctness": 0.9615,
+      "conflict_handling": 1.0,
+      "n": 26
+    },
+    "claim_coverage": {
+      "claims": 75,
+      "supported": 71,
+      "unsupported": 1,
+      "uncited": 3,
+      "coverage": 0.9467
+    }
+  },
+  "scorer_b": {
+    "model": "opencode/mimo-v2.6-flash-free",
+    "model_verification": "requested_only",
+    "aggregate": {
+      "answer_relevance": 0.9615,
+      "faithfulness": 0.96,
+      "citation_correctness": 0.925,
+      "citation_completeness": 1.0,
+      "abstention_correctness": 0.9615,
+      "conflict_handling": 1.0,
+      "n": 26
+    },
+    "claim_coverage": {
+      "claims": 84,
+      "supported": 76,
+      "unsupported": 3,
+      "uncited": 5,
+      "coverage": 0.9048
+    }
+  },
+  "inter_scorer_agreement": {
+    "records": 156,
+    "exact": 149,
+    "exact_rate": 0.9551,
+    "per_metric": {
+      "answer_relevance": {
+        "records": 26,
+        "exact": 25,
+        "exact_rate": 0.9615,
+        "both_scored": 26,
+        "null_mismatch": 0,
+        "mean_absolute_difference": 0.0192
+      },
+      "faithfulness": {
+        "records": 26,
+        "exact": 22,
+        "exact_rate": 0.8462,
+        "both_scored": 25,
+        "null_mismatch": 1,
+        "mean_absolute_difference": 0.06
+      },
+      "citation_correctness": {
+        "records": 26,
+        "exact": 24,
+        "exact_rate": 0.9231,
+        "both_scored": 20,
+        "null_mismatch": 0,
+        "mean_absolute_difference": 0.05
+      },
+      "citation_completeness": {
+        "records": 26,
+        "exact": 26,
+        "exact_rate": 1.0,
+        "both_scored": 20,
+        "null_mismatch": 0,
+        "mean_absolute_difference": 0.0
+      },
+      "abstention_correctness": {
+        "records": 26,
+        "exact": 26,
+        "exact_rate": 1.0,
+        "both_scored": 26,
+        "null_mismatch": 0,
+        "mean_absolute_difference": 0.0
+      },
+      "conflict_handling": {
+        "records": 26,
+        "exact": 26,
+        "exact_rate": 1.0,
+        "both_scored": 2,
+        "null_mismatch": 0,
+        "mean_absolute_difference": 0.0
+      }
+    }
+  }
+}

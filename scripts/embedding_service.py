@@ -1,8 +1,8 @@
 """Local embedding service for OpsAtlas; bind to loopback only."""
 
-from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 import json
 import logging
+from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 
 from sentence_transformers import SentenceTransformer
 

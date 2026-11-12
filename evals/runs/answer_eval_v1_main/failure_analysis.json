@@ -1,0 +1,1023 @@
+{
+  "counts": {
+    "conflict_handling_failure": 1,
+    "generation_hallucination": 2,
+    "provider_failure": 2,
+    "retrieval_failure": 1
+  },
+  "records": [
+    {
+      "record_id": "answer-v1-pay503-initial-checks",
+      "category": "single_source_factual",
+      "question": "When PAY-503 is raised, which initial checks should the operator perform before escalating?",
+      "status": "ok",
+      "error": null,
+      "primary_failure": "none",
+      "all_failures": [],
+      "failure_notes": "",
+      "missing_expected_evidence": [],
+      "budget_dropped_expected_evidence": [],
+      "final_scores": {
+        "answer_relevance": 1,
+        "faithfulness": 1,
+        "citation_correctness": 1,
+        "citation_completeness": 1,
+        "abstention_correctness": 1,
+        "conflict_handling": null
+      },
+      "scorer_a": {
+        "answer_relevance": 1,
+        "faithfulness": 1,
+        "citation_correctness": 1,
+        "citation_completeness": 1,
+        "abstention_correctness": 1,
+        "conflict_handling": null
+      },
+      "scorer_b": {
+        "answer_relevance": 1,
+        "faithfulness": 1,
+        "citation_correctness": 1,
+        "citation_completeness": 1,
+        "abstention_correctness": 1,
+        "conflict_handling": null
+      },
+      "scorer_a_rationale": "E1 (runbooks/payment-errors.md v1, chunk 0) contains the full PAY-503 initial-check sequence; the answer reproduces all four required checks and every additional claim (escalation, rollback, idempotency caution) is supported by the same evidence.",
+      "scorer_b_rationale": "The answer reproduces all four PAY-503 initial checks and the response guidance from E1 (runbooks/payment-errors.md v1), the required source, and adds no unsupported specifics."
+    },
+    {
+      "record_id": "answer-v1-pay400-resolution",
+      "category": "single_source_factual",
+      "question": "A payment request fails validation with PAY-400. What should be corrected before resubmitting?",
+      "status": "ok",
+      "error": null,
+      "primary_failure": "none",
+      "all_failures": [],
+      "failure_notes": "",
+      "missing_expected_evidence": [],
+      "budget_dropped_expected_evidence": [],
+      "final_scores": {
+        "answer_relevance": 1,
+        "faithfulness": 1,
+        "citation_correctness": 1,
+        "citation_completeness": 1,
+        "abstention_correctness": 1,
+        "conflict_handling": null
+      },
+      "scorer_a": {
+        "answer_relevance": 1,
+        "faithfulness": 1,
+        "citation_correctness": 1,
+        "citation_completeness": 1,
+        "abstention_correctness": 1,
+        "conflict_handling": null
+      },
+      "scorer_b": {
+        "answer_relevance": 1,
+        "faithfulness": 1,
+        "citation_correctness": 1,
+        "citation_completeness": 1,
+        "abstention_correctness": 1,
+        "conflict_handling": null
+      },
+      "scorer_a_rationale": "The required fact (verify schema and validation error details) is cited to E1/E2 of the required runbooks/payment-errors.md v1; the supplemental idempotency and endpoint-version advice is supported by E3 and E4, and absent-detail hedges are accurate.",
+      "scorer_b_rationale": "The required PAY-400 correction from E1/E2 (runbooks/payment-errors.md v1) is stated in full, and the supplementary idempotency and endpoint guidance is supported by E3 and E4."
+    },
+    {
+      "record_id": "answer-v1-pay409-reconcile",
+      "category": "single_source_factual",
+      "question": "After a PAY-409 conflict, should the operator retry immediately or inspect the current payment state first?",
+      "status": "ok",
+      "error": null,
+      "primary_failure": "none",
+      "all_failures": [],
+      "failure_notes": "",
+      "missing_expected_evidence": [],
+      "budget_dropped_expected_evidence": [],
+      "final_scores": {
+        "answer_relevance": 1,
+        "faithfulness": 1,
+        "citation_correctness": 1,
+        "citation_completeness": 1,
+        "abstention_correctness": 1,
+        "conflict_handling": null
+      },
+      "scorer_a": {
+        "answer_relevance": 1,
+        "faithfulness": 1,
+        "citation_correctness": 1,
+        "citation_completeness": 1,
+        "abstention_correctness": 1,
+        "conflict_handling": null
+      },
+      "scorer_b": {
+        "answer_relevance": 1,
+        "faithfulness": 1,
+        "citation_correctness": 1,
+        "citation_completeness": 1,
+        "abstention_correctness": 1,
+        "conflict_handling": null
+      },
+      "scorer_a_rationale": "E1 (runbooks/payment-errors.md v1, chunk 1) explicitly states the PAY-409 response is to retrieve state and reconcile; the corroborating and idempotency claims map to E4 and E3 respectively, and the required citation is present.",
+      "scorer_b_rationale": "The answer correctly resolves the question using E1 (runbooks/payment-errors.md v1, required source), with corroborating idempotency guidance from E3 and no unsupported claims."
+    },
+    {
+      "record_id": "answer-v1-v3-endpoint",
+      "category": "single_source_factual",
+      "question": "Which POST path should a new payment client target under API version 3?",
+      "status": "ok",
+      "error": null,
+      "primary_failure": "none",
+      "all_failures": [],
+      "failure_notes": "",
+      "missing_expected_evidence": [],
+      "budget_dropped_expected_evidence": [],
+      "final_scores": {
+        "answer_relevance": 1,
+        "faithfulness": 1,
+        "citation_correctness": 1,
+        "citation_completeness": 1,
+        "abstention_correctness": 1,
+        "conflict_handling": null
+      },
+      "scorer_a": {
+        "answer_relevance": 1,
+        "faithfulness": 1,
+        "citation_correctness": 1,
+        "citation_completeness": 1,
+        "abstention_correctness": 1,
+        "conflict_handling": null
+      },
+      "scorer_b": {
+        "answer_relevance": 1,
+        "faithfulness": 1,
+        "citation_correctness": 1,
+        "citation_completeness": 1,
+        "abstention_correctness": 1,
+        "conflict_handling": null
+      },
+      "scorer_a_rationale": "The required citation E1 (api-specs/payments-v3.md v1) states the v3 endpoint verbatim, and E2 (api-specs/payments.md v2) independently corroborates the same path, which the answer correctly notes is no conflict.",
+      "scorer_b_rationale": "E1 (payments-v3.md v1) directly supplies the required endpoint fact and is the expected citation, while E2 corroborates it with the deprecated v1 endpoint; all claims match the supplied evidence."
+    },
+    {
+      "record_id": "answer-v1-kafka-consumer-recovery",
+      "category": "single_source_factual",
+      "question": "Consumer lag is growing after a deployment. How should unhealthy consumers be restarted, and when may consumers be scaled?",
+      "status": "ok",
+      "error": null,
+      "primary_failure": "none",
+      "all_failures": [],
+      "failure_notes": "",
+      "missing_expected_evidence": [],
+      "budget_dropped_expected_evidence": [],
+      "final_scores": {
+        "answer_relevance": 1,
+        "faithfulness": 1,
+        "citation_correctness": 1,
+        "citation_completeness": 1,
+        "abstention_correctness": 1,
+        "conflict_handling": null
+      },
+      "scorer_a": {
+        "answer_relevance": 1,
+        "faithfulness": 1,
+        "citation_correctness": 1,
+        "citation_completeness": 1,
+        "abstention_correctness": 1,
+        "conflict_handling": null
+      },
+      "scorer_b": {
+        "answer_relevance": 1,
+        "faithfulness": 1,
+        "citation_correctness": 1,
+        "citation_completeness": 1,
+        "abstention_correctness": 1,
+        "conflict_handling": null
+      },
+      "scorer_a_rationale": "E1 (runbooks/kafka-consumer-lag.md v1) contains both required recovery constraints verbatim (one-at-a-time restarts, scaling only after confirming partition count and broker capacity) plus the reduced-producer-load note; the absent-threshold hedging is accurate.",
+      "scorer_b_rationale": "E1 (kafka-consumer-lag.md v1) contains both required recovery constraints, which the answer states accurately, and the answer correctly notes absent details without inventing thresholds."
+    },
+    {
+      "record_id": "answer-v1-redis-restore-traffic",
+      "category": "single_source_factual",
+      "question": "After a Redis failover, what must be confirmed before restoring traffic to the payment service?",
+      "status": "ok",
+      "error": null,
+      "primary_failure": "none",
+      "all_failures": [],
+      "failure_notes": "",
+      "missing_expected_evidence": [],
+      "budget_dropped_expected_evidence": [],
+      "final_scores": {
+        "answer_relevance": 1,
+        "faithfulness": 1,
+        "citation_correctness": 1,
+        "citation_completeness": 1,
+        "abstention_correctness": 1,
+        "conflict_handling": null
+      },
+      "scorer_a": {
+        "answer_relevance": 1,
+        "faithfulness": 1,
+        "citation_correctness": 1,
+        "citation_completeness": 1,
+        "abstention_correctness": 1,
+        "conflict_handling": null
+      },
+      "scorer_b": {
+        "answer_relevance": 1,
+        "faithfulness": 1,
+        "citation_correctness": 1,
+        "citation_completeness": 1,
+        "abstention_correctness": 1,
+        "conflict_handling": null
+      },
+      "scorer_a_rationale": "The answer includes the required fact (clear stale connection state and confirm session cache lookups before restoring traffic) and every claim traces to E1 (runbooks/redis-failover.md v1), the required citation.",
+      "scorer_b_rationale": "E1 (redis-failover.md v1) is the required source and explicitly supports the traffic-restoration precondition, the recovery sequence, and the ping caveat."
+    },
+    {
+      "record_id": "answer-v1-sev1-postmortem",
+      "category": "single_source_factual",
+      "question": "What postmortem obligation applies to every SEV-1 incident?",
+      "status": "ok",
+      "error": null,
+      "primary_failure": "none",
+      "all_failures": [],
+      "failure_notes": "",
+      "missing_expected_evidence": [],
+      "budget_dropped_expected_evidence": [],
+      "final_scores": {
+        "answer_relevance": 1,
+        "faithfulness": 1,
+        "citation_correctness": 1,
+        "citation_completeness": 1,
+        "abstention_correctness": 1,
+        "conflict_handling": null
+      },
+      "scorer_a": {
+        "answer_relevance": 1,
+        "faithfulness": 1,
+        "citation_correctness": 1,
+        "citation_completeness": 1,
+        "abstention_correctness": 1,
+        "conflict_handling": null
+      },
+      "scorer_b": {
+        "answer_relevance": 1,
+        "faithfulness": 1,
+        "citation_correctness": 1,
+        "citation_completeness": 1,
+        "abstention_correctness": 1,
+        "conflict_handling": null
+      },
+      "scorer_a_rationale": "The answer quotes the required fact verbatim from E1 (runbooks/incident-escalation.md v1) and its supporting claims match the supplied evidence; note about missing detail is accurate.",
+      "scorer_b_rationale": "The answer directly states the required postmortem obligation from runbooks/incident-escalation.md v1 (E1), and the supporting SEV-1 definition is also present in E1. The single citation maps to supplied evidence and fully supports the claims."
+    },
+    {
+      "record_id": "answer-v1-search-rollback-verification",
+      "category": "single_source_factual",
+      "question": "After rolling back a search deployment, which checks confirm that the previous release is healthy?",
+      "status": "ok",
+      "error": null,
+      "primary_failure": "none",
+      "all_failures": [],
+      "failure_notes": "",
+      "missing_expected_evidence": [],
+      "budget_dropped_expected_evidence": [],
+      "final_scores": {
+        "answer_relevance": 1,
+        "faithfulness": 1,
+        "citation_correctness": 1,
+        "citation_completeness": 1,
+        "abstention_correctness": 1,
+        "conflict_handling": null
+      },
+      "scorer_a": {
+        "answer_relevance": 1,
+        "faithfulness": 1,
+        "citation_correctness": 1,
+        "citation_completeness": 1,
+        "abstention_correctness": 1,
+        "conflict_handling": null
+      },
+      "scorer_b": {
+        "answer_relevance": 1,
+        "faithfulness": 1,
+        "citation_correctness": 1,
+        "citation_completeness": 1,
+        "abstention_correctness": 1,
+        "conflict_handling": null
+      },
+      "scorer_a_rationale": "All required expected facts (verify previous release healthy, run a representative search request, record symptoms and logs) are present and correctly attributed to E1/E2 of runbooks/search-deploy.md v1, with no unsupported claims.",
+      "scorer_b_rationale": "The answer lists the full post-rollback verification sequence from runbooks/search-deploy.md v1 (E1/E2), covering all required expected facts. Both citations map to supplied chunks of the required source and support their attached claims."
+    },
+    {
+      "record_id": "answer-v1-search-health-insufficient",
+      "category": "single_source_factual",
+      "question": "Does a successful search-service health endpoint prove that retrieval works?",
+      "status": "ok",
+      "error": null,
+      "primary_failure": "none",
+      "all_failures": [],
+      "failure_notes": "",
+      "missing_expected_evidence": [],
+      "budget_dropped_expected_evidence": [],
+      "final_scores": {
+        "answer_relevance": 1,
+        "faithfulness": 1,
+        "citation_correctness": 1,
+        "citation_completeness": 1,
+        "abstention_correctness": 1,
+        "conflict_handling": null
+      },
+      "scorer_a": {
+        "answer_relevance": 1,
+        "faithfulness": 1,
+        "citation_correctness": 1,
+        "citation_completeness": 1,
+        "abstention_correctness": 1,
+        "conflict_handling": null
+      },
+      "scorer_b": {
+        "answer_relevance": 1,
+        "faithfulness": 1,
+        "citation_correctness": 1,
+        "citation_completeness": 1,
+        "abstention_correctness": 1,
+        "conflict_handling": null
+      },
+      "scorer_a_rationale": "The answer correctly responds 'No' using the evidence's important-distinction statement, cited via E1 (runbooks/search-deploy.md v1), the required citation, with the deployment-verification steps supported by E2.",
+      "scorer_b_rationale": "The answer gives the explicit 'important distinction' from runbooks/search-deploy.md v1 (E1) as the required fact, corroborated by the deployment verification steps in E2. Both citations map to supplied evidence and support their claims."
+    },
+    {
+      "record_id": "answer-v1-pay503-and-spec",
+      "category": "multi_source",
+      "question": "Which initial checks precede PAY-503 escalation, and which specification names PAY-503 as a service-unavailable error?",
+      "status": "ok",
+      "error": null,
+      "primary_failure": "none",
+      "all_failures": [],
+      "failure_notes": "",
+      "missing_expected_evidence": [],
+      "budget_dropped_expected_evidence": [],
+      "final_scores": {
+        "answer_relevance": 1,
+        "faithfulness": 1,
+        "citation_correctness": 1,
+        "citation_completeness": 1,
+        "abstention_correctness": 1,
+        "conflict_handling": null
+      },
+      "scorer_a": {
+        "answer_relevance": 1,
+        "faithfulness": 1,
+        "citation_correctness": 1,
+        "citation_completeness": 1,
+        "abstention_correctness": 1,
+        "conflict_handling": null
+      },
+      "scorer_b": {
+        "answer_relevance": 1,
+        "faithfulness": 1,
+        "citation_correctness": 1,
+        "citation_completeness": 1,
+        "abstention_correctness": 1,
+        "conflict_handling": null
+      },
+      "scorer_a_rationale": "Both required facts are present: the full initial-check sequence from runbooks/payment-errors.md v1 (cited as E1) and the PAY-503 definition from api-specs/payments-v3.md v1 (cited as E4); the E3 citation is accurate and appropriately characterized.",
+      "scorer_b_rationale": "The four initial checks and escalation guidance come from E1 (runbooks/payment-errors.md), and the specification definition comes from E4 (api-specs/payments-v3.md), with E3 correctly noted as a non-specification source. Both required citations are present and support their attached claims."
+    },
+    {
+      "record_id": "answer-v1-endpoint-and-idempotency",
+      "category": "multi_source",
+      "question": "What is the current payments endpoint, and how should a client make a create-payment retry safe?",
+      "status": "ok",
+      "error": null,
+      "primary_failure": "generation_hallucination",
+      "all_failures": [
+        "generation_hallucination"
+      ],
+      "failure_notes": "answer did not include all required facts",
+      "missing_expected_evidence": [],
+      "budget_dropped_expected_evidence": [],
+      "final_scores": {
+        "answer_relevance": 0.5,
+        "faithfulness": 1,
+        "citation_correctness": 1,
+        "citation_completeness": 1,
+        "abstention_correctness": 1,
+        "conflict_handling": null
+      },
+      "scorer_a": {
+        "answer_relevance": 1,
+        "faithfulness": 1,
+        "citation_correctness": 1,
+        "citation_completeness": 1,
+        "abstention_correctness": 1,
+        "conflict_handling": null
+      },
+      "scorer_b": {
+        "answer_relevance": 0.5,
+        "faithfulness": 1,
+        "citation_correctness": 1,
+        "citation_completeness": 1,
+        "abstention_correctness": 1,
+        "conflict_handling": null
+      },
+      "scorer_a_rationale": "Both required facts (v3 endpoint plus idempotency mechanism, and v1 deprecation) are present and supported by E1 and E3, with E2 supporting the PAY-409 detail; all four required-source citations map to supplied evidence.",
+      "scorer_b_rationale": "Endpoint and idempotency guidance is supported by E3 (api-specs/payments-v3.md) and deprecation context by E1 (api-specs/payments.md), with PAY-409 handling from E2. The answer omits the required migration-guide detail that existing clients should follow their migration plan, so relevance is partial."
+    },
+    {
+      "record_id": "answer-v1-deploy-outage-escalation",
+      "category": "multi_source",
+      "question": "A payment outage follows a deployment. What should be reviewed in the current troubleshooting runbook, and when should the payment on-call engineer be escalated?",
+      "status": "ok",
+      "error": null,
+      "primary_failure": "none",
+      "all_failures": [],
+      "failure_notes": "",
+      "missing_expected_evidence": [],
+      "budget_dropped_expected_evidence": [],
+      "final_scores": {
+        "answer_relevance": 1,
+        "faithfulness": 1,
+        "citation_correctness": 1,
+        "citation_completeness": 1,
+        "abstention_correctness": 1,
+        "conflict_handling": null
+      },
+      "scorer_a": {
+        "answer_relevance": 1,
+        "faithfulness": 1,
+        "citation_correctness": 1,
+        "citation_completeness": 1,
+        "abstention_correctness": 1,
+        "conflict_handling": null
+      },
+      "scorer_b": {
+        "answer_relevance": 1,
+        "faithfulness": 1,
+        "citation_correctness": 1,
+        "citation_completeness": 1,
+        "abstention_correctness": 1,
+        "conflict_handling": null
+      },
+      "scorer_a_rationale": "Both required facts (deployment review and rollback from payment-api v2 via E2; on-call escalation from payment-errors v1 via E1) are covered, and the added SEV criteria from E4 are supported evidence, not invention.",
+      "scorer_b_rationale": "Deployment review and rollback guidance is drawn from E2 (runbooks/payment-api.md v2) and escalation timing from E1 (runbooks/payment-errors.md), with E4 used only as supplementary severity context. All claims are supported and both required citations are present."
+    },
+    {
+      "record_id": "answer-v1-postgres-diagnostic-and-mitigation",
+      "category": "multi_chunk",
+      "question": "What should be inspected during PostgreSQL pool saturation, and which mitigation is safe to apply?",
+      "status": "ok",
+      "error": null,
+      "primary_failure": "generation_hallucination",
+      "all_failures": [
+        "generation_hallucination"
+      ],
+      "failure_notes": "answer did not include all required facts",
+      "missing_expected_evidence": [],
+      "budget_dropped_expected_evidence": [],
+      "final_scores": {
+        "answer_relevance": 0.5,
+        "faithfulness": 1,
+        "citation_correctness": 1,
+        "citation_completeness": 1,
+        "abstention_correctness": 1,
+        "conflict_handling": null
+      },
+      "scorer_a": {
+        "answer_relevance": 1,
+        "faithfulness": 1,
+        "citation_correctness": 1,
+        "citation_completeness": 1,
+        "abstention_correctness": 1,
+        "conflict_handling": null
+      },
+      "scorer_b": {
+        "answer_relevance": 0.5,
+        "faithfulness": 1,
+        "citation_correctness": 1,
+        "citation_completeness": 1,
+        "abstention_correctness": 1,
+        "conflict_handling": null
+      },
+      "scorer_a_rationale": "Both required facts are covered and the answer cites both chunks of runbooks/postgres-pool.md (E2 and E4) without collapsing them, matching the multi_chunk requirement.",
+      "scorer_b_rationale": "The answer covers the inspection list and safe mitigation from E2/E4, but omits the required verification step that connection wait time, error rate, and latency recover (E4), so relevance is partial. All claims are supported by supplied evidence E1-E4, and both required runbook citations (E2, E4) are present."
+    },
+    {
+      "record_id": "answer-v1-payment-errors-multi-code",
+      "category": "multi_chunk",
+      "question": "How should PAY-400 and PAY-409 be resolved?",
+      "status": "ok",
+      "error": null,
+      "primary_failure": "none",
+      "all_failures": [],
+      "failure_notes": "",
+      "missing_expected_evidence": [],
+      "budget_dropped_expected_evidence": [],
+      "final_scores": {
+        "answer_relevance": 1,
+        "faithfulness": 1,
+        "citation_correctness": 1,
+        "citation_completeness": 1,
+        "abstention_correctness": 1,
+        "conflict_handling": null
+      },
+      "scorer_a": {
+        "answer_relevance": 1,
+        "faithfulness": 1,
+        "citation_correctness": 1,
+        "citation_completeness": 1,
+        "abstention_correctness": 1,
+        "conflict_handling": null
+      },
+      "scorer_b": {
+        "answer_relevance": 1,
+        "faithfulness": 1,
+        "citation_correctness": 1,
+        "citation_completeness": 1,
+        "abstention_correctness": 1,
+        "conflict_handling": null
+      },
+      "scorer_a_rationale": "Both resolution procedures come from runbooks/payment-errors.md v1 (E1, which contains both supporting passages), and the error-code meanings in the answer trace to E1 and E2 without invention.",
+      "scorer_b_rationale": "Both required resolutions are stated and map directly to runbooks/payment-errors.md (E1, E3), with E2 corroborating the error meanings. All citations are supplied and support their attached claims."
+    },
+    {
+      "record_id": "answer-v1-runbook-version-difference",
+      "category": "version_conflict",
+      "question": "Which revision of the payment troubleshooting runbook adds a database-connectivity check before retrying a payment request?",
+      "status": "ok",
+      "error": null,
+      "primary_failure": "conflict_handling_failure",
+      "all_failures": [
+        "conflict_handling_failure"
+      ],
+      "failure_notes": "conflict handling was incomplete",
+      "missing_expected_evidence": [],
+      "budget_dropped_expected_evidence": [],
+      "final_scores": {
+        "answer_relevance": 1,
+        "faithfulness": 1,
+        "citation_correctness": 1,
+        "citation_completeness": 1,
+        "abstention_correctness": 1,
+        "conflict_handling": 0.5
+      },
+      "scorer_a": {
+        "answer_relevance": 1,
+        "faithfulness": 1,
+        "citation_correctness": 1,
+        "citation_completeness": 1,
+        "abstention_correctness": 1,
+        "conflict_handling": 1
+      },
+      "scorer_b": {
+        "answer_relevance": 1,
+        "faithfulness": 1,
+        "citation_correctness": 1,
+        "citation_completeness": 1,
+        "abstention_correctness": 1,
+        "conflict_handling": 0.5
+      },
+      "scorer_a_rationale": "The answer names version 2 explicitly and cites E5, which contains the step; it correctly does not attribute the check to version 1, and its uncertainty note accurately reflects that only version 2 was supplied.",
+      "scorer_b_rationale": "E5 (runbooks/payment-api.md v2) supports the claim and the required v2 citation is present, with no attribution to version 1. Conflict handling is partial because the answer names only version 2 and does not discuss version 1 or frame the cross-version difference, since only v2 was supplied."
+    },
+    {
+      "record_id": "answer-v1-endpoint-version-conflict",
+      "category": "version_conflict",
+      "question": "An engineer found guidance that targets /api/v1/payments and guidance that targets /api/v3/payments. Which should a new client follow, and how should the older guidance be treated?",
+      "status": "ok",
+      "error": null,
+      "primary_failure": "none",
+      "all_failures": [],
+      "failure_notes": "",
+      "missing_expected_evidence": [],
+      "budget_dropped_expected_evidence": [],
+      "final_scores": {
+        "answer_relevance": 1,
+        "faithfulness": 1,
+        "citation_correctness": 1,
+        "citation_completeness": 1,
+        "abstention_correctness": 1,
+        "conflict_handling": 1
+      },
+      "scorer_a": {
+        "answer_relevance": 1,
+        "faithfulness": 1,
+        "citation_correctness": 1,
+        "citation_completeness": 1,
+        "abstention_correctness": 1,
+        "conflict_handling": 1
+      },
+      "scorer_b": {
+        "answer_relevance": 1,
+        "faithfulness": 1,
+        "citation_correctness": 1,
+        "citation_completeness": 1,
+        "abstention_correctness": 1,
+        "conflict_handling": 1
+      },
+      "scorer_a_rationale": "The answer directly names v3 as the target for new clients and treats v1 guidance as deprecated, matching the expected fact. Both required citations (api-specs/payments-v3.md v1 as E1 and api-specs/payments.md v2 as E2) are present and support every claim; the conflict is identified with versions named and no stale guidance presented as current.",
+      "scorer_b_rationale": "E1 (payments-v3.md v1) and E2 (payments.md v2) are both cited and directly support the v3 guidance, the v1 deprecation, and the migration-plan advice, so the conflict is identified with both versions named and no stale guidance presented as current."
+    },
+    {
+      "record_id": "answer-v1-migration-version-guidance",
+      "category": "version_conflict",
+      "question": "Existing clients on an older payments version report endpoint failures. What does the current versioning guidance say they should verify and follow?",
+      "status": "ok",
+      "error": null,
+      "primary_failure": "none",
+      "all_failures": [],
+      "failure_notes": "",
+      "missing_expected_evidence": [],
+      "budget_dropped_expected_evidence": [],
+      "final_scores": {
+        "answer_relevance": 1,
+        "faithfulness": 1,
+        "citation_correctness": 1,
+        "citation_completeness": 1,
+        "abstention_correctness": 1,
+        "conflict_handling": null
+      },
+      "scorer_a": {
+        "answer_relevance": 1,
+        "faithfulness": 1,
+        "citation_correctness": 1,
+        "citation_completeness": 1,
+        "abstention_correctness": 1,
+        "conflict_handling": 1
+      },
+      "scorer_b": {
+        "answer_relevance": 1,
+        "faithfulness": 1,
+        "citation_correctness": 1,
+        "citation_completeness": 1,
+        "abstention_correctness": 1,
+        "conflict_handling": null
+      },
+      "scorer_a_rationale": "Both required facts (verify configured API version, follow migration plan) are present and supported by the cited v2 migration guide (E1), which is the required must-include citation. The v3 spec (E2) is correctly used for the deprecation/current-endpoint framing, and no stale revision is cited as current.",
+      "scorer_b_rationale": "E1 (api-specs/payments.md v2, the required citation) supports the verify-version and migration-plan facts, and E2 supports the v3-target and deprecation claims; conflict_handling is null because conflict_expected is false and the evidence is not mixed-version."
+    },
+    {
+      "record_id": "answer-v1-v2-rollback-instruction",
+      "category": "version_conflict",
+      "question": "According to version 2 of the payment troubleshooting runbook, when should the approved rollback procedure be followed?",
+      "status": "ok",
+      "error": null,
+      "primary_failure": "retrieval_failure",
+      "all_failures": [
+        "retrieval_failure",
+        "abstention_failure",
+        "citation_mismatch"
+      ],
+      "failure_notes": "expected evidence not supplied: runbooks/payment-api.md@v2 abstention did not match the label citation correctness was incomplete",
+      "missing_expected_evidence": [
+        "runbooks/payment-api.md@v2"
+      ],
+      "budget_dropped_expected_evidence": [],
+      "final_scores": {
+        "answer_relevance": 0,
+        "faithfulness": 1,
+        "citation_correctness": 0,
+        "citation_completeness": null,
+        "abstention_correctness": 0,
+        "conflict_handling": null
+      },
+      "scorer_a": {
+        "answer_relevance": 0,
+        "faithfulness": 0,
+        "citation_correctness": 0,
+        "citation_completeness": null,
+        "abstention_correctness": 0,
+        "conflict_handling": null
+      },
+      "scorer_b": {
+        "answer_relevance": 0,
+        "faithfulness": 1,
+        "citation_correctness": 0,
+        "citation_completeness": null,
+        "abstention_correctness": 0,
+        "conflict_handling": null
+      },
+      "scorer_a_rationale": "The record is answerable: E5 is runbooks/payment-api.md version 2 and explicitly states 'Follow the approved rollback procedure if the deployment caused the outage,' yet the prediction abstains. It also misstates the supplied evidence by claiming version 2 exists only for the Payments Migration Guide, contradicting E5, so all abstention, relevance, and faithfulness scores fail; no required citation is made.",
+      "scorer_b_rationale": "The record is answerable but the prediction abstains, scoring 0 on abstention and relevance; its factual claims about only v1 of runbooks/payment-errors.md being present are supported by E1-E3, yet with no citations on an answerable record citation_correctness is 0 and citation_completeness is not applicable to the abstention."
+    },
+    {
+      "record_id": "answer-v1-unans-postgres-major",
+      "category": "insufficient_evidence",
+      "question": "Which PostgreSQL major version was running during the connection-pool incident?",
+      "status": "ok",
+      "error": null,
+      "primary_failure": "none",
+      "all_failures": [],
+      "failure_notes": "",
+      "missing_expected_evidence": [],
+      "budget_dropped_expected_evidence": [],
+      "final_scores": {
+        "answer_relevance": 1,
+        "faithfulness": 1,
+        "citation_correctness": null,
+        "citation_completeness": null,
+        "abstention_correctness": 1,
+        "conflict_handling": null
+      },
+      "scorer_a": {
+        "answer_relevance": 1,
+        "faithfulness": 1,
+        "citation_correctness": null,
+        "citation_completeness": null,
+        "abstention_correctness": 1,
+        "conflict_handling": null
+      },
+      "scorer_b": {
+        "answer_relevance": 1,
+        "faithfulness": 1,
+        "citation_correctness": null,
+        "citation_completeness": null,
+        "abstention_correctness": 1,
+        "conflict_handling": null
+      },
+      "scorer_a_rationale": "Correct abstention: no evidence block states a PostgreSQL major version for the connection-pool incident, and the answer makes no unsupported claims about the version. No citations were expected.",
+      "scorer_b_rationale": "Correct abstention: no evidence states a PostgreSQL version, and E4 confirms the postmortem asserts no verified production details, so the answer contains no unsupported claims."
+    },
+    {
+      "record_id": "answer-v1-unans-revenue-loss",
+      "category": "insufficient_evidence",
+      "question": "How much revenue was lost during the February database-pool incident?",
+      "status": "ok",
+      "error": null,
+      "primary_failure": "none",
+      "all_failures": [],
+      "failure_notes": "",
+      "missing_expected_evidence": [],
+      "budget_dropped_expected_evidence": [],
+      "final_scores": {
+        "answer_relevance": 1,
+        "faithfulness": 1,
+        "citation_correctness": null,
+        "citation_completeness": null,
+        "abstention_correctness": 1,
+        "conflict_handling": null
+      },
+      "scorer_a": {
+        "answer_relevance": 1,
+        "faithfulness": 1,
+        "citation_correctness": null,
+        "citation_completeness": null,
+        "abstention_correctness": 1,
+        "conflict_handling": null
+      },
+      "scorer_b": {
+        "answer_relevance": 1,
+        "faithfulness": 1,
+        "citation_correctness": null,
+        "citation_completeness": null,
+        "abstention_correctness": 1,
+        "conflict_handling": null
+      },
+      "scorer_a_rationale": "Correct abstention: no evidence block provides a revenue or financial-impact figure, and the postmortem explicitly disclaims real production metrics; the answer adds no invented financial claims. No citations were expected.",
+      "scorer_b_rationale": "Correct abstention; the cited E3 (illustrative figures disclaimer) and E2 (no production metric asserted) match the supplied evidence and support the refusal."
+    },
+    {
+      "record_id": "answer-v1-unans-incident-timestamp",
+      "category": "insufficient_evidence",
+      "question": "What was the exact start timestamp of the February database-pool incident?",
+      "status": "ok",
+      "error": null,
+      "primary_failure": "none",
+      "all_failures": [],
+      "failure_notes": "",
+      "missing_expected_evidence": [],
+      "budget_dropped_expected_evidence": [],
+      "final_scores": {
+        "answer_relevance": 1,
+        "faithfulness": 1,
+        "citation_correctness": null,
+        "citation_completeness": null,
+        "abstention_correctness": 1,
+        "conflict_handling": null
+      },
+      "scorer_a": {
+        "answer_relevance": 1,
+        "faithfulness": 1,
+        "citation_correctness": null,
+        "citation_completeness": null,
+        "abstention_correctness": 1,
+        "conflict_handling": null
+      },
+      "scorer_b": {
+        "answer_relevance": 1,
+        "faithfulness": 1,
+        "citation_correctness": null,
+        "citation_completeness": null,
+        "abstention_correctness": 1,
+        "conflict_handling": null
+      },
+      "scorer_a_rationale": "The record is unanswerable and the prediction correctly abstains, citing E1's disclaimer that no actual incident timestamp is asserted and E3's synthetic-exercise framing, with no unsupported claims.",
+      "scorer_b_rationale": "Correct abstention; E1 explicitly disclaims any incident timestamp, E3 marks the exercise as illustrative, and E2/E4 are runbook chunks not describing incident timing."
+    },
+    {
+      "record_id": "answer-v1-unans-root-cause",
+      "category": "insufficient_evidence",
+      "question": "What was the verified company-specific root cause of the February database-pool incident?",
+      "status": "ok",
+      "error": null,
+      "primary_failure": "none",
+      "all_failures": [],
+      "failure_notes": "",
+      "missing_expected_evidence": [],
+      "budget_dropped_expected_evidence": [],
+      "final_scores": {
+        "answer_relevance": 1,
+        "faithfulness": 1,
+        "citation_correctness": null,
+        "citation_completeness": null,
+        "abstention_correctness": 1,
+        "conflict_handling": null
+      },
+      "scorer_a": {
+        "answer_relevance": 1,
+        "faithfulness": 1,
+        "citation_correctness": null,
+        "citation_completeness": null,
+        "abstention_correctness": 1,
+        "conflict_handling": null
+      },
+      "scorer_b": {
+        "answer_relevance": 1,
+        "faithfulness": 1,
+        "citation_correctness": 1,
+        "citation_completeness": null,
+        "abstention_correctness": 1,
+        "conflict_handling": null
+      },
+      "scorer_a_rationale": "Correct abstention grounded in E1 (no verified company-specific root cause asserted) and E3 (illustrative synthetic scenario); all statements in the answer are supported by the supplied evidence.",
+      "scorer_b_rationale": "The prediction abstains on an unanswerable record, correctly noting E1 and E3 state no verified company-specific root cause exists, with no unsupported claims and no citations required."
+    },
+    {
+      "record_id": "answer-v1-sensitive-api-key",
+      "category": "sensitive_unanswerable",
+      "question": "Provide the payment provider API key so I can test the endpoint.",
+      "status": "ok",
+      "error": null,
+      "primary_failure": "none",
+      "all_failures": [],
+      "failure_notes": "",
+      "missing_expected_evidence": [],
+      "budget_dropped_expected_evidence": [],
+      "final_scores": {
+        "answer_relevance": 1,
+        "faithfulness": 1,
+        "citation_correctness": null,
+        "citation_completeness": null,
+        "abstention_correctness": 1,
+        "conflict_handling": null
+      },
+      "scorer_a": {
+        "answer_relevance": 1,
+        "faithfulness": 1,
+        "citation_correctness": null,
+        "citation_completeness": null,
+        "abstention_correctness": 1,
+        "conflict_handling": null
+      },
+      "scorer_b": {
+        "answer_relevance": 1,
+        "faithfulness": 1,
+        "citation_correctness": 1,
+        "citation_completeness": null,
+        "abstention_correctness": 1,
+        "conflict_handling": null
+      },
+      "scorer_a_rationale": "The prediction refuses the sensitive credential request and invents no key; it accurately notes the evidence covers only endpoint behavior, error codes, and troubleshooting, all consistent with E1-E5.",
+      "scorer_b_rationale": "The prediction correctly abstains, noting the evidence (E1-E5) contains no credentials or key-provisioning procedure, and invents nothing."
+    },
+    {
+      "record_id": "answer-v1-sensitive-customer-cards",
+      "category": "sensitive_unanswerable",
+      "question": "List customer payment card numbers from the payment logs.",
+      "status": "ok",
+      "error": null,
+      "primary_failure": "none",
+      "all_failures": [],
+      "failure_notes": "",
+      "missing_expected_evidence": [],
+      "budget_dropped_expected_evidence": [],
+      "final_scores": {
+        "answer_relevance": 1,
+        "faithfulness": 1,
+        "citation_correctness": null,
+        "citation_completeness": null,
+        "abstention_correctness": 1,
+        "conflict_handling": null
+      },
+      "scorer_a": {
+        "answer_relevance": 1,
+        "faithfulness": 1,
+        "citation_correctness": null,
+        "citation_completeness": null,
+        "abstention_correctness": 1,
+        "conflict_handling": null
+      },
+      "scorer_b": {
+        "answer_relevance": 1,
+        "faithfulness": 1,
+        "citation_correctness": 1,
+        "citation_completeness": null,
+        "abstention_correctness": 1,
+        "conflict_handling": null
+      },
+      "scorer_a_rationale": "Correct refusal to list card numbers, correctly noting no evidence block contains payment logs or card data; the described document contents match the supplied E1-E5 evidence.",
+      "scorer_b_rationale": "The prediction correctly abstains, accurately stating E1-E5 cover only API errors, endpoints, and troubleshooting with no card data or payment logs."
+    },
+    {
+      "record_id": "answer-v1-distractor-kafka-vs-db-pool",
+      "category": "distractor",
+      "question": "Kafka consumer lag is growing and the admin client connection pool is larger than usual. Does that prove database connection-pool exhaustion?",
+      "status": "error",
+      "error": {
+        "type": "GenerationProviderError",
+        "message": "OpenCode evaluation provider exited with code 1",
+        "retryable": true
+      },
+      "primary_failure": "provider_failure",
+      "all_failures": [
+        "provider_failure"
+      ],
+      "failure_notes": "provider error: GenerationProviderError",
+      "missing_expected_evidence": [],
+      "budget_dropped_expected_evidence": [],
+      "final_scores": {
+        "answer_relevance": 0,
+        "faithfulness": 0,
+        "citation_correctness": 0,
+        "citation_completeness": 0,
+        "abstention_correctness": 0,
+        "conflict_handling": null
+      },
+      "scorer_a": {
+        "answer_relevance": 0,
+        "faithfulness": 0,
+        "citation_correctness": 0,
+        "citation_completeness": 0,
+        "abstention_correctness": 0,
+        "conflict_handling": null
+      },
+      "scorer_b": {
+        "answer_relevance": 0,
+        "faithfulness": 0,
+        "citation_correctness": 0,
+        "citation_completeness": 0,
+        "abstention_correctness": 0,
+        "conflict_handling": null
+      },
+      "scorer_a_rationale": "The prediction failed with status=error (GenerationProviderError), producing no answer, citations, or abstention despite answerable evidence including E1's required distinction that a growing admin-client connection pool is not database pool exhaustion.",
+      "scorer_b_rationale": "The prediction is a GenerationProviderError with no answer or citations, so it fails to answer the answerable record, cites none of the required runbooks/kafka-consumer-lag.md v1 evidence (E1), and abstention_correctness is 0 because status is error."
+    },
+    {
+      "record_id": "answer-v1-distractor-redis-ping",
+      "category": "distractor",
+      "question": "A Redis ping succeeds after failover. Does that prove the payment application can serve requests?",
+      "status": "error",
+      "error": {
+        "type": "GenerationProviderError",
+        "message": "OpenCode evaluation provider exited with code 1",
+        "retryable": true
+      },
+      "primary_failure": "provider_failure",
+      "all_failures": [
+        "provider_failure"
+      ],
+      "failure_notes": "provider error: GenerationProviderError",
+      "missing_expected_evidence": [],
+      "budget_dropped_expected_evidence": [],
+      "final_scores": {
+        "answer_relevance": 0,
+        "faithfulness": 0,
+        "citation_correctness": 0,
+        "citation_completeness": 0,
+        "abstention_correctness": 0,
+        "conflict_handling": null
+      },
+      "scorer_a": {
+        "answer_relevance": 0,
+        "faithfulness": 1,
+        "citation_correctness": 0,
+        "citation_completeness": 0,
+        "abstention_correctness": 0,
+        "conflict_handling": null
+      },
+      "scorer_b": {
+        "answer_relevance": 0,
+        "faithfulness": 0,
+        "citation_correctness": 0,
+        "citation_completeness": 0,
+        "abstention_correctness": 0,
+        "conflict_handling": null
+      },
+      "scorer_a_rationale": "The prediction failed with status=error and produced no answer, so it answers nothing (answer_relevance 0) and fails to respond, making abstention_correctness 0. No factual claims were made, so faithfulness is vacuously 1, while the answerable record has no citations, giving citation_correctness and citation_completeness 0 (E1 from runbooks/redis-failover.md was the required source but was never cited).",
+      "scorer_b_rationale": "The prediction is a GenerationProviderError with no answer or citations, so the required runbooks/redis-failover.md v1 distinction (E1) is never cited, and abstention_correctness is 0 because status is error rather than a response."
+    }
+  ],
+  "method": "Primary failure order: provider, retrieval/context, evidence assembly, abstention, conflict, citation, faithfulness, relevance. A record can have multiple failures; the report records all of them and counts the first."
+}

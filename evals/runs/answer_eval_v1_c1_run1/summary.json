@@ -1,0 +1,27 @@
+{
+  "records_total": 26,
+  "records_ok": 24,
+  "records_error": 2,
+  "provider_failures": 0,
+  "generation_contract_failures": 2,
+  "provider_failure_rate": 0.0,
+  "abstained": 4,
+  "abstention_rate": 0.1667,
+  "conflicts": 0,
+  "provider_attempts_total": 26,
+  "provider_retries": 0,
+  "latency_ms": {
+    "p50": 9128.5,
+    "p95": 32464.49999999996,
+    "mean": 11772.25,
+    "max": 47964
+  },
+  "tokens_estimate": {
+    "input": 49271,
+    "output": 4497
+  },
+  "provider_usage_reported": 1,
+  "error_types": [
+    "InvalidModelOutputError"
+  ]
+}

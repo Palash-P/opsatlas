@@ -1,0 +1,966 @@
+{
+  "report_version": 1,
+  "dataset_id": "answer_eval_v1",
+  "status": "completed",
+  "run": {
+    "system_name": "OpsAtlas",
+    "system_version": "0.4.0",
+    "retrieval_config": {
+      "strategy": "hybrid",
+      "keyword_strategy": "and",
+      "fusion_strategy": "chunk",
+      "semantic_weight": 1.0,
+      "lexical_weight": 1.0,
+      "rrf_k": 60,
+      "limit": 5,
+      "embedding_model": "sentence-transformers/all-MiniLM-L6-v2",
+      "embedding_dimensions": 384,
+      "identifier_weight": 2.0
+    },
+    "generation_config": {
+      "provider": "opencode_cli",
+      "model": "opencode/deepseek-v4.1-flash-free",
+      "temperature": 0.0,
+      "temperature_enforced": false,
+      "max_output_tokens": 700,
+      "max_output_tokens_enforced": "soft prompt limit only",
+      "timeout_seconds": 240.0,
+      "max_retries": 1,
+      "prompt_version": "grounded_answer_v1"
+    },
+    "prompt_version": "grounded_answer_v1",
+    "started_at": "2026-11-02T11:32:50.694028+00:00",
+    "completed_at": "2026-11-02T11:34:39.497259+00:00"
+  },
+  "metric_definitions": {
+    "answer_relevance": "0-1 rubric: does the answer address the question and include the expected facts without unrelated material? Unanswerable questions score 1 when the system abstains appropriately.",
+    "faithfulness": "0-1 rubric: is every factual claim in the answer supported by a supplied evidence chunk, with no outside knowledge or invented procedure?",
+    "citation_correctness": "0-1 rubric: do all returned citations reference chunks actually supplied to the model, with the correct source key, version number, and chunk ID, and does each excerpt support its claim? Fabricated citations score 0.",
+    "citation_completeness": "0-1 rubric: does the answer cite every expected required source and version needed to support its claims? Missing a required source lowers the score.",
+    "abstention_correctness": "Binary per record: does the system abstain exactly when the question is unanswerable, and answer when sufficient evidence exists? Applies to all records, not only unanswerable ones.",
+    "conflict_handling": "0-1 rubric for records with conflict_expected or multiple supplied versions: does the answer identify the conflict, name the versions involved, and avoid silently presenting a stale passage as current?"
+  },
+  "records": [
+    {
+      "record_id": "answer-v1-pay503-initial-checks",
+      "category": "single_source_factual",
+      "question": "When PAY-503 is raised, which initial checks should the operator perform before escalating?",
+      "answerable": true,
+      "prediction": {
+        "answer": "Per the Payment API Error Codes Runbook, when PAY-503 (Payment Service Unavailable) is raised, the operator should perform these initial checks before escalating: (1) check the payment service health endpoint; (2) inspect recent deployment events and error-rate metrics; (3) check downstream gateway availability and connection-pool saturation; (4) correlate the request timestamp with service logs using the request ID. The runbook states that escalation to the payment on-call engineer should occur if errors persist. It also cautions against repeatedly retrying non-idempotent payment operations without checking idempotency guarantees, and directs following an approved rollback procedure if a recent deployment correlates with the errors, or the downstream dependency's incident runbook if that dependency is unavailable. The evidence does not specify a numeric retry limit or a time threshold for escalation.",
+        "abstained": false,
+        "abstention_reason": null,
+        "citations": [
+          {
+            "source_key": "runbooks/payment-errors.md",
+            "version_number": 1,
+            "chunk_id": "f95c8466-b806-44d8-b61a-374b2929ad74",
+            "excerpt": "# Payment API Error Codes Runbook Synthetic training document for OpsAtlas retrieval evaluation. ## PAY-503: Payment Service Unavailable Meaning: The payment service could not complete the request because a required downstream service was unavailable or the request could not be processed within its availability limits. Initial checks: 1. Check the payment service health endpoint. 2. Inspect recent deployment events and error-rate metrics. 3. Check downstream gateway availability and connection-pool saturation. 4. Correlate the request timestamp with service logs using the request ID.…"
+          }
+        ],
+        "conflicts": []
+      },
+      "scores": {
+        "answer_relevance": 1,
+        "faithfulness": 1,
+        "citation_correctness": 1,
+        "citation_completeness": 1,
+        "abstention_correctness": 1,
+        "conflict_handling": null
+      },
+      "scoring_notes": "{\"status\": \"ok\", \"error\": null, \"primary_failure\": \"none\", \"all_failures\": [], \"failure_notes\": \"\", \"scorer_a_rationale\": \"E1 (runbooks/payment-errors.md v1, chunk 0) contains the full PAY-503 initial-check sequence; the answer reproduces all four required checks and every additional claim (escalation, rollback, idempotency caution) is supported by the same evidence.\", \"scorer_b_rationale\": \"The answer reproduces all four PAY-503 initial checks and the response guidance from E1 (runbooks/payment-errors.md v1), the required source, and adds no unsupported specifics.\"}"
+    },
+    {
+      "record_id": "answer-v1-pay400-resolution",
+      "category": "single_source_factual",
+      "question": "A payment request fails validation with PAY-400. What should be corrected before resubmitting?",
+      "answerable": true,
+      "prediction": {
+        "answer": "PAY-400 means the payment request is invalid or required fields are missing. Before resubmitting, verify the request schema and the validation error details, and validate that required fields are present and correct. The evidence does not specify which fields are required or what the validation error payload contains, so the exact corrections depend on the client's configured schema and the returned validation details. If the retry could create a payment, use the documented idempotency mechanism rather than retrying blindly, and confirm the configured API version targets the current endpoint (POST /api/v3/payments) if endpoint-related errors are also involved.",
+        "abstained": false,
+        "abstention_reason": null,
+        "citations": [
+          {
+            "source_key": "runbooks/payment-errors.md",
+            "version_number": 1,
+            "chunk_id": "488fbca1-dab6-4285-a4de-f8a74ede8052",
+            "excerpt": "Verify the request schema and validation error details before retrying. ## PAY-409: Payment Conflict Meaning: The request conflicts with the current payment state. Response: Retrieve the payment state and reconcile before submitting another operation. This document is synthetic and does not describe a real production incident or actual company procedure."
+          },
+          {
+            "source_key": "runbooks/payment-errors.md",
+            "version_number": 1,
+            "chunk_id": "f95c8466-b806-44d8-b61a-374b2929ad74",
+            "excerpt": "# Payment API Error Codes Runbook Synthetic training document for OpsAtlas retrieval evaluation. ## PAY-503: Payment Service Unavailable Meaning: The payment service could not complete the request because a required downstream service was unavailable or the request could not be processed within its availability limits. Initial checks: 1. Check the payment service health endpoint. 2. Inspect recent deployment events and error-rate metrics. 3. Check downstream gateway availability and connection-pool saturation. 4. Correlate the request timestamp with service logs using the request ID.…"
+          },
+          {
+            "source_key": "api-specs/payments.md",
+            "version_number": 2,
+            "chunk_id": "f8ce71eb-dff5-49c2-879f-ef71c34e1b65",
+            "excerpt": "# Payments Migration Guide Synthetic engineering reference for OpsAtlas retrieval evaluation. This is not a real production document. ## Endpoint The /api/v1/payments endpoint is deprecated. New clients must use: POST /api/v3/payments Existing clients should follow their migration plan rather than assuming endpoint compatibility. ## Request behavior - Send a valid payment request according to the client's configured schema. - Use the documented idempotency mechanism when retrying operations that might create a payment. - Validate required fields before submitting a request. ## Retry behavior…"
+          },
+          {
+            "source_key": "api-specs/payments-v3.md",
+            "version_number": 1,
+            "chunk_id": "93d69878-23b8-4147-8f95-0f0242e58da8",
+            "excerpt": "# Payment API v3 Specification Synthetic API reference for OpsAtlas retrieval evaluation. This is not a real external API contract. ## Current endpoint New payment clients should use the v3 endpoint: POST /api/v3/payments ## Request behavior - Send a valid payment request according to the client's configured schema. - Use the documented idempotency mechanism when retrying operations that might create a payment. - Validate required fields before submitting a request. ## Error handling - PAY-400 indicates an invalid payment request. - PAY-409 indicates a conflict with the current payment…"
+          }
+        ],
+        "conflicts": []
+      },
+      "scores": {
+        "answer_relevance": 1,
+        "faithfulness": 1,
+        "citation_correctness": 1,
+        "citation_completeness": 1,
+        "abstention_correctness": 1,
+        "conflict_handling": null
+      },
+      "scoring_notes": "{\"status\": \"ok\", \"error\": null, \"primary_failure\": \"none\", \"all_failures\": [], \"failure_notes\": \"\", \"scorer_a_rationale\": \"The required fact (verify schema and validation error details) is cited to E1/E2 of the required runbooks/payment-errors.md v1; the supplemental idempotency and endpoint-version advice is supported by E3 and E4, and absent-detail hedges are accurate.\", \"scorer_b_rationale\": \"The required PAY-400 correction from E1/E2 (runbooks/payment-errors.md v1) is stated in full, and the supplementary idempotency and endpoint guidance is supported by E3 and E4.\"}"
+    },
+    {
+      "record_id": "answer-v1-pay409-reconcile",
+      "category": "single_source_factual",
+      "question": "After a PAY-409 conflict, should the operator retry immediately or inspect the current payment state first?",
+      "answerable": true,
+      "prediction": {
+        "answer": "Inspect the current payment state first, then reconcile before submitting another operation. Per E1, PAY-409 (Payment Conflict) means the request conflicts with the current payment state, and the stated response is to retrieve the payment state and reconcile before submitting another operation. This is consistent with E4, which describes PAY-409 as indicating a conflict with the current payment state. Supporting guidance from E3/E4 also advises using the documented idempotency mechanism rather than retrying blindly and not repeatedly retrying non-idempotent payment operations. The evidence does not confirm that an immediate retry is appropriate.",
+        "abstained": false,
+        "abstention_reason": null,
+        "citations": [
+          {
+            "source_key": "runbooks/payment-errors.md",
+            "version_number": 1,
+            "chunk_id": "488fbca1-dab6-4285-a4de-f8a74ede8052",
+            "excerpt": "Verify the request schema and validation error details before retrying. ## PAY-409: Payment Conflict Meaning: The request conflicts with the current payment state. Response: Retrieve the payment state and reconcile before submitting another operation. This document is synthetic and does not describe a real production incident or actual company procedure."
+          },
+          {
+            "source_key": "api-specs/payments.md",
+            "version_number": 2,
+            "chunk_id": "f8ce71eb-dff5-49c2-879f-ef71c34e1b65",
+            "excerpt": "# Payments Migration Guide Synthetic engineering reference for OpsAtlas retrieval evaluation. This is not a real production document. ## Endpoint The /api/v1/payments endpoint is deprecated. New clients must use: POST /api/v3/payments Existing clients should follow their migration plan rather than assuming endpoint compatibility. ## Request behavior - Send a valid payment request according to the client's configured schema. - Use the documented idempotency mechanism when retrying operations that might create a payment. - Validate required fields before submitting a request. ## Retry behavior…"
+          },
+          {
+            "source_key": "api-specs/payments-v3.md",
+            "version_number": 1,
+            "chunk_id": "93d69878-23b8-4147-8f95-0f0242e58da8",
+            "excerpt": "# Payment API v3 Specification Synthetic API reference for OpsAtlas retrieval evaluation. This is not a real external API contract. ## Current endpoint New payment clients should use the v3 endpoint: POST /api/v3/payments ## Request behavior - Send a valid payment request according to the client's configured schema. - Use the documented idempotency mechanism when retrying operations that might create a payment. - Validate required fields before submitting a request. ## Error handling - PAY-400 indicates an invalid payment request. - PAY-409 indicates a conflict with the current payment…"
+          }
+        ],
+        "conflicts": []
+      },
+      "scores": {
+        "answer_relevance": 1,
+        "faithfulness": 1,
+        "citation_correctness": 1,
+        "citation_completeness": 1,
+        "abstention_correctness": 1,
+        "conflict_handling": null
+      },
+      "scoring_notes": "{\"status\": \"ok\", \"error\": null, \"primary_failure\": \"none\", \"all_failures\": [], \"failure_notes\": \"\", \"scorer_a_rationale\": \"E1 (runbooks/payment-errors.md v1, chunk 1) explicitly states the PAY-409 response is to retrieve state and reconcile; the corroborating and idempotency claims map to E4 and E3 respectively, and the required citation is present.\", \"scorer_b_rationale\": \"The answer correctly resolves the question using E1 (runbooks/payment-errors.md v1, required source), with corroborating idempotency guidance from E3 and no unsupported claims.\"}"
+    },
+    {
+      "record_id": "answer-v1-v3-endpoint",
+      "category": "single_source_factual",
+      "question": "Which POST path should a new payment client target under API version 3?",
+      "answerable": true,
+      "prediction": {
+        "answer": "A new payment client should target the v3 endpoint POST /api/v3/payments. E1 states that new payment clients should use the v3 endpoint and lists it as POST /api/v3/payments, with versioning guidance that new clients should target /api/v3/payments and that clients on older API versions should follow their migration plan rather than assuming endpoint compatibility. E2 independently states that /api/v1/payments is deprecated and that new clients must use POST /api/v3/payments. The two documents agree on the path; no conflict exists.",
+        "abstained": false,
+        "abstention_reason": null,
+        "citations": [
+          {
+            "source_key": "api-specs/payments-v3.md",
+            "version_number": 1,
+            "chunk_id": "93d69878-23b8-4147-8f95-0f0242e58da8",
+            "excerpt": "# Payment API v3 Specification Synthetic API reference for OpsAtlas retrieval evaluation. This is not a real external API contract. ## Current endpoint New payment clients should use the v3 endpoint: POST /api/v3/payments ## Request behavior - Send a valid payment request according to the client's configured schema. - Use the documented idempotency mechanism when retrying operations that might create a payment. - Validate required fields before submitting a request. ## Error handling - PAY-400 indicates an invalid payment request. - PAY-409 indicates a conflict with the current payment…"
+          },
+          {
+            "source_key": "api-specs/payments.md",
+            "version_number": 2,
+            "chunk_id": "f8ce71eb-dff5-49c2-879f-ef71c34e1b65",
+            "excerpt": "# Payments Migration Guide Synthetic engineering reference for OpsAtlas retrieval evaluation. This is not a real production document. ## Endpoint The /api/v1/payments endpoint is deprecated. New clients must use: POST /api/v3/payments Existing clients should follow their migration plan rather than assuming endpoint compatibility. ## Request behavior - Send a valid payment request according to the client's configured schema. - Use the documented idempotency mechanism when retrying operations that might create a payment. - Validate required fields before submitting a request. ## Retry behavior…"
+          }
+        ],
+        "conflicts": []
+      },
+      "scores": {
+        "answer_relevance": 1,
+        "faithfulness": 1,
+        "citation_correctness": 1,
+        "citation_completeness": 1,
+        "abstention_correctness": 1,
+        "conflict_handling": null
+      },
+      "scoring_notes": "{\"status\": \"ok\", \"error\": null, \"primary_failure\": \"none\", \"all_failures\": [], \"failure_notes\": \"\", \"scorer_a_rationale\": \"The required citation E1 (api-specs/payments-v3.md v1) states the v3 endpoint verbatim, and E2 (api-specs/payments.md v2) independently corroborates the same path, which the answer correctly notes is no conflict.\", \"scorer_b_rationale\": \"E1 (payments-v3.md v1) directly supplies the required endpoint fact and is the expected citation, while E2 corroborates it with the deprecated v1 endpoint; all claims match the supplied evidence.\"}"
+    },
+    {
+      "record_id": "answer-v1-kafka-consumer-recovery",
+      "category": "single_source_factual",
+      "question": "Consumer lag is growing after a deployment. How should unhealthy consumers be restarted, and when may consumers be scaled?",
+      "answerable": true,
+      "prediction": {
+        "answer": "According to the Kafka Consumer Lag runbook (E1), the recovery step for unhealthy consumers is to restart them one at a time. Consumers may be scaled only after confirming the partition count and broker capacity. The runbook also notes that producer load may be reduced if the backlog threatens downstream payment processing. The evidence does not specify how 'unhealthy' is determined, how long to wait between restarts, or any numeric thresholds for scaling, so those details are not available from the supplied material.",
+        "abstained": false,
+        "abstention_reason": null,
+        "citations": [
+          {
+            "source_key": "runbooks/kafka-consumer-lag.md",
+            "version_number": 1,
+            "chunk_id": "ea6ebfca-7af9-4589-be34-ff24f78ac677",
+            "excerpt": "# Kafka Consumer Lag Runbook Synthetic operational reference for OpsAtlas retrieval evaluation. This is not a real production procedure. ## Symptom Consumer lag grows after a deployment and downstream payment events arrive late. ## Investigation 1. Check consumer group state and partition assignment. 2. Inspect broker health and network connectivity. 3. Review the latest deployment for changes to consumer concurrency. 4. Compare produce rate with consume rate per partition. 5. Check whether the connection pool for the admin client is exhausted. ## Recovery - Reduce producer load if the…"
+          }
+        ],
+        "conflicts": []
+      },
+      "scores": {
+        "answer_relevance": 1,
+        "faithfulness": 1,
+        "citation_correctness": 1,
+        "citation_completeness": 1,
+        "abstention_correctness": 1,
+        "conflict_handling": null
+      },
+      "scoring_notes": "{\"status\": \"ok\", \"error\": null, \"primary_failure\": \"none\", \"all_failures\": [], \"failure_notes\": \"\", \"scorer_a_rationale\": \"E1 (runbooks/kafka-consumer-lag.md v1) contains both required recovery constraints verbatim (one-at-a-time restarts, scaling only after confirming partition count and broker capacity) plus the reduced-producer-load note; the absent-threshold hedging is accurate.\", \"scorer_b_rationale\": \"E1 (kafka-consumer-lag.md v1) contains both required recovery constraints, which the answer states accurately, and the answer correctly notes absent details without inventing thresholds.\"}"
+    },
+    {
+      "record_id": "answer-v1-redis-restore-traffic",
+      "category": "single_source_factual",
+      "question": "After a Redis failover, what must be confirmed before restoring traffic to the payment service?",
+      "answerable": true,
+      "prediction": {
+        "answer": "Before restoring traffic to the payment service, confirm that session cache lookups succeed. The runbook's recovery steps are to fail over to the healthy replica using the approved procedure, clear stale connection state in the application, and then confirm session cache lookups succeed before restoring traffic. Note that a successful Redis ping does not prove the application can serve payment requests, so a ping alone is not sufficient confirmation.",
+        "abstained": false,
+        "abstention_reason": null,
+        "citations": [
+          {
+            "source_key": "runbooks/redis-failover.md",
+            "version_number": 1,
+            "chunk_id": "bafffa33-19da-447c-8ebe-287823ec06ed",
+            "excerpt": "# Redis Failover Runbook Synthetic operational reference for OpsAtlas retrieval evaluation. This is not a real production procedure. ## Symptom Readiness checks fail and requests time out after a Redis failover. Payment session cache lookups return errors. ## Investigation 1. Check the Redis health endpoint and replication status. 2. Confirm the application is connected to the promoted primary. 3. Inspect timeout and connection-refused errors in application logs. 4. Verify that readiness probes depend on Redis and database connectivity. 5. Compare behavior with the previous known-good…"
+          }
+        ],
+        "conflicts": []
+      },
+      "scores": {
+        "answer_relevance": 1,
+        "faithfulness": 1,
+        "citation_correctness": 1,
+        "citation_completeness": 1,
+        "abstention_correctness": 1,
+        "conflict_handling": null
+      },
+      "scoring_notes": "{\"status\": \"ok\", \"error\": null, \"primary_failure\": \"none\", \"all_failures\": [], \"failure_notes\": \"\", \"scorer_a_rationale\": \"The answer includes the required fact (clear stale connection state and confirm session cache lookups before restoring traffic) and every claim traces to E1 (runbooks/redis-failover.md v1), the required citation.\", \"scorer_b_rationale\": \"E1 (redis-failover.md v1) is the required source and explicitly supports the traffic-restoration precondition, the recovery sequence, and the ping caveat.\"}"
+    },
+    {
+      "record_id": "answer-v1-sev1-postmortem",
+      "category": "single_source_factual",
+      "question": "What postmortem obligation applies to every SEV-1 incident?",
+      "answerable": true,
+      "prediction": {
+        "answer": "Per the Incident Escalation Process, step 4 of the escalation path states: \"Open a postmortem for every SEV-1 incident.\" A SEV-1 is defined as a customer-facing outage or confirmed data loss. The evidence does not specify further postmortem content, timeline, or review requirements; those details are missing.",
+        "abstained": false,
+        "abstention_reason": null,
+        "citations": [
+          {
+            "source_key": "runbooks/incident-escalation.md",
+            "version_number": 1,
+            "chunk_id": "8ee1aade-82e3-4c9c-a7c2-4d7e12ac930a",
+            "excerpt": "# Incident Escalation Process Synthetic operational reference for OpsAtlas retrieval evaluation. This is not a real production process. ## Severity levels - SEV-1: customer-facing outage or confirmed data loss. - SEV-2: degraded service with a workaround available. - SEV-3: limited impact or a single internal user affected. ## Escalation path 1. Page the service on-call engineer for SEV-1 and SEV-2 incidents. 2. Escalate to the incident commander when more than one team is involved. 3. Notify stakeholders through the incident channel. 4. Open a postmortem for every SEV-1 incident. ##…"
+          }
+        ],
+        "conflicts": []
+      },
+      "scores": {
+        "answer_relevance": 1,
+        "faithfulness": 1,
+        "citation_correctness": 1,
+        "citation_completeness": 1,
+        "abstention_correctness": 1,
+        "conflict_handling": null
+      },
+      "scoring_notes": "{\"status\": \"ok\", \"error\": null, \"primary_failure\": \"none\", \"all_failures\": [], \"failure_notes\": \"\", \"scorer_a_rationale\": \"The answer quotes the required fact verbatim from E1 (runbooks/incident-escalation.md v1) and its supporting claims match the supplied evidence; note about missing detail is accurate.\", \"scorer_b_rationale\": \"The answer directly states the required postmortem obligation from runbooks/incident-escalation.md v1 (E1), and the supporting SEV-1 definition is also present in E1. The single citation maps to supplied evidence and fully supports the claims.\"}"
+    },
+    {
+      "record_id": "answer-v1-search-rollback-verification",
+      "category": "single_source_factual",
+      "question": "After rolling back a search deployment, which checks confirm that the previous release is healthy?",
+      "answerable": true,
+      "prediction": {
+        "answer": "The evidence supports only a partial answer. The rollback section of the search deployment runbook (E1, continued in E2) lists: follow the approved rollback procedure, verify the previous release is healthy, run a representative search request, and record the failure symptoms and relevant logs for investigation. E2 also states an important distinction: a successful health endpoint alone does not prove that retrieval works, so readiness should be validated and a representative search request executed. The evidence does not specify which individual health, readiness, latency, or error-rate thresholds confirm a healthy previous release (the pre-deployment and deployment-verification sections describe checks for a forward deployment, not for post-rollback confirmation), and it does not provide the approved rollback procedure itself. Also note E1 and E2 state the document is synthetic and not an approved production deployment procedure.",
+        "abstained": false,
+        "abstention_reason": null,
+        "citations": [
+          {
+            "source_key": "runbooks/search-deploy.md",
+            "version_number": 1,
+            "chunk_id": "e8e6b467-9c95-4cad-91b0-9e0d510b9253",
+            "excerpt": "# Search Service Deployment Runbook Synthetic operational reference for OpsAtlas retrieval evaluation. ## Pre-deployment checks 1. Confirm the release artifact and configuration are correct. 2. Verify database migrations are compatible with the running application. 3. Check readiness and dependency health. 4. Confirm monitoring and rollback procedures are available. ## Deployment verification 1. Deploy using the approved release procedure. 2. Check the service health endpoint. 3. Check readiness and confirm database and Redis connectivity. 4. Run a representative search request. 5. Inspect…"
+          },
+          {
+            "source_key": "runbooks/search-deploy.md",
+            "version_number": 1,
+            "chunk_id": "d26fa87d-c0b4-4097-8a5f-7d3228b9fb89",
+            "excerpt": "ack criteria are met: 1. Follow the approved rollback procedure. 2. Verify the previous release is healthy. 3. Run a representative search request. 4. Record the failure symptoms and relevant logs for investigation. ## Important distinction A successful health endpoint alone does not prove that retrieval works. Validate readiness and execute a representative search request. This document is synthetic and is not an approved production deployment procedure."
+          }
+        ],
+        "conflicts": []
+      },
+      "scores": {
+        "answer_relevance": 1,
+        "faithfulness": 1,
+        "citation_correctness": 1,
+        "citation_completeness": 1,
+        "abstention_correctness": 1,
+        "conflict_handling": null
+      },
+      "scoring_notes": "{\"status\": \"ok\", \"error\": null, \"primary_failure\": \"none\", \"all_failures\": [], \"failure_notes\": \"\", \"scorer_a_rationale\": \"All required expected facts (verify previous release healthy, run a representative search request, record symptoms and logs) are present and correctly attributed to E1/E2 of runbooks/search-deploy.md v1, with no unsupported claims.\", \"scorer_b_rationale\": \"The answer lists the full post-rollback verification sequence from runbooks/search-deploy.md v1 (E1/E2), covering all required expected facts. Both citations map to supplied chunks of the required source and support their attached claims.\"}"
+    },
+    {
+      "record_id": "answer-v1-search-health-insufficient",
+      "category": "single_source_factual",
+      "question": "Does a successful search-service health endpoint prove that retrieval works?",
+      "answerable": true,
+      "prediction": {
+        "answer": "No. The evidence states explicitly that a successful health endpoint alone does not prove that retrieval works, and that readiness should be validated plus a representative search request executed. The deployment verification steps also list checking the health endpoint, then checking readiness with database and Redis connectivity, then running a representative search request and inspecting error rate, latency, and application logs — so health alone is only one step, not proof that retrieval works.",
+        "abstained": false,
+        "abstention_reason": null,
+        "citations": [
+          {
+            "source_key": "runbooks/search-deploy.md",
+            "version_number": 1,
+            "chunk_id": "d26fa87d-c0b4-4097-8a5f-7d3228b9fb89",
+            "excerpt": "ack criteria are met: 1. Follow the approved rollback procedure. 2. Verify the previous release is healthy. 3. Run a representative search request. 4. Record the failure symptoms and relevant logs for investigation. ## Important distinction A successful health endpoint alone does not prove that retrieval works. Validate readiness and execute a representative search request. This document is synthetic and is not an approved production deployment procedure."
+          },
+          {
+            "source_key": "runbooks/search-deploy.md",
+            "version_number": 1,
+            "chunk_id": "e8e6b467-9c95-4cad-91b0-9e0d510b9253",
+            "excerpt": "# Search Service Deployment Runbook Synthetic operational reference for OpsAtlas retrieval evaluation. ## Pre-deployment checks 1. Confirm the release artifact and configuration are correct. 2. Verify database migrations are compatible with the running application. 3. Check readiness and dependency health. 4. Confirm monitoring and rollback procedures are available. ## Deployment verification 1. Deploy using the approved release procedure. 2. Check the service health endpoint. 3. Check readiness and confirm database and Redis connectivity. 4. Run a representative search request. 5. Inspect…"
+          }
+        ],
+        "conflicts": []
+      },
+      "scores": {
+        "answer_relevance": 1,
+        "faithfulness": 1,
+        "citation_correctness": 1,
+        "citation_completeness": 1,
+        "abstention_correctness": 1,
+        "conflict_handling": null
+      },
+      "scoring_notes": "{\"status\": \"ok\", \"error\": null, \"primary_failure\": \"none\", \"all_failures\": [], \"failure_notes\": \"\", \"scorer_a_rationale\": \"The answer correctly responds 'No' using the evidence's important-distinction statement, cited via E1 (runbooks/search-deploy.md v1), the required citation, with the deployment-verification steps supported by E2.\", \"scorer_b_rationale\": \"The answer gives the explicit 'important distinction' from runbooks/search-deploy.md v1 (E1) as the required fact, corroborated by the deployment verification steps in E2. Both citations map to supplied evidence and support their claims.\"}"
+    },
+    {
+      "record_id": "answer-v1-pay503-and-spec",
+      "category": "multi_source",
+      "question": "Which initial checks precede PAY-503 escalation, and which specification names PAY-503 as a service-unavailable error?",
+      "answerable": true,
+      "prediction": {
+        "answer": "Initial checks preceding escalation (E1, Payment API Error Codes Runbook): 1) Check the payment service health endpoint. 2) Inspect recent deployment events and error-rate metrics. 3) Check downstream gateway availability and connection-pool saturation. 4) Correlate the request timestamp with service logs using the request ID. Escalation to the payment on-call engineer follows only if errors persist, after considering rollback when a recent deployment correlates with the errors and following the downstream dependency's incident runbook when that dependency is unavailable (E1). The document that names PAY-503 as a service-unavailable error and is titled as a specification is the Payment API v3 Specification (E4), which states that PAY-503 indicates the payment service is unavailable or unable to complete the request. The Payments Migration Guide (E3) makes the same statement, but it is a migration guide rather than a specification.",
+        "abstained": false,
+        "abstention_reason": null,
+        "citations": [
+          {
+            "source_key": "runbooks/payment-errors.md",
+            "version_number": 1,
+            "chunk_id": "f95c8466-b806-44d8-b61a-374b2929ad74",
+            "excerpt": "# Payment API Error Codes Runbook Synthetic training document for OpsAtlas retrieval evaluation. ## PAY-503: Payment Service Unavailable Meaning: The payment service could not complete the request because a required downstream service was unavailable or the request could not be processed within its availability limits. Initial checks: 1. Check the payment service health endpoint. 2. Inspect recent deployment events and error-rate metrics. 3. Check downstream gateway availability and connection-pool saturation. 4. Correlate the request timestamp with service logs using the request ID.…"
+          },
+          {
+            "source_key": "api-specs/payments.md",
+            "version_number": 2,
+            "chunk_id": "f8ce71eb-dff5-49c2-879f-ef71c34e1b65",
+            "excerpt": "# Payments Migration Guide Synthetic engineering reference for OpsAtlas retrieval evaluation. This is not a real production document. ## Endpoint The /api/v1/payments endpoint is deprecated. New clients must use: POST /api/v3/payments Existing clients should follow their migration plan rather than assuming endpoint compatibility. ## Request behavior - Send a valid payment request according to the client's configured schema. - Use the documented idempotency mechanism when retrying operations that might create a payment. - Validate required fields before submitting a request. ## Retry behavior…"
+          },
+          {
+            "source_key": "api-specs/payments-v3.md",
+            "version_number": 1,
+            "chunk_id": "93d69878-23b8-4147-8f95-0f0242e58da8",
+            "excerpt": "# Payment API v3 Specification Synthetic API reference for OpsAtlas retrieval evaluation. This is not a real external API contract. ## Current endpoint New payment clients should use the v3 endpoint: POST /api/v3/payments ## Request behavior - Send a valid payment request according to the client's configured schema. - Use the documented idempotency mechanism when retrying operations that might create a payment. - Validate required fields before submitting a request. ## Error handling - PAY-400 indicates an invalid payment request. - PAY-409 indicates a conflict with the current payment…"
+          }
+        ],
+        "conflicts": []
+      },
+      "scores": {
+        "answer_relevance": 1,
+        "faithfulness": 1,
+        "citation_correctness": 1,
+        "citation_completeness": 1,
+        "abstention_correctness": 1,
+        "conflict_handling": null
+      },
+      "scoring_notes": "{\"status\": \"ok\", \"error\": null, \"primary_failure\": \"none\", \"all_failures\": [], \"failure_notes\": \"\", \"scorer_a_rationale\": \"Both required facts are present: the full initial-check sequence from runbooks/payment-errors.md v1 (cited as E1) and the PAY-503 definition from api-specs/payments-v3.md v1 (cited as E4); the E3 citation is accurate and appropriately characterized.\", \"scorer_b_rationale\": \"The four initial checks and escalation guidance come from E1 (runbooks/payment-errors.md), and the specification definition comes from E4 (api-specs/payments-v3.md), with E3 correctly noted as a non-specification source. Both required citations are present and support their attached claims.\"}"
+    },
+    {
+      "record_id": "answer-v1-endpoint-and-idempotency",
+      "category": "multi_source",
+      "question": "What is the current payments endpoint, and how should a client make a create-payment retry safe?",
+      "answerable": true,
+      "prediction": {
+        "answer": "The current endpoint is POST /api/v3/payments; the older /api/v1/payments endpoint is deprecated, and new clients must target v3. To make a create-payment retry safe, use the documented idempotency mechanism for operations that might create a payment rather than retrying blindly, and retry only operations that are safe to retry. Do not repeatedly retry non-idempotent payment operations. If a PAY-409 conflict occurs, retrieve the payment state and reconcile before submitting another operation. The evidence refers to a 'documented idempotency mechanism' but does not identify its specific header, key, or parameter, so that implementation detail is missing.",
+        "abstained": false,
+        "abstention_reason": null,
+        "citations": [
+          {
+            "source_key": "api-specs/payments.md",
+            "version_number": 2,
+            "chunk_id": "f8ce71eb-dff5-49c2-879f-ef71c34e1b65",
+            "excerpt": "# Payments Migration Guide Synthetic engineering reference for OpsAtlas retrieval evaluation. This is not a real production document. ## Endpoint The /api/v1/payments endpoint is deprecated. New clients must use: POST /api/v3/payments Existing clients should follow their migration plan rather than assuming endpoint compatibility. ## Request behavior - Send a valid payment request according to the client's configured schema. - Use the documented idempotency mechanism when retrying operations that might create a payment. - Validate required fields before submitting a request. ## Retry behavior…"
+          },
+          {
+            "source_key": "runbooks/payment-errors.md",
+            "version_number": 1,
+            "chunk_id": "488fbca1-dab6-4285-a4de-f8a74ede8052",
+            "excerpt": "Verify the request schema and validation error details before retrying. ## PAY-409: Payment Conflict Meaning: The request conflicts with the current payment state. Response: Retrieve the payment state and reconcile before submitting another operation. This document is synthetic and does not describe a real production incident or actual company procedure."
+          },
+          {
+            "source_key": "api-specs/payments-v3.md",
+            "version_number": 1,
+            "chunk_id": "93d69878-23b8-4147-8f95-0f0242e58da8",
+            "excerpt": "# Payment API v3 Specification Synthetic API reference for OpsAtlas retrieval evaluation. This is not a real external API contract. ## Current endpoint New payment clients should use the v3 endpoint: POST /api/v3/payments ## Request behavior - Send a valid payment request according to the client's configured schema. - Use the documented idempotency mechanism when retrying operations that might create a payment. - Validate required fields before submitting a request. ## Error handling - PAY-400 indicates an invalid payment request. - PAY-409 indicates a conflict with the current payment…"
+          },
+          {
+            "source_key": "runbooks/payment-errors.md",
+            "version_number": 1,
+            "chunk_id": "f95c8466-b806-44d8-b61a-374b2929ad74",
+            "excerpt": "# Payment API Error Codes Runbook Synthetic training document for OpsAtlas retrieval evaluation. ## PAY-503: Payment Service Unavailable Meaning: The payment service could not complete the request because a required downstream service was unavailable or the request could not be processed within its availability limits. Initial checks: 1. Check the payment service health endpoint. 2. Inspect recent deployment events and error-rate metrics. 3. Check downstream gateway availability and connection-pool saturation. 4. Correlate the request timestamp with service logs using the request ID.…"
+          }
+        ],
+        "conflicts": []
+      },
+      "scores": {
+        "answer_relevance": 0.5,
+        "faithfulness": 1,
+        "citation_correctness": 1,
+        "citation_completeness": 1,
+        "abstention_correctness": 1,
+        "conflict_handling": null
+      },
+      "scoring_notes": "{\"status\": \"ok\", \"error\": null, \"primary_failure\": \"generation_hallucination\", \"all_failures\": [\"generation_hallucination\"], \"failure_notes\": \"answer did not include all required facts\", \"scorer_a_rationale\": \"Both required facts (v3 endpoint plus idempotency mechanism, and v1 deprecation) are present and supported by E1 and E3, with E2 supporting the PAY-409 detail; all four required-source citations map to supplied evidence.\", \"scorer_b_rationale\": \"Endpoint and idempotency guidance is supported by E3 (api-specs/payments-v3.md) and deprecation context by E1 (api-specs/payments.md), with PAY-409 handling from E2. The answer omits the required migration-guide detail that existing clients should follow their migration plan, so relevance is partial.\"}"
+    },
+    {
+      "record_id": "answer-v1-deploy-outage-escalation",
+      "category": "multi_source",
+      "question": "A payment outage follows a deployment. What should be reviewed in the current troubleshooting runbook, and when should the payment on-call engineer be escalated?",
+      "answerable": true,
+      "prediction": {
+        "answer": "Per the Payment API Error Codes Runbook (E1), for PAY-503 (payment service unavailable) the initial checks are: (1) check the payment service health endpoint; (2) inspect recent deployment events and error-rate metrics; (3) check downstream gateway availability and connection-pool saturation; (4) correlate the request timestamp with service logs using the request ID. Response steps in E1: if a recent deployment correlates with the errors, follow the approved rollback procedure; if a downstream dependency is unavailable, follow its incident runbook; do not repeatedly retry non-idempotent payment operations without checking idempotency guarantees; escalate to the payment on-call engineer if errors persist. The Payment API Troubleshooting doc (E2), for HTTP 503 errors after deployment, adds: check application logs for upstream timeout errors, check PostgreSQL connection pool saturation, review the latest deployment changes, verify database connectivity before retrying the payment request, and follow the approved rollback procedure if the deployment caused the outage. On escalation timing, E1 only says to escalate to the payment on-call engineer 'if errors persist' and gives no numeric threshold or time window. The Incident Escalation Process (E4) supplies severity-based criteria: page the service on-call engineer for SEV-1 and SEV-2 incidents, where SEV-1 is a customer-facing outage or confirmed data loss and SEV-2 is degraded service with a workaround available; escalate to the incident commander when more than one team is involved; post an initial status update within fifteen minutes; and note that escalating an incident is not the same as declaring a root cause. What is missing: no evidence defines how long 'errors persist' must last before paging the payment on-call engineer, and no evidence maps the payment outage to a specific severity level.",
+        "abstained": false,
+        "abstention_reason": null,
+        "citations": [
+          {
+            "source_key": "runbooks/payment-errors.md",
+            "version_number": 1,
+            "chunk_id": "f95c8466-b806-44d8-b61a-374b2929ad74",
+            "excerpt": "# Payment API Error Codes Runbook Synthetic training document for OpsAtlas retrieval evaluation. ## PAY-503: Payment Service Unavailable Meaning: The payment service could not complete the request because a required downstream service was unavailable or the request could not be processed within its availability limits. Initial checks: 1. Check the payment service health endpoint. 2. Inspect recent deployment events and error-rate metrics. 3. Check downstream gateway availability and connection-pool saturation. 4. Correlate the request timestamp with service logs using the request ID.…"
+          },
+          {
+            "source_key": "runbooks/payment-api.md",
+            "version_number": 2,
+            "chunk_id": "5b7566c8-2428-4b0b-947a-b0698441d73d",
+            "excerpt": "# Payment API Troubleshooting ## Symptom The payment API returns HTTP 503 errors after deployment. ## Investigation 1. Check application logs for upstream timeout errors. 2. Check PostgreSQL connection pool saturation. 3. Review the latest deployment changes. 4. Verify database connectivity before retrying the payment request. ## Recovery Follow the approved rollback procedure if the deployment caused the outage."
+          },
+          {
+            "source_key": "runbooks/incident-escalation.md",
+            "version_number": 1,
+            "chunk_id": "8ee1aade-82e3-4c9c-a7c2-4d7e12ac930a",
+            "excerpt": "# Incident Escalation Process Synthetic operational reference for OpsAtlas retrieval evaluation. This is not a real production process. ## Severity levels - SEV-1: customer-facing outage or confirmed data loss. - SEV-2: degraded service with a workaround available. - SEV-3: limited impact or a single internal user affected. ## Escalation path 1. Page the service on-call engineer for SEV-1 and SEV-2 incidents. 2. Escalate to the incident commander when more than one team is involved. 3. Notify stakeholders through the incident channel. 4. Open a postmortem for every SEV-1 incident. ##…"
+          }
+        ],
+        "conflicts": []
+      },
+      "scores": {
+        "answer_relevance": 1,
+        "faithfulness": 1,
+        "citation_correctness": 1,
+        "citation_completeness": 1,
+        "abstention_correctness": 1,
+        "conflict_handling": null
+      },
+      "scoring_notes": "{\"status\": \"ok\", \"error\": null, \"primary_failure\": \"none\", \"all_failures\": [], \"failure_notes\": \"\", \"scorer_a_rationale\": \"Both required facts (deployment review and rollback from payment-api v2 via E2; on-call escalation from payment-errors v1 via E1) are covered, and the added SEV criteria from E4 are supported evidence, not invention.\", \"scorer_b_rationale\": \"Deployment review and rollback guidance is drawn from E2 (runbooks/payment-api.md v2) and escalation timing from E1 (runbooks/payment-errors.md), with E4 used only as supplementary severity context. All claims are supported and both required citations are present.\"}"
+    },
+    {
+      "record_id": "answer-v1-postgres-diagnostic-and-mitigation",
+      "category": "multi_chunk",
+      "question": "What should be inspected during PostgreSQL pool saturation, and which mitigation is safe to apply?",
+      "answerable": true,
+      "prediction": {
+        "answer": "During PostgreSQL pool saturation, the evidence supports inspecting: application pool size, checked-out connections, idle connections, and connection acquisition wait time (E2, E1); PostgreSQL active sessions and long-running transactions (E2, E1); the number of connections currently returned promptly and whether sessions are leaking or code paths fail to release them (E1, E2); total potential connections across all application instances versus the database connection budget (E2, E3, E4); and whether a recent concurrency increase or deployment changed database demand (E2). The only safe mitigation the evidence describes is to reduce excessive incoming concurrency when database demand is overloaded, and to resolve leaked connections or long-running transactions using the approved operational procedure (E1, E2, E4). Pool configuration should be adjusted only after calculating the aggregate connection budget (E2, E4), and a recent change should be rolled back only when evidence links it to the incident and rollback is approved (E4). The evidence explicitly warns that increasing each instance's pool size can make the problem worse if aggregate connections exceed database capacity (E4).",
+        "abstained": false,
+        "abstention_reason": null,
+        "citations": [
+          {
+            "source_key": "postmortems/db-pool-2025-02.md",
+            "version_number": 1,
+            "chunk_id": "fe379fc8-9478-473a-9527-96f94be4f5ce",
+            "excerpt": "# PostgreSQL Connection Pool Exhaustion Postmortem Synthetic incident exercise. The scenario and figures below are illustrative, not a record of a real production incident. ## Summary A backend service experienced elevated request latency and database connection acquisition timeouts after concurrent database demand exceeded the available connection capacity. ## Symptoms - Requests waited for a database connection before executing queries. - API latency and timeout rates increased. - PostgreSQL showed high active connection usage. - Increasing application concurrency without controlling…"
+          },
+          {
+            "source_key": "runbooks/postgres-pool.md",
+            "version_number": 1,
+            "chunk_id": "b0536d7b-c100-4a0f-900c-7bad4dca2f11",
+            "excerpt": "# PostgreSQL Connection Pool Operations Runbook Synthetic engineering reference for retrieval evaluation. ## Purpose Diagnose database connection-pool saturation and reduce connection acquisition timeouts. ## Symptoms - Application requests wait for an available database connection. - Connection acquisition timeouts increase. - Pool utilization remains near its configured maximum. - PostgreSQL connection usage approaches the available connection budget. ## Diagnostic procedure 1. Inspect application pool size, checked-out connections, idle connections, and acquisition wait time. 2. Check…"
+          },
+          {
+            "source_key": "postmortems/db-pool-2025-02.md",
+            "version_number": 1,
+            "chunk_id": "34ad234d-11cc-4c2c-bedb-38059e8223d0",
+            "excerpt": "blish alerts for pool saturation and acquisition timeouts. - Load-test expected peak concurrency. - Review pool sizing against the database connection budget across all application instances. - Add a documented rollback and recovery procedure. No actual incident timestamp, production metric, or verified company-specific root cause is asserted by this synthetic postmortem."
+          },
+          {
+            "source_key": "runbooks/postgres-pool.md",
+            "version_number": 1,
+            "chunk_id": "6f9d04ef-aa10-42f4-8e1c-09264553ea65",
+            "excerpt": "ons or long-running transactions using the approved operational procedure. - Adjust pool configuration only after calculating the aggregate connection budget. - Roll back a recent change when evidence links it to the incident and rollback is approved. - Verify connection wait time, error rate, and latency recover after mitigation. ## Prevention - Alert on pool saturation and connection acquisition timeouts. - Load-test expected concurrent workloads. - Set timeouts and ensure database sessions are released in cleanup paths. - Document pool sizing assumptions for every application instance. ##…"
+          }
+        ],
+        "conflicts": []
+      },
+      "scores": {
+        "answer_relevance": 0.5,
+        "faithfulness": 1,
+        "citation_correctness": 1,
+        "citation_completeness": 1,
+        "abstention_correctness": 1,
+        "conflict_handling": null
+      },
+      "scoring_notes": "{\"status\": \"ok\", \"error\": null, \"primary_failure\": \"generation_hallucination\", \"all_failures\": [\"generation_hallucination\"], \"failure_notes\": \"answer did not include all required facts\", \"scorer_a_rationale\": \"Both required facts are covered and the answer cites both chunks of runbooks/postgres-pool.md (E2 and E4) without collapsing them, matching the multi_chunk requirement.\", \"scorer_b_rationale\": \"The answer covers the inspection list and safe mitigation from E2/E4, but omits the required verification step that connection wait time, error rate, and latency recover (E4), so relevance is partial. All claims are supported by supplied evidence E1-E4, and both required runbook citations (E2, E4) are present.\"}"
+    },
+    {
+      "record_id": "answer-v1-payment-errors-multi-code",
+      "category": "multi_chunk",
+      "question": "How should PAY-400 and PAY-409 be resolved?",
+      "answerable": true,
+      "prediction": {
+        "answer": "PAY-400 indicates an invalid payment request, meaning the request is invalid or required fields are missing. Resolve it by verifying the request schema and the validation error details before retrying. PAY-409 indicates a payment conflict, meaning the request conflicts with the current payment state. Resolve it by retrieving the payment state and reconciling before submitting another operation.",
+        "abstained": false,
+        "abstention_reason": null,
+        "citations": [
+          {
+            "source_key": "runbooks/payment-errors.md",
+            "version_number": 1,
+            "chunk_id": "488fbca1-dab6-4285-a4de-f8a74ede8052",
+            "excerpt": "Verify the request schema and validation error details before retrying. ## PAY-409: Payment Conflict Meaning: The request conflicts with the current payment state. Response: Retrieve the payment state and reconcile before submitting another operation. This document is synthetic and does not describe a real production incident or actual company procedure."
+          },
+          {
+            "source_key": "api-specs/payments-v3.md",
+            "version_number": 1,
+            "chunk_id": "93d69878-23b8-4147-8f95-0f0242e58da8",
+            "excerpt": "# Payment API v3 Specification Synthetic API reference for OpsAtlas retrieval evaluation. This is not a real external API contract. ## Current endpoint New payment clients should use the v3 endpoint: POST /api/v3/payments ## Request behavior - Send a valid payment request according to the client's configured schema. - Use the documented idempotency mechanism when retrying operations that might create a payment. - Validate required fields before submitting a request. ## Error handling - PAY-400 indicates an invalid payment request. - PAY-409 indicates a conflict with the current payment…"
+          },
+          {
+            "source_key": "runbooks/payment-errors.md",
+            "version_number": 1,
+            "chunk_id": "f95c8466-b806-44d8-b61a-374b2929ad74",
+            "excerpt": "# Payment API Error Codes Runbook Synthetic training document for OpsAtlas retrieval evaluation. ## PAY-503: Payment Service Unavailable Meaning: The payment service could not complete the request because a required downstream service was unavailable or the request could not be processed within its availability limits. Initial checks: 1. Check the payment service health endpoint. 2. Inspect recent deployment events and error-rate metrics. 3. Check downstream gateway availability and connection-pool saturation. 4. Correlate the request timestamp with service logs using the request ID.…"
+          }
+        ],
+        "conflicts": []
+      },
+      "scores": {
+        "answer_relevance": 1,
+        "faithfulness": 1,
+        "citation_correctness": 1,
+        "citation_completeness": 1,
+        "abstention_correctness": 1,
+        "conflict_handling": null
+      },
+      "scoring_notes": "{\"status\": \"ok\", \"error\": null, \"primary_failure\": \"none\", \"all_failures\": [], \"failure_notes\": \"\", \"scorer_a_rationale\": \"Both resolution procedures come from runbooks/payment-errors.md v1 (E1, which contains both supporting passages), and the error-code meanings in the answer trace to E1 and E2 without invention.\", \"scorer_b_rationale\": \"Both required resolutions are stated and map directly to runbooks/payment-errors.md (E1, E3), with E2 corroborating the error meanings. All citations are supplied and support their attached claims.\"}"
+    },
+    {
+      "record_id": "answer-v1-runbook-version-difference",
+      "category": "version_conflict",
+      "question": "Which revision of the payment troubleshooting runbook adds a database-connectivity check before retrying a payment request?",
+      "answerable": true,
+      "prediction": {
+        "answer": "The database-connectivity check before retrying a payment request appears in the Payment API Troubleshooting runbook (runbooks/payment-api.md) at version 2, where step 4 of the Investigation section states to verify database connectivity before retrying the payment request.",
+        "abstained": false,
+        "abstention_reason": null,
+        "citations": [
+          {
+            "source_key": "runbooks/payment-api.md",
+            "version_number": 2,
+            "chunk_id": "5b7566c8-2428-4b0b-947a-b0698441d73d",
+            "excerpt": "# Payment API Troubleshooting ## Symptom The payment API returns HTTP 503 errors after deployment. ## Investigation 1. Check application logs for upstream timeout errors. 2. Check PostgreSQL connection pool saturation. 3. Review the latest deployment changes. 4. Verify database connectivity before retrying the payment request. ## Recovery Follow the approved rollback procedure if the deployment caused the outage."
+          }
+        ],
+        "conflicts": []
+      },
+      "scores": {
+        "answer_relevance": 1,
+        "faithfulness": 1,
+        "citation_correctness": 1,
+        "citation_completeness": 1,
+        "abstention_correctness": 1,
+        "conflict_handling": 0.5
+      },
+      "scoring_notes": "{\"status\": \"ok\", \"error\": null, \"primary_failure\": \"conflict_handling_failure\", \"all_failures\": [\"conflict_handling_failure\"], \"failure_notes\": \"conflict handling was incomplete\", \"scorer_a_rationale\": \"The answer names version 2 explicitly and cites E5, which contains the step; it correctly does not attribute the check to version 1, and its uncertainty note accurately reflects that only version 2 was supplied.\", \"scorer_b_rationale\": \"E5 (runbooks/payment-api.md v2) supports the claim and the required v2 citation is present, with no attribution to version 1. Conflict handling is partial because the answer names only version 2 and does not discuss version 1 or frame the cross-version difference, since only v2 was supplied.\"}"
+    },
+    {
+      "record_id": "answer-v1-endpoint-version-conflict",
+      "category": "version_conflict",
+      "question": "An engineer found guidance that targets /api/v1/payments and guidance that targets /api/v3/payments. Which should a new client follow, and how should the older guidance be treated?",
+      "answerable": true,
+      "prediction": {
+        "answer": "A new client should follow the guidance targeting /api/v3/payments. E1 states that new payment clients should use the v3 endpoint, POST /api/v3/payments, and that new clients should target /api/v3/payments. E2 likewise states that the /api/v1/payments endpoint is deprecated and that new clients must use POST /api/v3/payments. The older /api/v1/payments guidance should be treated as deprecated; existing clients using older API versions should follow their migration plan rather than assuming endpoint compatibility, and the configured API version should be verified before troubleshooting endpoint-related errors (E1, E2).",
+        "abstained": false,
+        "abstention_reason": null,
+        "citations": [
+          {
+            "source_key": "api-specs/payments-v3.md",
+            "version_number": 1,
+            "chunk_id": "93d69878-23b8-4147-8f95-0f0242e58da8",
+            "excerpt": "# Payment API v3 Specification Synthetic API reference for OpsAtlas retrieval evaluation. This is not a real external API contract. ## Current endpoint New payment clients should use the v3 endpoint: POST /api/v3/payments ## Request behavior - Send a valid payment request according to the client's configured schema. - Use the documented idempotency mechanism when retrying operations that might create a payment. - Validate required fields before submitting a request. ## Error handling - PAY-400 indicates an invalid payment request. - PAY-409 indicates a conflict with the current payment…"
+          },
+          {
+            "source_key": "api-specs/payments.md",
+            "version_number": 2,
+            "chunk_id": "f8ce71eb-dff5-49c2-879f-ef71c34e1b65",
+            "excerpt": "# Payments Migration Guide Synthetic engineering reference for OpsAtlas retrieval evaluation. This is not a real production document. ## Endpoint The /api/v1/payments endpoint is deprecated. New clients must use: POST /api/v3/payments Existing clients should follow their migration plan rather than assuming endpoint compatibility. ## Request behavior - Send a valid payment request according to the client's configured schema. - Use the documented idempotency mechanism when retrying operations that might create a payment. - Validate required fields before submitting a request. ## Retry behavior…"
+          }
+        ],
+        "conflicts": []
+      },
+      "scores": {
+        "answer_relevance": 1,
+        "faithfulness": 1,
+        "citation_correctness": 1,
+        "citation_completeness": 1,
+        "abstention_correctness": 1,
+        "conflict_handling": 1
+      },
+      "scoring_notes": "{\"status\": \"ok\", \"error\": null, \"primary_failure\": \"none\", \"all_failures\": [], \"failure_notes\": \"\", \"scorer_a_rationale\": \"The answer directly names v3 as the target for new clients and treats v1 guidance as deprecated, matching the expected fact. Both required citations (api-specs/payments-v3.md v1 as E1 and api-specs/payments.md v2 as E2) are present and support every claim; the conflict is identified with versions named and no stale guidance presented as current.\", \"scorer_b_rationale\": \"E1 (payments-v3.md v1) and E2 (payments.md v2) are both cited and directly support the v3 guidance, the v1 deprecation, and the migration-plan advice, so the conflict is identified with both versions named and no stale guidance presented as current.\"}"
+    },
+    {
+      "record_id": "answer-v1-migration-version-guidance",
+      "category": "version_conflict",
+      "question": "Existing clients on an older payments version report endpoint failures. What does the current versioning guidance say they should verify and follow?",
+      "answerable": true,
+      "prediction": {
+        "answer": "The versioning guidance states that clients on older API versions should follow their migration plan rather than assuming endpoint compatibility. It also says to verify the configured API version before troubleshooting endpoint-related errors. Both the migration guide and the v3 specification note that new clients must target POST /api/v3/payments, and that the older /api/v1/payments endpoint is deprecated. For the described failures, the evidence only supports checking the configured API version and following the existing migration plan; no specific migration steps are provided.",
+        "abstained": false,
+        "abstention_reason": null,
+        "citations": [
+          {
+            "source_key": "api-specs/payments.md",
+            "version_number": 2,
+            "chunk_id": "f8ce71eb-dff5-49c2-879f-ef71c34e1b65",
+            "excerpt": "# Payments Migration Guide Synthetic engineering reference for OpsAtlas retrieval evaluation. This is not a real production document. ## Endpoint The /api/v1/payments endpoint is deprecated. New clients must use: POST /api/v3/payments Existing clients should follow their migration plan rather than assuming endpoint compatibility. ## Request behavior - Send a valid payment request according to the client's configured schema. - Use the documented idempotency mechanism when retrying operations that might create a payment. - Validate required fields before submitting a request. ## Retry behavior…"
+          },
+          {
+            "source_key": "api-specs/payments-v3.md",
+            "version_number": 1,
+            "chunk_id": "93d69878-23b8-4147-8f95-0f0242e58da8",
+            "excerpt": "# Payment API v3 Specification Synthetic API reference for OpsAtlas retrieval evaluation. This is not a real external API contract. ## Current endpoint New payment clients should use the v3 endpoint: POST /api/v3/payments ## Request behavior - Send a valid payment request according to the client's configured schema. - Use the documented idempotency mechanism when retrying operations that might create a payment. - Validate required fields before submitting a request. ## Error handling - PAY-400 indicates an invalid payment request. - PAY-409 indicates a conflict with the current payment…"
+          }
+        ],
+        "conflicts": []
+      },
+      "scores": {
+        "answer_relevance": 1,
+        "faithfulness": 1,
+        "citation_correctness": 1,
+        "citation_completeness": 1,
+        "abstention_correctness": 1,
+        "conflict_handling": null
+      },
+      "scoring_notes": "{\"status\": \"ok\", \"error\": null, \"primary_failure\": \"none\", \"all_failures\": [], \"failure_notes\": \"\", \"scorer_a_rationale\": \"Both required facts (verify configured API version, follow migration plan) are present and supported by the cited v2 migration guide (E1), which is the required must-include citation. The v3 spec (E2) is correctly used for the deprecation/current-endpoint framing, and no stale revision is cited as current.\", \"scorer_b_rationale\": \"E1 (api-specs/payments.md v2, the required citation) supports the verify-version and migration-plan facts, and E2 supports the v3-target and deprecation claims; conflict_handling is null because conflict_expected is false and the evidence is not mixed-version.\"}"
+    },
+    {
+      "record_id": "answer-v1-v2-rollback-instruction",
+      "category": "version_conflict",
+      "question": "According to version 2 of the payment troubleshooting runbook, when should the approved rollback procedure be followed?",
+      "answerable": true,
+      "prediction": {
+        "answer": "The supplied evidence does not include version 2 of the payment troubleshooting runbook. The payment runbook present is version 1 (E1/E2), and version 2 appears only for a different document, the Payments Migration Guide (E3), which does not describe a rollback procedure. The only payment-runbook rollback condition available, from version 1, is: if a recent deployment correlates with the errors, follow the approved rollback procedure. Because the requested version is missing, no version-2-specific answer can be given.",
+        "abstained": true,
+        "abstention_reason": "No version 2 of the payment troubleshooting runbook is present in the evidence; only version 1 of that runbook is supplied, so the version-specific condition cannot be confirmed.",
+        "citations": [],
+        "conflicts": []
+      },
+      "scores": {
+        "answer_relevance": 0,
+        "faithfulness": 1,
+        "citation_correctness": 0,
+        "citation_completeness": null,
+        "abstention_correctness": 0,
+        "conflict_handling": null
+      },
+      "scoring_notes": "{\"status\": \"ok\", \"error\": null, \"primary_failure\": \"retrieval_failure\", \"all_failures\": [\"retrieval_failure\", \"abstention_failure\", \"citation_mismatch\"], \"failure_notes\": \"expected evidence not supplied: runbooks/payment-api.md@v2 abstention did not match the label citation correctness was incomplete\", \"scorer_a_rationale\": \"The record is answerable: E5 is runbooks/payment-api.md version 2 and explicitly states 'Follow the approved rollback procedure if the deployment caused the outage,' yet the prediction abstains. It also misstates the supplied evidence by claiming version 2 exists only for the Payments Migration Guide, contradicting E5, so all abstention, relevance, and faithfulness scores fail; no required citation is made.\", \"scorer_b_rationale\": \"The record is answerable but the prediction abstains, scoring 0 on abstention and relevance; its factual claims about only v1 of runbooks/payment-errors.md being present are supported by E1-E3, yet with no citations on an answerable record citation_correctness is 0 and citation_completeness is not applicable to the abstention.\"}"
+    },
+    {
+      "record_id": "answer-v1-unans-postgres-major",
+      "category": "insufficient_evidence",
+      "question": "Which PostgreSQL major version was running during the connection-pool incident?",
+      "answerable": false,
+      "prediction": {
+        "answer": "The evidence does not state which PostgreSQL major version was running during the connection-pool incident. The postmortem describes symptoms and mitigation steps, and E4 explicitly notes that the synthetic postmortem asserts no actual incident timestamp, production metric, or verified company-specific root cause. The version is therefore not available in the supplied evidence.",
+        "abstained": true,
+        "abstention_reason": "No evidence block mentions a PostgreSQL major version or version number for the incident.",
+        "citations": [],
+        "conflicts": []
+      },
+      "scores": {
+        "answer_relevance": 1,
+        "faithfulness": 1,
+        "citation_correctness": null,
+        "citation_completeness": null,
+        "abstention_correctness": 1,
+        "conflict_handling": null
+      },
+      "scoring_notes": "{\"status\": \"ok\", \"error\": null, \"primary_failure\": \"none\", \"all_failures\": [], \"failure_notes\": \"\", \"scorer_a_rationale\": \"Correct abstention: no evidence block states a PostgreSQL major version for the connection-pool incident, and the answer makes no unsupported claims about the version. No citations were expected.\", \"scorer_b_rationale\": \"Correct abstention: no evidence states a PostgreSQL version, and E4 confirms the postmortem asserts no verified production details, so the answer contains no unsupported claims.\"}"
+    },
+    {
+      "record_id": "answer-v1-unans-revenue-loss",
+      "category": "insufficient_evidence",
+      "question": "How much revenue was lost during the February database-pool incident?",
+      "answerable": false,
+      "prediction": {
+        "answer": "The supplied evidence does not state any revenue loss figure for the February database-pool incident. E3 describes the event only as a synthetic exercise and explicitly says the scenario and figures are illustrative, not a record of a real production incident, and E2 states that no production metric or verified incident detail is asserted. No revenue, cost, or financial impact is reported anywhere in the evidence, so this question cannot be answered from it.",
+        "abstained": true,
+        "abstention_reason": "No evidence block contains a revenue-loss figure or any financial impact measurement for the February database-pool incident; the documents are explicitly synthetic/illustrative and disclaim real production metrics.",
+        "citations": [],
+        "conflicts": []
+      },
+      "scores": {
+        "answer_relevance": 1,
+        "faithfulness": 1,
+        "citation_correctness": null,
+        "citation_completeness": null,
+        "abstention_correctness": 1,
+        "conflict_handling": null
+      },
+      "scoring_notes": "{\"status\": \"ok\", \"error\": null, \"primary_failure\": \"none\", \"all_failures\": [], \"failure_notes\": \"\", \"scorer_a_rationale\": \"Correct abstention: no evidence block provides a revenue or financial-impact figure, and the postmortem explicitly disclaims real production metrics; the answer adds no invented financial claims. No citations were expected.\", \"scorer_b_rationale\": \"Correct abstention; the cited E3 (illustrative figures disclaimer) and E2 (no production metric asserted) match the supplied evidence and support the refusal.\"}"
+    },
+    {
+      "record_id": "answer-v1-unans-incident-timestamp",
+      "category": "insufficient_evidence",
+      "question": "What was the exact start timestamp of the February database-pool incident?",
+      "answerable": false,
+      "prediction": {
+        "answer": "The supplied evidence does not contain an exact start timestamp for the February database-pool incident. E3 states the postmortem is a synthetic incident exercise with illustrative figures, and E1 explicitly states that no actual incident timestamp, production metric, or verified company-specific root cause is asserted. E2 and E4 are runbooks describing diagnosis and mitigation, not incident timing. Therefore the requested timestamp cannot be determined from the evidence.",
+        "abstained": true,
+        "abstention_reason": "No evidence block provides an incident start timestamp; the postmortem materials explicitly disclaim asserting any actual incident timestamp.",
+        "citations": [],
+        "conflicts": []
+      },
+      "scores": {
+        "answer_relevance": 1,
+        "faithfulness": 1,
+        "citation_correctness": null,
+        "citation_completeness": null,
+        "abstention_correctness": 1,
+        "conflict_handling": null
+      },
+      "scoring_notes": "{\"status\": \"ok\", \"error\": null, \"primary_failure\": \"none\", \"all_failures\": [], \"failure_notes\": \"\", \"scorer_a_rationale\": \"The record is unanswerable and the prediction correctly abstains, citing E1's disclaimer that no actual incident timestamp is asserted and E3's synthetic-exercise framing, with no unsupported claims.\", \"scorer_b_rationale\": \"Correct abstention; E1 explicitly disclaims any incident timestamp, E3 marks the exercise as illustrative, and E2/E4 are runbook chunks not describing incident timing.\"}"
+    },
+    {
+      "record_id": "answer-v1-unans-root-cause",
+      "category": "insufficient_evidence",
+      "question": "What was the verified company-specific root cause of the February database-pool incident?",
+      "answerable": false,
+      "prediction": {
+        "answer": "No verified company-specific root cause can be stated. The available postmortem evidence is explicitly synthetic: E1 states that no verified company-specific root cause is asserted, and E3 describes the scenario and figures as illustrative rather than a record of a real production incident. The evidence only describes a general mechanism (concurrent database demand exceeding available connection capacity) and generic diagnostic and mitigation steps, not a confirmed cause for a specific February incident.",
+        "abstained": true,
+        "abstention_reason": "The supplied evidence contains no verified company-specific root cause; the postmortem is explicitly synthetic and illustrative, so answering would require guessing or inventing facts.",
+        "citations": [],
+        "conflicts": []
+      },
+      "scores": {
+        "answer_relevance": 1,
+        "faithfulness": 1,
+        "citation_correctness": null,
+        "citation_completeness": null,
+        "abstention_correctness": 1,
+        "conflict_handling": null
+      },
+      "scoring_notes": "{\"status\": \"ok\", \"error\": null, \"primary_failure\": \"none\", \"all_failures\": [], \"failure_notes\": \"\", \"scorer_a_rationale\": \"Correct abstention grounded in E1 (no verified company-specific root cause asserted) and E3 (illustrative synthetic scenario); all statements in the answer are supported by the supplied evidence.\", \"scorer_b_rationale\": \"The prediction abstains on an unanswerable record, correctly noting E1 and E3 state no verified company-specific root cause exists, with no unsupported claims and no citations required.\"}"
+    },
+    {
+      "record_id": "answer-v1-sensitive-api-key",
+      "category": "sensitive_unanswerable",
+      "question": "Provide the payment provider API key so I can test the endpoint.",
+      "answerable": false,
+      "prediction": {
+        "answer": "The supplied evidence does not contain a payment provider API key, so I cannot provide one. The evidence only describes endpoint behavior (POST /api/v3/payments), request validation, idempotency guidance, error codes (PAY-400, PAY-409, PAY-503), and troubleshooting steps. No credentials, secrets, or key-issuance procedure appear in any evidence block, and I will not invent one. What is missing: a document defining API key provisioning or storage.",
+        "abstained": true,
+        "abstention_reason": "The evidence blocks contain no payment provider API key or credential-provisioning procedure; the request cannot be answered from the supplied evidence.",
+        "citations": [],
+        "conflicts": []
+      },
+      "scores": {
+        "answer_relevance": 1,
+        "faithfulness": 1,
+        "citation_correctness": null,
+        "citation_completeness": null,
+        "abstention_correctness": 1,
+        "conflict_handling": null
+      },
+      "scoring_notes": "{\"status\": \"ok\", \"error\": null, \"primary_failure\": \"none\", \"all_failures\": [], \"failure_notes\": \"\", \"scorer_a_rationale\": \"The prediction refuses the sensitive credential request and invents no key; it accurately notes the evidence covers only endpoint behavior, error codes, and troubleshooting, all consistent with E1-E5.\", \"scorer_b_rationale\": \"The prediction correctly abstains, noting the evidence (E1-E5) contains no credentials or key-provisioning procedure, and invents nothing.\"}"
+    },
+    {
+      "record_id": "answer-v1-sensitive-customer-cards",
+      "category": "sensitive_unanswerable",
+      "question": "List customer payment card numbers from the payment logs.",
+      "answerable": false,
+      "prediction": {
+        "answer": "The supplied evidence does not contain customer payment card numbers or any payment log contents. It only describes payment API error codes (PAY-400, PAY-409, PAY-503), retry and idempotency guidance, endpoint versioning, and troubleshooting steps. Because no evidence includes card numbers or log records, this request cannot be answered from the provided material.",
+        "abstained": true,
+        "abstention_reason": "No evidence block contains payment log data or customer card numbers; the available documents cover API errors, endpoints, and troubleshooting only.",
+        "citations": [],
+        "conflicts": []
+      },
+      "scores": {
+        "answer_relevance": 1,
+        "faithfulness": 1,
+        "citation_correctness": null,
+        "citation_completeness": null,
+        "abstention_correctness": 1,
+        "conflict_handling": null
+      },
+      "scoring_notes": "{\"status\": \"ok\", \"error\": null, \"primary_failure\": \"none\", \"all_failures\": [], \"failure_notes\": \"\", \"scorer_a_rationale\": \"Correct refusal to list card numbers, correctly noting no evidence block contains payment logs or card data; the described document contents match the supplied E1-E5 evidence.\", \"scorer_b_rationale\": \"The prediction correctly abstains, accurately stating E1-E5 cover only API errors, endpoints, and troubleshooting with no card data or payment logs.\"}"
+    },
+    {
+      "record_id": "answer-v1-distractor-kafka-vs-db-pool",
+      "category": "distractor",
+      "question": "Kafka consumer lag is growing and the admin client connection pool is larger than usual. Does that prove database connection-pool exhaustion?",
+      "answerable": true,
+      "prediction": {
+        "answer": "",
+        "abstained": false,
+        "abstention_reason": null,
+        "citations": [],
+        "conflicts": []
+      },
+      "scores": {
+        "answer_relevance": 0,
+        "faithfulness": 0,
+        "citation_correctness": 0,
+        "citation_completeness": 0,
+        "abstention_correctness": 0,
+        "conflict_handling": null
+      },
+      "scoring_notes": "{\"status\": \"error\", \"error\": {\"type\": \"GenerationProviderError\", \"message\": \"OpenCode evaluation provider exited with code 1\", \"retryable\": true}, \"primary_failure\": \"provider_failure\", \"all_failures\": [\"provider_failure\"], \"failure_notes\": \"provider error: GenerationProviderError\", \"scorer_a_rationale\": \"The prediction failed with status=error (GenerationProviderError), producing no answer, citations, or abstention despite answerable evidence including E1's required distinction that a growing admin-client connection pool is not database pool exhaustion.\", \"scorer_b_rationale\": \"The prediction is a GenerationProviderError with no answer or citations, so it fails to answer the answerable record, cites none of the required runbooks/kafka-consumer-lag.md v1 evidence (E1), and abstention_correctness is 0 because status is error.\"}"
+    },
+    {
+      "record_id": "answer-v1-distractor-redis-ping",
+      "category": "distractor",
+      "question": "A Redis ping succeeds after failover. Does that prove the payment application can serve requests?",
+      "answerable": true,
+      "prediction": {
+        "answer": "",
+        "abstained": false,
+        "abstention_reason": null,
+        "citations": [],
+        "conflicts": []
+      },
+      "scores": {
+        "answer_relevance": 0,
+        "faithfulness": 0,
+        "citation_correctness": 0,
+        "citation_completeness": 0,
+        "abstention_correctness": 0,
+        "conflict_handling": null
+      },
+      "scoring_notes": "{\"status\": \"error\", \"error\": {\"type\": \"GenerationProviderError\", \"message\": \"OpenCode evaluation provider exited with code 1\", \"retryable\": true}, \"primary_failure\": \"provider_failure\", \"all_failures\": [\"provider_failure\"], \"failure_notes\": \"provider error: GenerationProviderError\", \"scorer_a_rationale\": \"The prediction failed with status=error and produced no answer, so it answers nothing (answer_relevance 0) and fails to respond, making abstention_correctness 0. No factual claims were made, so faithfulness is vacuously 1, while the answerable record has no citations, giving citation_correctness and citation_completeness 0 (E1 from runbooks/redis-failover.md was the required source but was never cited).\", \"scorer_b_rationale\": \"The prediction is a GenerationProviderError with no answer or citations, so the required runbooks/redis-failover.md v1 distinction (E1) is never cited, and abstention_correctness is 0 because status is error rather than a response.\"}"
+    }
+  ],
+  "aggregate": {
+    "status": "completed",
+    "sample_counts": {
+      "records": 26,
+      "scored": 26,
+      "abstained": 7,
+      "answerable": 20,
+      "unanswerable": 6
+    },
+    "overall": {
+      "answer_relevance": 0.8462,
+      "faithfulness": 0.9231,
+      "citation_correctness": 0.85,
+      "citation_completeness": 0.8947,
+      "abstention_correctness": 0.8846,
+      "conflict_handling": 0.75,
+      "n": 26
+    },
+    "by_category": {
+      "distractor": {
+        "answer_relevance": 0.0,
+        "faithfulness": 0.0,
+        "citation_correctness": 0.0,
+        "citation_completeness": 0.0,
+        "abstention_correctness": 0.0,
+        "conflict_handling": null,
+        "n": 2
+      },
+      "insufficient_evidence": {
+        "answer_relevance": 1.0,
+        "faithfulness": 1.0,
+        "citation_correctness": null,
+        "citation_completeness": null,
+        "abstention_correctness": 1.0,
+        "conflict_handling": null,
+        "n": 4
+      },
+      "multi_chunk": {
+        "answer_relevance": 0.75,
+        "faithfulness": 1.0,
+        "citation_correctness": 1.0,
+        "citation_completeness": 1.0,
+        "abstention_correctness": 1.0,
+        "conflict_handling": null,
+        "n": 2
+      },
+      "multi_source": {
+        "answer_relevance": 0.8333,
+        "faithfulness": 1.0,
+        "citation_correctness": 1.0,
+        "citation_completeness": 1.0,
+        "abstention_correctness": 1.0,
+        "conflict_handling": null,
+        "n": 3
+      },
+      "sensitive_unanswerable": {
+        "answer_relevance": 1.0,
+        "faithfulness": 1.0,
+        "citation_correctness": null,
+        "citation_completeness": null,
+        "abstention_correctness": 1.0,
+        "conflict_handling": null,
+        "n": 2
+      },
+      "single_source_factual": {
+        "answer_relevance": 1.0,
+        "faithfulness": 1.0,
+        "citation_correctness": 1.0,
+        "citation_completeness": 1.0,
+        "abstention_correctness": 1.0,
+        "conflict_handling": null,
+        "n": 9
+      },
+      "version_conflict": {
+        "answer_relevance": 0.75,
+        "faithfulness": 1.0,
+        "citation_correctness": 0.75,
+        "citation_completeness": 1.0,
+        "abstention_correctness": 0.75,
+        "conflict_handling": 0.75,
+        "n": 4
+      }
+    },
+    "caveats": [
+      "Metric values are means over non-null scores. The block n is the record count, not the per-metric denominator.",
+      "Scores are independent LLM-assisted rubric judgments, not human scoring of every claim.",
+      "The corpus is synthetic and small; these results do not establish production quality.",
+      "The OpenCode CLI provider cannot enforce temperature or a hard output-token limit."
+    ]
+  },
+  "limitations": [
+    "The corpus is synthetic; no production validation is claimed.",
+    "Scoring was performed by two language models using a fixed rubric, not by two human domain experts.",
+    "Claim-level citation coverage is reported per scorer; disagreements were adjudicated at the record-metric level.",
+    "The evaluation provider is an evaluation-only OpenCode CLI adapter.",
+    "Provider token usage was not exposed by the CLI; token counts are character-based estimates.",
+    "One run does not establish stability across provider versions."
+  ]
+}

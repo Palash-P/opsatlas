@@ -20,3 +20,17 @@ htmlcov/
 # Build artifacts
 build/
 dist/
+
+# Generated evaluation reports
+evals/reports/
+
+# Generated evaluation run payloads
+evals/runs/**/predictions.jsonl
+evals/runs/**/scorer_raw/
+
+# Raw operational logs and per-request load-test records
+evals/ops/phase-e-final/*.log
+evals/ops/phase-e-final/*.records.jsonl
+
+# Generated evaluation run logs
+evals/runs/**/*.log

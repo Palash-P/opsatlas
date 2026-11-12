@@ -1,0 +1,23 @@
+{
+  "records_total": 26,
+  "records_ok": 24,
+  "records_error": 2,
+  "abstained": 7,
+  "conflicts": 0,
+  "provider_attempts_total": 28,
+  "provider_retries": 2,
+  "latency_ms": {
+    "p50": 4161.5,
+    "p95": 6304.699999999998,
+    "mean": 4355.041666666667,
+    "max": 6927
+  },
+  "tokens_estimate": {
+    "input": 42839,
+    "output": 3819
+  },
+  "provider_usage_reported": 0,
+  "error_types": [
+    "GenerationProviderError"
+  ]
+}

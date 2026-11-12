@@ -1,0 +1,1056 @@
+{
+  "started_at": "2026-11-10T11:39:03.548151+00:00",
+  "finished_at": "2026-11-10T11:39:57.786137+00:00",
+  "base_url": "http://127.0.0.1:8010",
+  "results": [
+    {
+      "case": "baseline_ready",
+      "expected": "200 ready",
+      "request_id": "fi-baseline-ready-0001",
+      "method": "GET",
+      "path": "/ready",
+      "status": 200,
+      "latency_ms": 20.17,
+      "detail": {
+        "status": "ready",
+        "checks": {
+          "postgres": "ok",
+          "redis": "ok"
+        }
+      },
+      "client_error": null,
+      "recorded_at": "2026-11-10T11:39:03.931781+00:00"
+    },
+    {
+      "case": "postgres_down_health",
+      "expected": "200 liveness only",
+      "request_id": "fi-postgres-down-health-0001",
+      "method": "GET",
+      "path": "/health",
+      "status": 200,
+      "latency_ms": 3.15,
+      "detail": {
+        "status": "ok",
+        "service": "OpsAtlas"
+      },
+      "client_error": null,
+      "recorded_at": "2026-11-10T11:39:06.452634+00:00"
+    },
+    {
+      "case": "postgres_down_ready",
+      "expected": "503 not_ready",
+      "request_id": "fi-postgres-down-ready-0001",
+      "method": "GET",
+      "path": "/ready",
+      "status": 503,
+      "latency_ms": 10060.78,
+      "detail": {
+        "status": "not_ready",
+        "checks": {
+          "postgres": "error",
+          "redis": "ok"
+        }
+      },
+      "client_error": null,
+      "recorded_at": "2026-11-10T11:39:16.513439+00:00"
+    },
+    {
+      "case": "postgres_down_answer_lexical",
+      "expected": "503 database_unavailable",
+      "request_id": "fi-postgres-down-answer-0001",
+      "method": "POST",
+      "path": "/api/v1/answer",
+      "status": 503,
+      "latency_ms": 10019.68,
+      "detail": {
+        "detail": "A required dependency is unavailable"
+      },
+      "client_error": null,
+      "recorded_at": "2026-11-10T11:39:26.533142+00:00"
+    },
+    {
+      "case": "postgres_recovered_ready",
+      "expected": "200 ready",
+      "request_id": "fi-postgres-recovered-ready-0001",
+      "method": "GET",
+      "path": "/ready",
+      "status": 200,
+      "latency_ms": 63.23,
+      "detail": {
+        "status": "ready",
+        "checks": {
+          "postgres": "ok",
+          "redis": "ok"
+        }
+      },
+      "client_error": null,
+      "recorded_at": "2026-11-10T11:39:27.620101+00:00"
+    },
+    {
+      "case": "postgres_recovered_answer_lexical",
+      "expected": "200",
+      "request_id": "fi-postgres-recovered-answer-0001",
+      "method": "POST",
+      "path": "/api/v1/answer",
+      "status": 200,
+      "latency_ms": 64.73,
+      "detail": {
+        "request_id": "fi-postgres-recovered-answer-0001",
+        "question": "What does PAY-503 mean?",
+        "answer": "Payment API Error Codes Runbook (Synthetic) (version 1) states: # Payment API Error Codes Runbook Synthetic training document for OpsAtlas retrieval evaluation. ## PAY-503: Payment Service Unavailable Meaning: The payment service could not complete the request because a required downstream service was unavailable or the request could not be processed within its availability limits. Initial checks: 1. Check the payment service health endpoint. 2. Inspect\u2026",
+        "citations": [
+          {
+            "evidence_id": "E1",
+            "document_id": "98d0085a-ab9e-47b0-9d84-6f982fc67c88",
+            "version_id": "467ebd0d-1849-434a-9fd9-c6ce9b574fc4",
+            "source_key": "runbooks/payment-errors.md",
+            "title": "Payment API Error Codes Runbook (Synthetic)",
+            "version_number": 1,
+            "chunk_id": "f95c8466-b806-44d8-b61a-374b2929ad74",
+            "chunk_index": 0,
+            "excerpt": "# Payment API Error Codes Runbook Synthetic training document for OpsAtlas retrieval evaluation. ## PAY-503: Payment Service Unavailable Meaning: The payment service could not complete the request because a required downstream service was unavailable or the request could not be processed within its availability limits. Initial checks: 1. Check the payment service health endpoint. 2. Inspect recent deployment events and error-rate metrics. 3. Check downstream gateway availability and connection-pool saturation. 4. Correlate the request timestamp with service logs using the request ID.\u2026"
+          }
+        ],
+        "evidence": [
+          {
+            "evidence_id": "E1",
+            "retrieval_rank": 1,
+            "chunk_id": "f95c8466-b806-44d8-b61a-374b2929ad74",
+            "document_id": "98d0085a-ab9e-47b0-9d84-6f982fc67c88",
+            "version_id": "467ebd0d-1849-434a-9fd9-c6ce9b574fc4",
+            "source_key": "runbooks/payment-errors.md",
+            "title": "Payment API Error Codes Runbook (Synthetic)",
+            "version_number": 1,
+            "chunk_index": 0,
+            "authority_level": 80,
+            "content": "# Payment API Error Codes Runbook\nSynthetic training document for OpsAtlas retrieval evaluation.\n\n## PAY-503: Payment Service Unavailable\nMeaning: The payment service could not complete the request because a required downstream service was unavailable or the request could not be processed within its availability limits.\n\nInitial checks:\n1. Check the payment service health endpoint.\n2. Inspect recent deployment events and error-rate metrics.\n3. Check downstream gateway availability and connection-pool saturation.\n4. Correlate the request timestamp with service logs using the request ID.\n\nResponse:\n- If a recent deployment correlates with the errors, follow the approved rollback procedure.\n- If the downstream dependency is unavailable, follow its incident runbook.\n- Do not repeatedly retry non-idempotent payment operations without checking idempotency guarantees.\n- Escalate to the payment on-call engineer if errors persist.\n\n## PAY-400: Invalid Payment Request\nMeaning: The request is invalid or required fields are missing.\nResponse: Verify the request schema and validation error details before retrying.\n\n## PAY-409: Payment Conflict\nMeaning: The request conflicts with the current",
+            "excerpt": "# Payment API Error Codes Runbook Synthetic training document for OpsAtlas retrieval evaluation. ## PAY-503: Payment Service Unavailable Meaning: The payment service could not complete the request because a required downstream service was unavailable or the request could not be processed within its availability limits. Initial checks: 1. Check the payment service health endpoint. 2. Inspect recent deployment events and error-rate metrics. 3. Check downstream gateway availability and connection-pool saturation. 4. Correlate the request timestamp with service logs using the request ID.\u2026",
+            "estimated_tokens": 299,
+            "score": 6.727949915595385,
+            "score_field": "lexical_score",
+            "scores": {
+              "lexical_score": 6.727949915595385
+            },
+            "semantic_rank": null,
+            "keyword_rank": null,
+            "ranking_origin": null
+          },
+          {
+            "evidence_id": "E2",
+            "retrieval_rank": 2,
+            "chunk_id": "93d69878-23b8-4147-8f95-0f0242e58da8",
+            "document_id": "c243000d-e86c-4cbd-a1e7-bd37a5d3a1c2",
+            "version_id": "85dd418c-c8bf-4f9f-99f1-523d5b40993c",
+            "source_key": "api-specs/payments-v3.md",
+            "title": "Payment API v3 Specification (Synthetic)",
+            "version_number": 1,
+            "chunk_index": 0,
+            "authority_level": 95,
+            "content": "# Payment API v3 Specification\nSynthetic API reference for OpsAtlas retrieval evaluation. This is not a real external API contract.\n\n## Current endpoint\nNew payment clients should use the v3 endpoint:\nPOST /api/v3/payments\n\n## Request behavior\n- Send a valid payment request according to the client's configured schema.\n- Use the documented idempotency mechanism when retrying operations that might create a payment.\n- Validate required fields before submitting a request.\n\n## Error handling\n- PAY-400 indicates an invalid payment request.\n- PAY-409 indicates a conflict with the current payment state.\n- PAY-503 indicates that the payment service is unavailable or unable to complete the request.\n\n## Versioning guidance\n- New clients should target /api/v3/payments.\n- Clients using older API versions should follow their migration plan rather than assuming endpoint compatibility.\n- Verify the configured API version before troubleshooting endpoint-related errors.\n\nThis document is synthetic and does not define a real production API.",
+            "excerpt": "# Payment API v3 Specification Synthetic API reference for OpsAtlas retrieval evaluation. This is not a real external API contract. ## Current endpoint New payment clients should use the v3 endpoint: POST /api/v3/payments ## Request behavior - Send a valid payment request according to the client's configured schema. - Use the documented idempotency mechanism when retrying operations that might create a payment. - Validate required fields before submitting a request. ## Error handling - PAY-400 indicates an invalid payment request. - PAY-409 indicates a conflict with the current payment\u2026",
+            "estimated_tokens": 260,
+            "score": 4.02320182335696,
+            "score_field": "lexical_score",
+            "scores": {
+              "lexical_score": 4.02320182335696
+            },
+            "semantic_rank": null,
+            "keyword_rank": null,
+            "ranking_origin": null
+          },
+          {
+            "evidence_id": "E3",
+            "retrieval_rank": 3,
+            "chunk_id": "f8ce71eb-dff5-49c2-879f-ef71c34e1b65",
+            "document_id": "5f364736-8c37-4b17-82ed-b56190cd5776",
+            "version_id": "34b458ab-eb58-4e89-8fae-b545d5a0add2",
+            "source_key": "api-specs/payments.md",
+            "title": "Payments Migration Guide (Synthetic)",
+            "version_number": 2,
+            "chunk_index": 0,
+            "authority_level": 90,
+            "content": "# Payments Migration Guide\n\nSynthetic engineering reference for OpsAtlas retrieval evaluation. This is not a real production document.\n\n## Endpoint\nThe /api/v1/payments endpoint is deprecated. New clients must use:\n\nPOST /api/v3/payments\n\nExisting clients should follow their migration plan rather than assuming endpoint compatibility.\n\n## Request behavior\n- Send a valid payment request according to the client's configured schema.\n- Use the documented idempotency mechanism when retrying operations that might create a payment.\n- Validate required fields before submitting a request.\n\n## Retry behavior\n- Retry only operations that are safe to retry.\n- Use the documented idempotency mechanism instead of retrying blindly.\n- Do not repeatedly retry non-idempotent payment operations.\n\n## Error handling\n- PAY-503 indicates that the payment service is unavailable or unable to complete the request.\n\n## Versioning guidance\n- New clients must target /api/v3/payments.\n- Verify the configured API version before troubleshooting endpoint-related errors.\n\nThis document is synthetic and is not an approved production specification.",
+            "excerpt": "# Payments Migration Guide Synthetic engineering reference for OpsAtlas retrieval evaluation. This is not a real production document. ## Endpoint The /api/v1/payments endpoint is deprecated. New clients must use: POST /api/v3/payments Existing clients should follow their migration plan rather than assuming endpoint compatibility. ## Request behavior - Send a valid payment request according to the client's configured schema. - Use the documented idempotency mechanism when retrying operations that might create a payment. - Validate required fields before submitting a request. ## Retry behavior\u2026",
+            "estimated_tokens": 282,
+            "score": 4.02320182335696,
+            "score_field": "lexical_score",
+            "scores": {
+              "lexical_score": 4.02320182335696
+            },
+            "semantic_rank": null,
+            "keyword_rank": null,
+            "ranking_origin": null
+          },
+          {
+            "evidence_id": "E4",
+            "retrieval_rank": 4,
+            "chunk_id": "488fbca1-dab6-4285-a4de-f8a74ede8052",
+            "document_id": "98d0085a-ab9e-47b0-9d84-6f982fc67c88",
+            "version_id": "467ebd0d-1849-434a-9fd9-c6ce9b574fc4",
+            "source_key": "runbooks/payment-errors.md",
+            "title": "Payment API Error Codes Runbook (Synthetic)",
+            "version_number": 1,
+            "chunk_index": 1,
+            "authority_level": 80,
+            "content": "Verify the request schema and validation error details before retrying.\n\n## PAY-409: Payment Conflict\nMeaning: The request conflicts with the current payment state.\nResponse: Retrieve the payment state and reconcile before submitting another operation.\n\nThis document is synthetic and does not describe a real production incident or actual company procedure.",
+            "excerpt": "Verify the request schema and validation error details before retrying. ## PAY-409: Payment Conflict Meaning: The request conflicts with the current payment state. Response: Retrieve the payment state and reconcile before submitting another operation. This document is synthetic and does not describe a real production incident or actual company procedure.",
+            "estimated_tokens": 90,
+            "score": 2.7047480922384253,
+            "score_field": "lexical_score",
+            "scores": {
+              "lexical_score": 2.7047480922384253
+            },
+            "semantic_rank": null,
+            "keyword_rank": null,
+            "ranking_origin": null
+          }
+        ],
+        "retrieval": {
+          "strategy": "lexical",
+          "config": {
+            "strategy": "lexical",
+            "limit": 5,
+            "version": {
+              "mode": "auto",
+              "scope": "current",
+              "version_numbers": [],
+              "include_historical": false,
+              "filter_numbers": []
+            }
+          },
+          "result_count": 4,
+          "results": [
+            {
+              "rank": 1,
+              "chunk_id": "f95c8466-b806-44d8-b61a-374b2929ad74",
+              "document_id": "98d0085a-ab9e-47b0-9d84-6f982fc67c88",
+              "version_id": "467ebd0d-1849-434a-9fd9-c6ce9b574fc4",
+              "source_key": "runbooks/payment-errors.md",
+              "title": "Payment API Error Codes Runbook (Synthetic)",
+              "version_number": 1,
+              "chunk_index": 0,
+              "score": 6.727949915595385,
+              "score_field": "lexical_score",
+              "scores": {
+                "lexical_score": 6.727949915595385
+              },
+              "semantic_rank": null,
+              "keyword_rank": null,
+              "lexical_rank": null,
+              "ranking_origin": null
+            },
+            {
+              "rank": 2,
+              "chunk_id": "93d69878-23b8-4147-8f95-0f0242e58da8",
+              "document_id": "c243000d-e86c-4cbd-a1e7-bd37a5d3a1c2",
+              "version_id": "85dd418c-c8bf-4f9f-99f1-523d5b40993c",
+              "source_key": "api-specs/payments-v3.md",
+              "title": "Payment API v3 Specification (Synthetic)",
+              "version_number": 1,
+              "chunk_index": 0,
+              "score": 4.02320182335696,
+              "score_field": "lexical_score",
+              "scores": {
+                "lexical_score": 4.02320182335696
+              },
+              "semantic_rank": null,
+              "keyword_rank": null,
+              "lexical_rank": null,
+              "ranking_origin": null
+            },
+            {
+              "rank": 3,
+              "chunk_id": "f8ce71eb-dff5-49c2-879f-ef71c34e1b65",
+              "document_id": "5f364736-8c37-4b17-82ed-b56190cd5776",
+              "version_id": "34b458ab-eb58-4e89-8fae-b545d5a0add2",
+              "source_key": "api-specs/payments.md",
+              "title": "Payments Migration Guide (Synthetic)",
+              "version_number": 2,
+              "chunk_index": 0,
+              "score": 4.02320182335696,
+              "score_field": "lexical_score",
+              "scores": {
+                "lexical_score": 4.02320182335696
+              },
+              "semantic_rank": null,
+              "keyword_rank": null,
+              "lexical_rank": null,
+              "ranking_origin": null
+            },
+            {
+              "rank": 4,
+              "chunk_id": "488fbca1-dab6-4285-a4de-f8a74ede8052",
+              "document_id": "98d0085a-ab9e-47b0-9d84-6f982fc67c88",
+              "version_id": "467ebd0d-1849-434a-9fd9-c6ce9b574fc4",
+              "source_key": "runbooks/payment-errors.md",
+              "title": "Payment API Error Codes Runbook (Synthetic)",
+              "version_number": 1,
+              "chunk_index": 1,
+              "score": 2.7047480922384253,
+              "score_field": "lexical_score",
+              "scores": {
+                "lexical_score": 2.7047480922384253
+              },
+              "semantic_rank": null,
+              "keyword_rank": null,
+              "lexical_rank": null,
+              "ranking_origin": null
+            }
+          ]
+        },
+        "generation": {
+          "provider": "extractive",
+          "model": "extractive-local-v1",
+          "requested_model": "extractive-local-v1",
+          "provider_capabilities": {
+            "temperature": "not_applicable",
+            "max_output_tokens": "not_applicable",
+            "token_usage": "not_reported",
+            "model_verification": "declared",
+            "deterministic": true
+          },
+          "prompt_version": "grounded_answer_v2",
+          "temperature": 0.0,
+          "max_output_tokens": 700,
+          "timeout_seconds": 20.0,
+          "max_retries": 1,
+          "latency_ms": 0,
+          "attempts": 1,
+          "input_tokens_estimate": 1822,
+          "output_tokens_estimate": 115,
+          "provider_usage": null
+        },
+        "abstention": {
+          "abstained": false,
+          "reason": null,
+          "insufficient_evidence": false
+        },
+        "conflicts": [],
+        "version_analysis": null,
+        "uncertainty": "Local extractive fallback: this response copies the top-ranked evidence and does not synthesize across sources.",
+        "diagnostics": {
+          "evidence_count": 4,
+          "context_tokens_estimate": 1126,
+          "context_token_budget": 4000,
+          "dropped_evidence_count": 0,
+          "dropped_evidence": [],
+          "mixed_versions": false,
+          "version_pairs": [
+            [
+              "api-specs/payments-v3.md",
+              1
+            ],
+            [
+              "api-specs/payments.md",
+              2
+            ],
+            [
+              "runbooks/payment-errors.md",
+              1
+            ]
+          ],
+          "uncited_evidence_ids": [
+            "E2",
+            "E3",
+            "E4"
+          ]
+        }
+      },
+      "client_error": null,
+      "recorded_at": "2026-11-10T11:39:27.684851+00:00"
+    },
+    {
+      "case": "redis_down_ready",
+      "expected": "200 degraded",
+      "request_id": "fi-redis-down-ready-0001",
+      "method": "GET",
+      "path": "/ready",
+      "status": 200,
+      "latency_ms": 2068.5,
+      "detail": {
+        "status": "degraded",
+        "checks": {
+          "postgres": "ok",
+          "redis": "error"
+        }
+      },
+      "client_error": null,
+      "recorded_at": "2026-11-10T11:39:32.222996+00:00"
+    },
+    {
+      "case": "redis_down_answer_lexical",
+      "expected": "200",
+      "request_id": "fi-redis-down-answer-0001",
+      "method": "POST",
+      "path": "/api/v1/answer",
+      "status": 200,
+      "latency_ms": 61.8,
+      "detail": {
+        "request_id": "fi-redis-down-answer-0001",
+        "question": "What does PAY-503 mean?",
+        "answer": "Payment API Error Codes Runbook (Synthetic) (version 1) states: # Payment API Error Codes Runbook Synthetic training document for OpsAtlas retrieval evaluation. ## PAY-503: Payment Service Unavailable Meaning: The payment service could not complete the request because a required downstream service was unavailable or the request could not be processed within its availability limits. Initial checks: 1. Check the payment service health endpoint. 2. Inspect\u2026",
+        "citations": [
+          {
+            "evidence_id": "E1",
+            "document_id": "98d0085a-ab9e-47b0-9d84-6f982fc67c88",
+            "version_id": "467ebd0d-1849-434a-9fd9-c6ce9b574fc4",
+            "source_key": "runbooks/payment-errors.md",
+            "title": "Payment API Error Codes Runbook (Synthetic)",
+            "version_number": 1,
+            "chunk_id": "f95c8466-b806-44d8-b61a-374b2929ad74",
+            "chunk_index": 0,
+            "excerpt": "# Payment API Error Codes Runbook Synthetic training document for OpsAtlas retrieval evaluation. ## PAY-503: Payment Service Unavailable Meaning: The payment service could not complete the request because a required downstream service was unavailable or the request could not be processed within its availability limits. Initial checks: 1. Check the payment service health endpoint. 2. Inspect recent deployment events and error-rate metrics. 3. Check downstream gateway availability and connection-pool saturation. 4. Correlate the request timestamp with service logs using the request ID.\u2026"
+          }
+        ],
+        "evidence": [
+          {
+            "evidence_id": "E1",
+            "retrieval_rank": 1,
+            "chunk_id": "f95c8466-b806-44d8-b61a-374b2929ad74",
+            "document_id": "98d0085a-ab9e-47b0-9d84-6f982fc67c88",
+            "version_id": "467ebd0d-1849-434a-9fd9-c6ce9b574fc4",
+            "source_key": "runbooks/payment-errors.md",
+            "title": "Payment API Error Codes Runbook (Synthetic)",
+            "version_number": 1,
+            "chunk_index": 0,
+            "authority_level": 80,
+            "content": "# Payment API Error Codes Runbook\nSynthetic training document for OpsAtlas retrieval evaluation.\n\n## PAY-503: Payment Service Unavailable\nMeaning: The payment service could not complete the request because a required downstream service was unavailable or the request could not be processed within its availability limits.\n\nInitial checks:\n1. Check the payment service health endpoint.\n2. Inspect recent deployment events and error-rate metrics.\n3. Check downstream gateway availability and connection-pool saturation.\n4. Correlate the request timestamp with service logs using the request ID.\n\nResponse:\n- If a recent deployment correlates with the errors, follow the approved rollback procedure.\n- If the downstream dependency is unavailable, follow its incident runbook.\n- Do not repeatedly retry non-idempotent payment operations without checking idempotency guarantees.\n- Escalate to the payment on-call engineer if errors persist.\n\n## PAY-400: Invalid Payment Request\nMeaning: The request is invalid or required fields are missing.\nResponse: Verify the request schema and validation error details before retrying.\n\n## PAY-409: Payment Conflict\nMeaning: The request conflicts with the current",
+            "excerpt": "# Payment API Error Codes Runbook Synthetic training document for OpsAtlas retrieval evaluation. ## PAY-503: Payment Service Unavailable Meaning: The payment service could not complete the request because a required downstream service was unavailable or the request could not be processed within its availability limits. Initial checks: 1. Check the payment service health endpoint. 2. Inspect recent deployment events and error-rate metrics. 3. Check downstream gateway availability and connection-pool saturation. 4. Correlate the request timestamp with service logs using the request ID.\u2026",
+            "estimated_tokens": 299,
+            "score": 6.727949915595385,
+            "score_field": "lexical_score",
+            "scores": {
+              "lexical_score": 6.727949915595385
+            },
+            "semantic_rank": null,
+            "keyword_rank": null,
+            "ranking_origin": null
+          },
+          {
+            "evidence_id": "E2",
+            "retrieval_rank": 2,
+            "chunk_id": "93d69878-23b8-4147-8f95-0f0242e58da8",
+            "document_id": "c243000d-e86c-4cbd-a1e7-bd37a5d3a1c2",
+            "version_id": "85dd418c-c8bf-4f9f-99f1-523d5b40993c",
+            "source_key": "api-specs/payments-v3.md",
+            "title": "Payment API v3 Specification (Synthetic)",
+            "version_number": 1,
+            "chunk_index": 0,
+            "authority_level": 95,
+            "content": "# Payment API v3 Specification\nSynthetic API reference for OpsAtlas retrieval evaluation. This is not a real external API contract.\n\n## Current endpoint\nNew payment clients should use the v3 endpoint:\nPOST /api/v3/payments\n\n## Request behavior\n- Send a valid payment request according to the client's configured schema.\n- Use the documented idempotency mechanism when retrying operations that might create a payment.\n- Validate required fields before submitting a request.\n\n## Error handling\n- PAY-400 indicates an invalid payment request.\n- PAY-409 indicates a conflict with the current payment state.\n- PAY-503 indicates that the payment service is unavailable or unable to complete the request.\n\n## Versioning guidance\n- New clients should target /api/v3/payments.\n- Clients using older API versions should follow their migration plan rather than assuming endpoint compatibility.\n- Verify the configured API version before troubleshooting endpoint-related errors.\n\nThis document is synthetic and does not define a real production API.",
+            "excerpt": "# Payment API v3 Specification Synthetic API reference for OpsAtlas retrieval evaluation. This is not a real external API contract. ## Current endpoint New payment clients should use the v3 endpoint: POST /api/v3/payments ## Request behavior - Send a valid payment request according to the client's configured schema. - Use the documented idempotency mechanism when retrying operations that might create a payment. - Validate required fields before submitting a request. ## Error handling - PAY-400 indicates an invalid payment request. - PAY-409 indicates a conflict with the current payment\u2026",
+            "estimated_tokens": 260,
+            "score": 4.02320182335696,
+            "score_field": "lexical_score",
+            "scores": {
+              "lexical_score": 4.02320182335696
+            },
+            "semantic_rank": null,
+            "keyword_rank": null,
+            "ranking_origin": null
+          },
+          {
+            "evidence_id": "E3",
+            "retrieval_rank": 3,
+            "chunk_id": "f8ce71eb-dff5-49c2-879f-ef71c34e1b65",
+            "document_id": "5f364736-8c37-4b17-82ed-b56190cd5776",
+            "version_id": "34b458ab-eb58-4e89-8fae-b545d5a0add2",
+            "source_key": "api-specs/payments.md",
+            "title": "Payments Migration Guide (Synthetic)",
+            "version_number": 2,
+            "chunk_index": 0,
+            "authority_level": 90,
+            "content": "# Payments Migration Guide\n\nSynthetic engineering reference for OpsAtlas retrieval evaluation. This is not a real production document.\n\n## Endpoint\nThe /api/v1/payments endpoint is deprecated. New clients must use:\n\nPOST /api/v3/payments\n\nExisting clients should follow their migration plan rather than assuming endpoint compatibility.\n\n## Request behavior\n- Send a valid payment request according to the client's configured schema.\n- Use the documented idempotency mechanism when retrying operations that might create a payment.\n- Validate required fields before submitting a request.\n\n## Retry behavior\n- Retry only operations that are safe to retry.\n- Use the documented idempotency mechanism instead of retrying blindly.\n- Do not repeatedly retry non-idempotent payment operations.\n\n## Error handling\n- PAY-503 indicates that the payment service is unavailable or unable to complete the request.\n\n## Versioning guidance\n- New clients must target /api/v3/payments.\n- Verify the configured API version before troubleshooting endpoint-related errors.\n\nThis document is synthetic and is not an approved production specification.",
+            "excerpt": "# Payments Migration Guide Synthetic engineering reference for OpsAtlas retrieval evaluation. This is not a real production document. ## Endpoint The /api/v1/payments endpoint is deprecated. New clients must use: POST /api/v3/payments Existing clients should follow their migration plan rather than assuming endpoint compatibility. ## Request behavior - Send a valid payment request according to the client's configured schema. - Use the documented idempotency mechanism when retrying operations that might create a payment. - Validate required fields before submitting a request. ## Retry behavior\u2026",
+            "estimated_tokens": 282,
+            "score": 4.02320182335696,
+            "score_field": "lexical_score",
+            "scores": {
+              "lexical_score": 4.02320182335696
+            },
+            "semantic_rank": null,
+            "keyword_rank": null,
+            "ranking_origin": null
+          },
+          {
+            "evidence_id": "E4",
+            "retrieval_rank": 4,
+            "chunk_id": "488fbca1-dab6-4285-a4de-f8a74ede8052",
+            "document_id": "98d0085a-ab9e-47b0-9d84-6f982fc67c88",
+            "version_id": "467ebd0d-1849-434a-9fd9-c6ce9b574fc4",
+            "source_key": "runbooks/payment-errors.md",
+            "title": "Payment API Error Codes Runbook (Synthetic)",
+            "version_number": 1,
+            "chunk_index": 1,
+            "authority_level": 80,
+            "content": "Verify the request schema and validation error details before retrying.\n\n## PAY-409: Payment Conflict\nMeaning: The request conflicts with the current payment state.\nResponse: Retrieve the payment state and reconcile before submitting another operation.\n\nThis document is synthetic and does not describe a real production incident or actual company procedure.",
+            "excerpt": "Verify the request schema and validation error details before retrying. ## PAY-409: Payment Conflict Meaning: The request conflicts with the current payment state. Response: Retrieve the payment state and reconcile before submitting another operation. This document is synthetic and does not describe a real production incident or actual company procedure.",
+            "estimated_tokens": 90,
+            "score": 2.7047480922384253,
+            "score_field": "lexical_score",
+            "scores": {
+              "lexical_score": 2.7047480922384253
+            },
+            "semantic_rank": null,
+            "keyword_rank": null,
+            "ranking_origin": null
+          }
+        ],
+        "retrieval": {
+          "strategy": "lexical",
+          "config": {
+            "strategy": "lexical",
+            "limit": 5,
+            "version": {
+              "mode": "auto",
+              "scope": "current",
+              "version_numbers": [],
+              "include_historical": false,
+              "filter_numbers": []
+            }
+          },
+          "result_count": 4,
+          "results": [
+            {
+              "rank": 1,
+              "chunk_id": "f95c8466-b806-44d8-b61a-374b2929ad74",
+              "document_id": "98d0085a-ab9e-47b0-9d84-6f982fc67c88",
+              "version_id": "467ebd0d-1849-434a-9fd9-c6ce9b574fc4",
+              "source_key": "runbooks/payment-errors.md",
+              "title": "Payment API Error Codes Runbook (Synthetic)",
+              "version_number": 1,
+              "chunk_index": 0,
+              "score": 6.727949915595385,
+              "score_field": "lexical_score",
+              "scores": {
+                "lexical_score": 6.727949915595385
+              },
+              "semantic_rank": null,
+              "keyword_rank": null,
+              "lexical_rank": null,
+              "ranking_origin": null
+            },
+            {
+              "rank": 2,
+              "chunk_id": "93d69878-23b8-4147-8f95-0f0242e58da8",
+              "document_id": "c243000d-e86c-4cbd-a1e7-bd37a5d3a1c2",
+              "version_id": "85dd418c-c8bf-4f9f-99f1-523d5b40993c",
+              "source_key": "api-specs/payments-v3.md",
+              "title": "Payment API v3 Specification (Synthetic)",
+              "version_number": 1,
+              "chunk_index": 0,
+              "score": 4.02320182335696,
+              "score_field": "lexical_score",
+              "scores": {
+                "lexical_score": 4.02320182335696
+              },
+              "semantic_rank": null,
+              "keyword_rank": null,
+              "lexical_rank": null,
+              "ranking_origin": null
+            },
+            {
+              "rank": 3,
+              "chunk_id": "f8ce71eb-dff5-49c2-879f-ef71c34e1b65",
+              "document_id": "5f364736-8c37-4b17-82ed-b56190cd5776",
+              "version_id": "34b458ab-eb58-4e89-8fae-b545d5a0add2",
+              "source_key": "api-specs/payments.md",
+              "title": "Payments Migration Guide (Synthetic)",
+              "version_number": 2,
+              "chunk_index": 0,
+              "score": 4.02320182335696,
+              "score_field": "lexical_score",
+              "scores": {
+                "lexical_score": 4.02320182335696
+              },
+              "semantic_rank": null,
+              "keyword_rank": null,
+              "lexical_rank": null,
+              "ranking_origin": null
+            },
+            {
+              "rank": 4,
+              "chunk_id": "488fbca1-dab6-4285-a4de-f8a74ede8052",
+              "document_id": "98d0085a-ab9e-47b0-9d84-6f982fc67c88",
+              "version_id": "467ebd0d-1849-434a-9fd9-c6ce9b574fc4",
+              "source_key": "runbooks/payment-errors.md",
+              "title": "Payment API Error Codes Runbook (Synthetic)",
+              "version_number": 1,
+              "chunk_index": 1,
+              "score": 2.7047480922384253,
+              "score_field": "lexical_score",
+              "scores": {
+                "lexical_score": 2.7047480922384253
+              },
+              "semantic_rank": null,
+              "keyword_rank": null,
+              "lexical_rank": null,
+              "ranking_origin": null
+            }
+          ]
+        },
+        "generation": {
+          "provider": "extractive",
+          "model": "extractive-local-v1",
+          "requested_model": "extractive-local-v1",
+          "provider_capabilities": {
+            "temperature": "not_applicable",
+            "max_output_tokens": "not_applicable",
+            "token_usage": "not_reported",
+            "model_verification": "declared",
+            "deterministic": true
+          },
+          "prompt_version": "grounded_answer_v2",
+          "temperature": 0.0,
+          "max_output_tokens": 700,
+          "timeout_seconds": 20.0,
+          "max_retries": 1,
+          "latency_ms": 0,
+          "attempts": 1,
+          "input_tokens_estimate": 1822,
+          "output_tokens_estimate": 115,
+          "provider_usage": null
+        },
+        "abstention": {
+          "abstained": false,
+          "reason": null,
+          "insufficient_evidence": false
+        },
+        "conflicts": [],
+        "version_analysis": null,
+        "uncertainty": "Local extractive fallback: this response copies the top-ranked evidence and does not synthesize across sources.",
+        "diagnostics": {
+          "evidence_count": 4,
+          "context_tokens_estimate": 1126,
+          "context_token_budget": 4000,
+          "dropped_evidence_count": 0,
+          "dropped_evidence": [],
+          "mixed_versions": false,
+          "version_pairs": [
+            [
+              "api-specs/payments-v3.md",
+              1
+            ],
+            [
+              "api-specs/payments.md",
+              2
+            ],
+            [
+              "runbooks/payment-errors.md",
+              1
+            ]
+          ],
+          "uncited_evidence_ids": [
+            "E2",
+            "E3",
+            "E4"
+          ]
+        }
+      },
+      "client_error": null,
+      "recorded_at": "2026-11-10T11:39:32.284826+00:00"
+    },
+    {
+      "case": "redis_recovered_ready",
+      "expected": "200 ready",
+      "request_id": "fi-redis-recovered-ready-0001",
+      "method": "GET",
+      "path": "/ready",
+      "status": 200,
+      "latency_ms": 12.2,
+      "detail": {
+        "status": "ready",
+        "checks": {
+          "postgres": "ok",
+          "redis": "ok"
+        }
+      },
+      "client_error": null,
+      "recorded_at": "2026-11-10T11:39:33.208166+00:00"
+    },
+    {
+      "case": "embedding_down_search",
+      "expected": "503 embedding_unavailable",
+      "request_id": "fi-embedding-down-search-0001",
+      "method": "POST",
+      "path": "/api/v1/search",
+      "status": 503,
+      "latency_ms": 4290.04,
+      "detail": {
+        "detail": "Embedding service is unavailable"
+      },
+      "client_error": null,
+      "recorded_at": "2026-11-10T11:39:39.681513+00:00"
+    },
+    {
+      "case": "embedding_down_answer_lexical",
+      "expected": "200",
+      "request_id": "fi-embedding-down-answer-0001",
+      "method": "POST",
+      "path": "/api/v1/answer",
+      "status": 200,
+      "latency_ms": 35.77,
+      "detail": {
+        "request_id": "fi-embedding-down-answer-0001",
+        "question": "What does PAY-503 mean?",
+        "answer": "Payment API Error Codes Runbook (Synthetic) (version 1) states: # Payment API Error Codes Runbook Synthetic training document for OpsAtlas retrieval evaluation. ## PAY-503: Payment Service Unavailable Meaning: The payment service could not complete the request because a required downstream service was unavailable or the request could not be processed within its availability limits. Initial checks: 1. Check the payment service health endpoint. 2. Inspect\u2026",
+        "citations": [
+          {
+            "evidence_id": "E1",
+            "document_id": "98d0085a-ab9e-47b0-9d84-6f982fc67c88",
+            "version_id": "467ebd0d-1849-434a-9fd9-c6ce9b574fc4",
+            "source_key": "runbooks/payment-errors.md",
+            "title": "Payment API Error Codes Runbook (Synthetic)",
+            "version_number": 1,
+            "chunk_id": "f95c8466-b806-44d8-b61a-374b2929ad74",
+            "chunk_index": 0,
+            "excerpt": "# Payment API Error Codes Runbook Synthetic training document for OpsAtlas retrieval evaluation. ## PAY-503: Payment Service Unavailable Meaning: The payment service could not complete the request because a required downstream service was unavailable or the request could not be processed within its availability limits. Initial checks: 1. Check the payment service health endpoint. 2. Inspect recent deployment events and error-rate metrics. 3. Check downstream gateway availability and connection-pool saturation. 4. Correlate the request timestamp with service logs using the request ID.\u2026"
+          }
+        ],
+        "evidence": [
+          {
+            "evidence_id": "E1",
+            "retrieval_rank": 1,
+            "chunk_id": "f95c8466-b806-44d8-b61a-374b2929ad74",
+            "document_id": "98d0085a-ab9e-47b0-9d84-6f982fc67c88",
+            "version_id": "467ebd0d-1849-434a-9fd9-c6ce9b574fc4",
+            "source_key": "runbooks/payment-errors.md",
+            "title": "Payment API Error Codes Runbook (Synthetic)",
+            "version_number": 1,
+            "chunk_index": 0,
+            "authority_level": 80,
+            "content": "# Payment API Error Codes Runbook\nSynthetic training document for OpsAtlas retrieval evaluation.\n\n## PAY-503: Payment Service Unavailable\nMeaning: The payment service could not complete the request because a required downstream service was unavailable or the request could not be processed within its availability limits.\n\nInitial checks:\n1. Check the payment service health endpoint.\n2. Inspect recent deployment events and error-rate metrics.\n3. Check downstream gateway availability and connection-pool saturation.\n4. Correlate the request timestamp with service logs using the request ID.\n\nResponse:\n- If a recent deployment correlates with the errors, follow the approved rollback procedure.\n- If the downstream dependency is unavailable, follow its incident runbook.\n- Do not repeatedly retry non-idempotent payment operations without checking idempotency guarantees.\n- Escalate to the payment on-call engineer if errors persist.\n\n## PAY-400: Invalid Payment Request\nMeaning: The request is invalid or required fields are missing.\nResponse: Verify the request schema and validation error details before retrying.\n\n## PAY-409: Payment Conflict\nMeaning: The request conflicts with the current",
+            "excerpt": "# Payment API Error Codes Runbook Synthetic training document for OpsAtlas retrieval evaluation. ## PAY-503: Payment Service Unavailable Meaning: The payment service could not complete the request because a required downstream service was unavailable or the request could not be processed within its availability limits. Initial checks: 1. Check the payment service health endpoint. 2. Inspect recent deployment events and error-rate metrics. 3. Check downstream gateway availability and connection-pool saturation. 4. Correlate the request timestamp with service logs using the request ID.\u2026",
+            "estimated_tokens": 299,
+            "score": 6.727949915595385,
+            "score_field": "lexical_score",
+            "scores": {
+              "lexical_score": 6.727949915595385
+            },
+            "semantic_rank": null,
+            "keyword_rank": null,
+            "ranking_origin": null
+          },
+          {
+            "evidence_id": "E2",
+            "retrieval_rank": 2,
+            "chunk_id": "93d69878-23b8-4147-8f95-0f0242e58da8",
+            "document_id": "c243000d-e86c-4cbd-a1e7-bd37a5d3a1c2",
+            "version_id": "85dd418c-c8bf-4f9f-99f1-523d5b40993c",
+            "source_key": "api-specs/payments-v3.md",
+            "title": "Payment API v3 Specification (Synthetic)",
+            "version_number": 1,
+            "chunk_index": 0,
+            "authority_level": 95,
+            "content": "# Payment API v3 Specification\nSynthetic API reference for OpsAtlas retrieval evaluation. This is not a real external API contract.\n\n## Current endpoint\nNew payment clients should use the v3 endpoint:\nPOST /api/v3/payments\n\n## Request behavior\n- Send a valid payment request according to the client's configured schema.\n- Use the documented idempotency mechanism when retrying operations that might create a payment.\n- Validate required fields before submitting a request.\n\n## Error handling\n- PAY-400 indicates an invalid payment request.\n- PAY-409 indicates a conflict with the current payment state.\n- PAY-503 indicates that the payment service is unavailable or unable to complete the request.\n\n## Versioning guidance\n- New clients should target /api/v3/payments.\n- Clients using older API versions should follow their migration plan rather than assuming endpoint compatibility.\n- Verify the configured API version before troubleshooting endpoint-related errors.\n\nThis document is synthetic and does not define a real production API.",
+            "excerpt": "# Payment API v3 Specification Synthetic API reference for OpsAtlas retrieval evaluation. This is not a real external API contract. ## Current endpoint New payment clients should use the v3 endpoint: POST /api/v3/payments ## Request behavior - Send a valid payment request according to the client's configured schema. - Use the documented idempotency mechanism when retrying operations that might create a payment. - Validate required fields before submitting a request. ## Error handling - PAY-400 indicates an invalid payment request. - PAY-409 indicates a conflict with the current payment\u2026",
+            "estimated_tokens": 260,
+            "score": 4.02320182335696,
+            "score_field": "lexical_score",
+            "scores": {
+              "lexical_score": 4.02320182335696
+            },
+            "semantic_rank": null,
+            "keyword_rank": null,
+            "ranking_origin": null
+          },
+          {
+            "evidence_id": "E3",
+            "retrieval_rank": 3,
+            "chunk_id": "f8ce71eb-dff5-49c2-879f-ef71c34e1b65",
+            "document_id": "5f364736-8c37-4b17-82ed-b56190cd5776",
+            "version_id": "34b458ab-eb58-4e89-8fae-b545d5a0add2",
+            "source_key": "api-specs/payments.md",
+            "title": "Payments Migration Guide (Synthetic)",
+            "version_number": 2,
+            "chunk_index": 0,
+            "authority_level": 90,
+            "content": "# Payments Migration Guide\n\nSynthetic engineering reference for OpsAtlas retrieval evaluation. This is not a real production document.\n\n## Endpoint\nThe /api/v1/payments endpoint is deprecated. New clients must use:\n\nPOST /api/v3/payments\n\nExisting clients should follow their migration plan rather than assuming endpoint compatibility.\n\n## Request behavior\n- Send a valid payment request according to the client's configured schema.\n- Use the documented idempotency mechanism when retrying operations that might create a payment.\n- Validate required fields before submitting a request.\n\n## Retry behavior\n- Retry only operations that are safe to retry.\n- Use the documented idempotency mechanism instead of retrying blindly.\n- Do not repeatedly retry non-idempotent payment operations.\n\n## Error handling\n- PAY-503 indicates that the payment service is unavailable or unable to complete the request.\n\n## Versioning guidance\n- New clients must target /api/v3/payments.\n- Verify the configured API version before troubleshooting endpoint-related errors.\n\nThis document is synthetic and is not an approved production specification.",
+            "excerpt": "# Payments Migration Guide Synthetic engineering reference for OpsAtlas retrieval evaluation. This is not a real production document. ## Endpoint The /api/v1/payments endpoint is deprecated. New clients must use: POST /api/v3/payments Existing clients should follow their migration plan rather than assuming endpoint compatibility. ## Request behavior - Send a valid payment request according to the client's configured schema. - Use the documented idempotency mechanism when retrying operations that might create a payment. - Validate required fields before submitting a request. ## Retry behavior\u2026",
+            "estimated_tokens": 282,
+            "score": 4.02320182335696,
+            "score_field": "lexical_score",
+            "scores": {
+              "lexical_score": 4.02320182335696
+            },
+            "semantic_rank": null,
+            "keyword_rank": null,
+            "ranking_origin": null
+          },
+          {
+            "evidence_id": "E4",
+            "retrieval_rank": 4,
+            "chunk_id": "488fbca1-dab6-4285-a4de-f8a74ede8052",
+            "document_id": "98d0085a-ab9e-47b0-9d84-6f982fc67c88",
+            "version_id": "467ebd0d-1849-434a-9fd9-c6ce9b574fc4",
+            "source_key": "runbooks/payment-errors.md",
+            "title": "Payment API Error Codes Runbook (Synthetic)",
+            "version_number": 1,
+            "chunk_index": 1,
+            "authority_level": 80,
+            "content": "Verify the request schema and validation error details before retrying.\n\n## PAY-409: Payment Conflict\nMeaning: The request conflicts with the current payment state.\nResponse: Retrieve the payment state and reconcile before submitting another operation.\n\nThis document is synthetic and does not describe a real production incident or actual company procedure.",
+            "excerpt": "Verify the request schema and validation error details before retrying. ## PAY-409: Payment Conflict Meaning: The request conflicts with the current payment state. Response: Retrieve the payment state and reconcile before submitting another operation. This document is synthetic and does not describe a real production incident or actual company procedure.",
+            "estimated_tokens": 90,
+            "score": 2.7047480922384253,
+            "score_field": "lexical_score",
+            "scores": {
+              "lexical_score": 2.7047480922384253
+            },
+            "semantic_rank": null,
+            "keyword_rank": null,
+            "ranking_origin": null
+          }
+        ],
+        "retrieval": {
+          "strategy": "lexical",
+          "config": {
+            "strategy": "lexical",
+            "limit": 5,
+            "version": {
+              "mode": "auto",
+              "scope": "current",
+              "version_numbers": [],
+              "include_historical": false,
+              "filter_numbers": []
+            }
+          },
+          "result_count": 4,
+          "results": [
+            {
+              "rank": 1,
+              "chunk_id": "f95c8466-b806-44d8-b61a-374b2929ad74",
+              "document_id": "98d0085a-ab9e-47b0-9d84-6f982fc67c88",
+              "version_id": "467ebd0d-1849-434a-9fd9-c6ce9b574fc4",
+              "source_key": "runbooks/payment-errors.md",
+              "title": "Payment API Error Codes Runbook (Synthetic)",
+              "version_number": 1,
+              "chunk_index": 0,
+              "score": 6.727949915595385,
+              "score_field": "lexical_score",
+              "scores": {
+                "lexical_score": 6.727949915595385
+              },
+              "semantic_rank": null,
+              "keyword_rank": null,
+              "lexical_rank": null,
+              "ranking_origin": null
+            },
+            {
+              "rank": 2,
+              "chunk_id": "93d69878-23b8-4147-8f95-0f0242e58da8",
+              "document_id": "c243000d-e86c-4cbd-a1e7-bd37a5d3a1c2",
+              "version_id": "85dd418c-c8bf-4f9f-99f1-523d5b40993c",
+              "source_key": "api-specs/payments-v3.md",
+              "title": "Payment API v3 Specification (Synthetic)",
+              "version_number": 1,
+              "chunk_index": 0,
+              "score": 4.02320182335696,
+              "score_field": "lexical_score",
+              "scores": {
+                "lexical_score": 4.02320182335696
+              },
+              "semantic_rank": null,
+              "keyword_rank": null,
+              "lexical_rank": null,
+              "ranking_origin": null
+            },
+            {
+              "rank": 3,
+              "chunk_id": "f8ce71eb-dff5-49c2-879f-ef71c34e1b65",
+              "document_id": "5f364736-8c37-4b17-82ed-b56190cd5776",
+              "version_id": "34b458ab-eb58-4e89-8fae-b545d5a0add2",
+              "source_key": "api-specs/payments.md",
+              "title": "Payments Migration Guide (Synthetic)",
+              "version_number": 2,
+              "chunk_index": 0,
+              "score": 4.02320182335696,
+              "score_field": "lexical_score",
+              "scores": {
+                "lexical_score": 4.02320182335696
+              },
+              "semantic_rank": null,
+              "keyword_rank": null,
+              "lexical_rank": null,
+              "ranking_origin": null
+            },
+            {
+              "rank": 4,
+              "chunk_id": "488fbca1-dab6-4285-a4de-f8a74ede8052",
+              "document_id": "98d0085a-ab9e-47b0-9d84-6f982fc67c88",
+              "version_id": "467ebd0d-1849-434a-9fd9-c6ce9b574fc4",
+              "source_key": "runbooks/payment-errors.md",
+              "title": "Payment API Error Codes Runbook (Synthetic)",
+              "version_number": 1,
+              "chunk_index": 1,
+              "score": 2.7047480922384253,
+              "score_field": "lexical_score",
+              "scores": {
+                "lexical_score": 2.7047480922384253
+              },
+              "semantic_rank": null,
+              "keyword_rank": null,
+              "lexical_rank": null,
+              "ranking_origin": null
+            }
+          ]
+        },
+        "generation": {
+          "provider": "extractive",
+          "model": "extractive-local-v1",
+          "requested_model": "extractive-local-v1",
+          "provider_capabilities": {
+            "temperature": "not_applicable",
+            "max_output_tokens": "not_applicable",
+            "token_usage": "not_reported",
+            "model_verification": "declared",
+            "deterministic": true
+          },
+          "prompt_version": "grounded_answer_v2",
+          "temperature": 0.0,
+          "max_output_tokens": 700,
+          "timeout_seconds": 20.0,
+          "max_retries": 1,
+          "latency_ms": 0,
+          "attempts": 1,
+          "input_tokens_estimate": 1822,
+          "output_tokens_estimate": 115,
+          "provider_usage": null
+        },
+        "abstention": {
+          "abstained": false,
+          "reason": null,
+          "insufficient_evidence": false
+        },
+        "conflicts": [],
+        "version_analysis": null,
+        "uncertainty": "Local extractive fallback: this response copies the top-ranked evidence and does not synthesize across sources.",
+        "diagnostics": {
+          "evidence_count": 4,
+          "context_tokens_estimate": 1126,
+          "context_token_budget": 4000,
+          "dropped_evidence_count": 0,
+          "dropped_evidence": [],
+          "mixed_versions": false,
+          "version_pairs": [
+            [
+              "api-specs/payments-v3.md",
+              1
+            ],
+            [
+              "api-specs/payments.md",
+              2
+            ],
+            [
+              "runbooks/payment-errors.md",
+              1
+            ]
+          ],
+          "uncited_evidence_ids": [
+            "E2",
+            "E3",
+            "E4"
+          ]
+        }
+      },
+      "client_error": null,
+      "recorded_at": "2026-11-10T11:39:39.717322+00:00"
+    },
+    {
+      "case": "embedding_recovered_search",
+      "expected": "200",
+      "request_id": "fi-embedding-recovered-search-0001",
+      "method": "POST",
+      "path": "/api/v1/search",
+      "status": 200,
+      "latency_ms": 94.94,
+      "detail": {
+        "query": "payment error",
+        "result_count": 5,
+        "results": [
+          {
+            "chunk_id": "488fbca1-dab6-4285-a4de-f8a74ede8052",
+            "document_id": "98d0085a-ab9e-47b0-9d84-6f982fc67c88",
+            "version_id": "467ebd0d-1849-434a-9fd9-c6ce9b574fc4",
+            "title": "Payment API Error Codes Runbook (Synthetic)",
+            "source_key": "runbooks/payment-errors.md",
+            "version_number": 1,
+            "authority_level": 80,
+            "chunk_index": 1,
+            "content": "Verify the request schema and validation error details before retrying.\n\n## PAY-409: Payment Conflict\nMeaning: The request conflicts with the current payment state.\nResponse: Retrieve the payment state and reconcile before submitting another operation.\n\nThis document is synthetic and does not describe a real production incident or actual company procedure.",
+            "cosine_distance": 0.4195312780560836,
+            "similarity": 0.5804687219439164
+          },
+          {
+            "chunk_id": "f95c8466-b806-44d8-b61a-374b2929ad74",
+            "document_id": "98d0085a-ab9e-47b0-9d84-6f982fc67c88",
+            "version_id": "467ebd0d-1849-434a-9fd9-c6ce9b574fc4",
+            "title": "Payment API Error Codes Runbook (Synthetic)",
+            "source_key": "runbooks/payment-errors.md",
+            "version_number": 1,
+            "authority_level": 80,
+            "chunk_index": 0,
+            "content": "# Payment API Error Codes Runbook\nSynthetic training document for OpsAtlas retrieval evaluation.\n\n## PAY-503: Payment Service Unavailable\nMeaning: The payment service could not complete the request because a required downstream service was unavailable or the request could not be processed within its availability limits.\n\nInitial checks:\n1. Check the payment service health endpoint.\n2. Inspect recent deployment events and error-rate metrics.\n3. Check downstream gateway availability and connection-pool saturation.\n4. Correlate the request timestamp with service logs using the request ID.\n\nResponse:\n- If a recent deployment correlates with the errors, follow the approved rollback procedure.\n- If the downstream dependency is unavailable, follow its incident runbook.\n- Do not repeatedly retry non-idempotent payment operations without checking idempotency guarantees.\n- Escalate to the payment on-call engineer if errors persist.\n\n## PAY-400: Invalid Payment Request\nMeaning: The request is invalid or required fields are missing.\nResponse: Verify the request schema and validation error details before retrying.\n\n## PAY-409: Payment Conflict\nMeaning: The request conflicts with the current",
+            "cosine_distance": 0.49636568139893567,
+            "similarity": 0.5036343186010643
+          },
+          {
+            "chunk_id": "5b7566c8-2428-4b0b-947a-b0698441d73d",
+            "document_id": "79cbdc59-0ffc-4c10-9b9b-3f9bc15e7a4d",
+            "version_id": "0f2dec57-7adc-49db-ac0c-20efad5d7fed",
+            "title": "Payment API Troubleshooting (Synthetic)",
+            "source_key": "runbooks/payment-api.md",
+            "version_number": 2,
+            "authority_level": 80,
+            "chunk_index": 0,
+            "content": "# Payment API Troubleshooting\n\n## Symptom\nThe payment API returns HTTP 503 errors after deployment.\n\n## Investigation\n1. Check application logs for upstream timeout errors.\n2. Check PostgreSQL connection pool saturation.\n3. Review the latest deployment changes.\n4. Verify database connectivity before retrying the payment request.\n\n## Recovery\nFollow the approved rollback procedure if the deployment caused the outage.",
+            "cosine_distance": 0.5294529655412721,
+            "similarity": 0.4705470344587279
+          },
+          {
+            "chunk_id": "f8ce71eb-dff5-49c2-879f-ef71c34e1b65",
+            "document_id": "5f364736-8c37-4b17-82ed-b56190cd5776",
+            "version_id": "34b458ab-eb58-4e89-8fae-b545d5a0add2",
+            "title": "Payments Migration Guide (Synthetic)",
+            "source_key": "api-specs/payments.md",
+            "version_number": 2,
+            "authority_level": 90,
+            "chunk_index": 0,
+            "content": "# Payments Migration Guide\n\nSynthetic engineering reference for OpsAtlas retrieval evaluation. This is not a real production document.\n\n## Endpoint\nThe /api/v1/payments endpoint is deprecated. New clients must use:\n\nPOST /api/v3/payments\n\nExisting clients should follow their migration plan rather than assuming endpoint compatibility.\n\n## Request behavior\n- Send a valid payment request according to the client's configured schema.\n- Use the documented idempotency mechanism when retrying operations that might create a payment.\n- Validate required fields before submitting a request.\n\n## Retry behavior\n- Retry only operations that are safe to retry.\n- Use the documented idempotency mechanism instead of retrying blindly.\n- Do not repeatedly retry non-idempotent payment operations.\n\n## Error handling\n- PAY-503 indicates that the payment service is unavailable or unable to complete the request.\n\n## Versioning guidance\n- New clients must target /api/v3/payments.\n- Verify the configured API version before troubleshooting endpoint-related errors.\n\nThis document is synthetic and is not an approved production specification.",
+            "cosine_distance": 0.6107599023210972,
+            "similarity": 0.3892400976789028
+          },
+          {
+            "chunk_id": "93d69878-23b8-4147-8f95-0f0242e58da8",
+            "document_id": "c243000d-e86c-4cbd-a1e7-bd37a5d3a1c2",
+            "version_id": "85dd418c-c8bf-4f9f-99f1-523d5b40993c",
+            "title": "Payment API v3 Specification (Synthetic)",
+            "source_key": "api-specs/payments-v3.md",
+            "version_number": 1,
+            "authority_level": 95,
+            "chunk_index": 0,
+            "content": "# Payment API v3 Specification\nSynthetic API reference for OpsAtlas retrieval evaluation. This is not a real external API contract.\n\n## Current endpoint\nNew payment clients should use the v3 endpoint:\nPOST /api/v3/payments\n\n## Request behavior\n- Send a valid payment request according to the client's configured schema.\n- Use the documented idempotency mechanism when retrying operations that might create a payment.\n- Validate required fields before submitting a request.\n\n## Error handling\n- PAY-400 indicates an invalid payment request.\n- PAY-409 indicates a conflict with the current payment state.\n- PAY-503 indicates that the payment service is unavailable or unable to complete the request.\n\n## Versioning guidance\n- New clients should target /api/v3/payments.\n- Clients using older API versions should follow their migration plan rather than assuming endpoint compatibility.\n- Verify the configured API version before troubleshooting endpoint-related errors.\n\nThis document is synthetic and does not define a real production API.",
+            "cosine_distance": 0.6528738244511523,
+            "similarity": 0.3471261755488477
+          }
+        ]
+      },
+      "client_error": null,
+      "recorded_at": "2026-11-10T11:39:57.786021+00:00"
+    }
+  ],
+  "notes": [
+    "docker stop postgres exit=0",
+    "postgres restored ready=(200, '{\"status\":\"ready\",\"checks\":{\"postgres\":\"ok\",\"redis\":\"ok\"}}')",
+    "docker stop redis exit=0",
+    "redis restored ready=(200, '{\"status\":\"ready\",\"checks\":{\"postgres\":\"ok\",\"redis\":\"ok\"}}')",
+    "embedding stop pid=59092 stopped=True",
+    "embedding restarted pid=35824",
+    "embedding health=(200, '{\"status\": \"ok\", \"model\": \"sentence-transformers/all-MiniLM-L6-v2\", \"dimensions\": 384, \"device\": \"cpu\"}')"
+  ],
+  "restored": [
+    "postgres",
+    "redis",
+    "embedding"
+  ],
+  "passed": true
+}

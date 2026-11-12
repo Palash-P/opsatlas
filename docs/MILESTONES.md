@@ -21,16 +21,23 @@
 - [ ] Evaluate Recall@k against the golden dataset.
 - Exit: retrieval output and scores are reproducible and traceable to source versions.
 
-## M4 — Grounded answer generation
-- [ ] Add model provider interface and bounded timeouts.
-- [ ] Return citations with source IDs, versions, and sections.
-- [ ] Add abstention behavior and citation validation.
+## M4 - Grounded answer generation (vertical slice complete; hardening pending)
+- [x] Add model provider interface and bounded timeouts.
+- [x] Return citations with document ID, source key, title, version number, chunk ID, and excerpt.
+- [x] Add abstention behavior and citation validation.
+- [x] Add deterministic evidence assembly with a context-token budget.
+- [x] Add an API endpoint for grounded answers with retrieval diagnostics.
+- [ ] Run answer-quality evaluation with a real provider and publish scored results.
+- [ ] Add adversarial prompt-injection and cross-version conflict tests.
 - Exit: every answer citation resolves; unanswerable cases do not invent evidence.
 
-## M5 — Evaluation and optimization
-- [ ] Add retrieval metrics and answer-level checks.
-- [ ] Compare chunk sizes, hybrid weights, and reranking.
-- [ ] Store configuration and dataset versions with every run.
+## M5 - Evaluation and optimization (retrieval complete; answer evaluation designed)
+- [x] Add retrieval metrics and compare fusion strategies.
+- [x] Compare chunk sizes, hybrid weights, and lexical strategies.
+- [x] Store configuration and dataset versions with every retrieval run.
+- [x] Design the answer evaluation dataset, rubric, and report schema.
+- [ ] Execute and score the answer evaluation.
+- [ ] Use answer metrics to justify any generation or context-selection change.
 - Exit: report explains measured trade-offs and regression thresholds.
 
 ## M6 — Security and multi-tenancy

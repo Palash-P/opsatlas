@@ -1,0 +1,186 @@
+{
+  "corpus_version": 1,
+  "corpus_id": "synthetic_v1",
+  "documents": [
+    {
+      "source_key": "api-specs/payments-v3.md",
+      "title": "Payment API v3 Specification (Synthetic)",
+      "source_type": "api_spec",
+      "authority_level": 95,
+      "synthetic": true,
+      "label_source": "content",
+      "manage": "observe",
+      "intended_current_version": 1,
+      "versions": [
+        {
+          "version_number": 1,
+          "path": "api-specs/payments-v3.md",
+          "content_sha256": "90c2d29bbd7b3a8ca2a6d8df41d703b0579f05392abf182b51500f77f2bda99b"
+        }
+      ]
+    },
+    {
+      "source_key": "api-specs/payments.md",
+      "title": "Payments Migration Guide (Synthetic)",
+      "source_type": "api_spec",
+      "authority_level": 90,
+      "synthetic": true,
+      "label_source": "content",
+      "manage": "create",
+      "intended_current_version": 2,
+      "versions": [
+        {
+          "version_number": 1,
+          "path": "api-specs/payments.md",
+          "content_sha256": "dccafbf54e3c52e2f1b58e2924828cb673995884cdfea59955280a3764f56f5a"
+        },
+        {
+          "version_number": 2,
+          "path": "api-specs/payments.v2.md",
+          "content_sha256": "2f82061c846429b445a25e287f7a4999c8dfba3f647f238736a28f7dfb3cfa83"
+        }
+      ]
+    },
+    {
+      "source_key": "postmortems/db-pool-2025-02.md",
+      "title": "PostgreSQL Connection Pool Exhaustion Postmortem (Synthetic)",
+      "source_type": "incident_report",
+      "authority_level": 90,
+      "synthetic": true,
+      "label_source": "content",
+      "manage": "observe",
+      "intended_current_version": 1,
+      "versions": [
+        {
+          "version_number": 1,
+          "path": "postmortems/db-pool-2025-02.md",
+          "content_sha256": "a00094e70898708f7170a4621119c7fcd6be075835143d37a689fec418b593d3"
+        }
+      ]
+    },
+    {
+      "source_key": "runbooks/payment-api.md",
+      "title": "Payment API Troubleshooting (Synthetic)",
+      "source_type": "runbook",
+      "authority_level": 80,
+      "synthetic": true,
+      "label_source": "manifest",
+      "manage": "repair_current",
+      "intended_current_version": 2,
+      "versions": [
+        {
+          "version_number": 1,
+          "path": "runbooks/payment-api.md",
+          "content_sha256": "7002e1d6212957d0a4e8bc7884994ce1b8cd7d20f0de2b802395934077333c61"
+        },
+        {
+          "version_number": 2,
+          "path": "runbooks/payment-api.v2.md",
+          "content_sha256": "45421745e610182ed94bc42482dd7eb5715f00f7dfff07076e2b979553e24a7e"
+        }
+      ]
+    },
+    {
+      "source_key": "runbooks/payment-errors.md",
+      "title": "Payment API Error Codes Runbook (Synthetic)",
+      "source_type": "runbook",
+      "authority_level": 80,
+      "synthetic": true,
+      "label_source": "content",
+      "manage": "observe",
+      "intended_current_version": 1,
+      "versions": [
+        {
+          "version_number": 1,
+          "path": "runbooks/payment-errors.md",
+          "content_sha256": "e87fc9a30dabecf5ddb6c204d3a0ca0b7243bc6a2a13c0aa965ff39d9afa6701"
+        }
+      ]
+    },
+    {
+      "source_key": "runbooks/postgres-pool.md",
+      "title": "PostgreSQL Connection Pool Operations Runbook (Synthetic)",
+      "source_type": "runbook",
+      "authority_level": 85,
+      "synthetic": true,
+      "label_source": "content",
+      "manage": "observe",
+      "intended_current_version": 1,
+      "versions": [
+        {
+          "version_number": 1,
+          "path": "runbooks/postgres-pool.md",
+          "content_sha256": "2ff22149328d24eba29bacff2c6520aa11395b5d8ed8e43f6662ee0781e7749d"
+        }
+      ]
+    },
+    {
+      "source_key": "runbooks/search-deploy.md",
+      "title": "Search Service Deployment Runbook (Synthetic)",
+      "source_type": "runbook",
+      "authority_level": 85,
+      "synthetic": true,
+      "label_source": "content",
+      "manage": "observe",
+      "intended_current_version": 1,
+      "versions": [
+        {
+          "version_number": 1,
+          "path": "runbooks/search-deploy.md",
+          "content_sha256": "0f0de1d3a6d31402ad2ea6f08b8192a582ed910522d0c4e90201e2d64657d5f2"
+        }
+      ]
+    },
+    {
+      "source_key": "runbooks/kafka-consumer-lag.md",
+      "title": "Kafka Consumer Lag Runbook (Synthetic)",
+      "source_type": "runbook",
+      "authority_level": 70,
+      "synthetic": true,
+      "label_source": "content",
+      "manage": "create",
+      "intended_current_version": 1,
+      "versions": [
+        {
+          "version_number": 1,
+          "path": "runbooks/kafka-consumer-lag.md",
+          "content_sha256": "8e8552aef09c3ba273d8d78430d8f09b359a455ca85d70d7ad5693a0dbce2212"
+        }
+      ]
+    },
+    {
+      "source_key": "runbooks/redis-failover.md",
+      "title": "Redis Failover Runbook (Synthetic)",
+      "source_type": "runbook",
+      "authority_level": 70,
+      "synthetic": true,
+      "label_source": "content",
+      "manage": "create",
+      "intended_current_version": 1,
+      "versions": [
+        {
+          "version_number": 1,
+          "path": "runbooks/redis-failover.md",
+          "content_sha256": "ea7f47f2e58e76031c78b6898b4a57ac08447b5021a51e9fdc8f0e283d395687"
+        }
+      ]
+    },
+    {
+      "source_key": "runbooks/incident-escalation.md",
+      "title": "Incident Escalation Process (Synthetic)",
+      "source_type": "runbook",
+      "authority_level": 75,
+      "synthetic": true,
+      "label_source": "content",
+      "manage": "create",
+      "intended_current_version": 1,
+      "versions": [
+        {
+          "version_number": 1,
+          "path": "runbooks/incident-escalation.md",
+          "content_sha256": "59c168a117a7c28b919542b054527e81e3ffb6a914e6e4302709e77fa43b4db1"
+        }
+      ]
+    }
+  ]
+}

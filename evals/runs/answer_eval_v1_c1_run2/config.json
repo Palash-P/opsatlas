@@ -1,0 +1,135 @@
+{
+  "evaluation": "answer_eval_v1",
+  "run_id": "20261106T112007Z",
+  "created_at": "2026-11-06T11:20:07.415497+00:00",
+  "dataset": {
+    "path": "evals\\datasets\\answer_eval_v1.jsonl",
+    "sha256": "68fcd05c7a289d6bf476ec7e29a0ff3d9dfb2f334f052224f18735999f121350",
+    "profile_path": "evals\\datasets\\answer_eval_v1.profile.json",
+    "profile_sha256": "6927fd9f915449270cc549722e9eb3de3f5b8218d362e739835c2cdd4bfd0cdb",
+    "rubric_path": "evals\\answer_eval_v1.scoring_rubric.md",
+    "rubric_sha256": "ec4ba01e8df4d46c9aa90a502424b002f5117fdb753a8e4134bfbdff2b027239",
+    "record_count": 26,
+    "limit_applied": null
+  },
+  "corpus": {
+    "id": "synthetic_v1",
+    "fingerprint": "c5cb44a83cd37560f004692ec4c702d509dde3f958a42966545480ca23fe6408",
+    "synthetic_only": true
+  },
+  "code": {
+    "git": {
+      "head": "4d59a74c9c59f23fd93250d4a570691c280b0f63",
+      "dirty": true,
+      "status_lines": 67
+    },
+    "pipeline_sha256": "12dfb5d42adf0394b43c4fefc1fc8bba386b43dc626735a450a1b31940e31f50",
+    "files": {
+      "app/api/answers.py": "b22a1d8db7ec76367ab64da499bf677410e4c93808e2c2825cc7345541cc2bcf",
+      "app/core/config.py": "1951380364d43836594dc4f1581532d22d249c8fffa5c7508d579fc86e58e19a",
+      "app/services/answer_generation.py": "35f3358efb77b1a0a00e3ea47696427cd4a4b7ff5959eb650a2b048dd7e4a086",
+      "app/services/evidence.py": "30d5df702b476b198e816688595aa937c72f51489184d85d12635cf0016a051e",
+      "app/services/llm_providers.py": "02ba227282040c87c202762f537afb402971b3bf89f03b0f732144cf063202b4",
+      "app/services/retrieval.py": "51039a5b6baf100788cb25d633d30f945135d5d417d62f5a101482c7c485574f",
+      "app/services/embedding_client.py": "2fe92067947f0bbcb8603146f7dfa6e67192978cc174c5803dbcff83460d4bb0",
+      "evals/opencode_provider.py": "8685cd65e352fd163349e3a14c1098615b87d52bf10ac1b802772aa4e4530236"
+    }
+  },
+  "retrieval": {
+    "strategy": "hybrid",
+    "keyword_strategy": "and",
+    "fusion_strategy": "chunk",
+    "semantic_weight": 1.0,
+    "lexical_weight": 1.0,
+    "rrf_k": 60,
+    "limit": 5,
+    "embedding_model": "sentence-transformers/all-MiniLM-L6-v2",
+    "embedding_dimensions": 384,
+    "identifier_weight": 2.0
+  },
+  "evidence": {
+    "context_token_budget": 4000,
+    "max_evidence": 8,
+    "citation_excerpt_chars": 600,
+    "token_estimate": "ceil(len(text) / 4)"
+  },
+  "generation": {
+    "provider": "opencode_cli",
+    "model": "opencode/deepseek-v4.1-flash-free",
+    "requested_model": "opencode/deepseek-v4.1-flash-free",
+    "model_verification": "not_independently_verified",
+    "temperature": 0.0,
+    "temperature_enforced": false,
+    "max_output_tokens": 700,
+    "max_output_tokens_enforced": "soft prompt limit only",
+    "timeout_seconds": 240.0,
+    "max_retries": 2,
+    "retry_backoff_seconds": 15.0,
+    "inter_record_delay_seconds": 3.0,
+    "prompt_version": "grounded_answer_v2",
+    "provider_capabilities": {
+      "temperature": "not_enforced",
+      "max_output_tokens": "soft_prompt_limit",
+      "token_usage": "reported_when_available",
+      "model_verification": "reported_when_available",
+      "deterministic": false
+    },
+    "model_substitution_policy": "No substitution is permitted. The adapter reports the requested model and flags a mismatch if the CLI event stream exposes one."
+  },
+  "tenant_id": "96e52951-46e1-4547-9103-b82de97e6822",
+  "scoring": {
+    "status": "completed",
+    "rubric": "evals\\answer_eval_v1.scoring_rubric.md",
+    "scorers": [
+      {
+        "id": "scorer_a",
+        "model": "opencode/glm-5.3-flash-free",
+        "requested_model": "opencode/glm-5.3-flash-free",
+        "model_verification": "requested_only"
+      },
+      {
+        "id": "scorer_b",
+        "model": "opencode/mimo-v2.6-flash-free",
+        "requested_model": "opencode/mimo-v2.6-flash-free",
+        "model_verification": "requested_only"
+      }
+    ],
+    "configured_scorers": [
+      {
+        "id": "scorer_a",
+        "model": "opencode/glm-5.3-flash-free"
+      },
+      {
+        "id": "scorer_b",
+        "model": "opencode/flint-40b-free"
+      }
+    ],
+    "independence": "Each scorer runs in a separate OpenCode session and receives only the rubric, labels, and prediction. Neither scorer receives the other's scores.",
+    "model_deviations": [
+      {
+        "scorer_id": "scorer_b",
+        "configured": "opencode/flint-40b-free",
+        "used": "opencode/mimo-v2.6-flash-free"
+      }
+    ],
+    "template_disagreements": 6,
+    "adjudicated_disagreements": 6
+  },
+  "notes": [
+    "The OpenCode CLI provider is evaluation-only and is not a production provider.",
+    "Temperature and max output tokens cannot be enforced by the CLI adapter; max output tokens is a soft prompt instruction.",
+    "The corpus is synthetic."
+  ],
+  "latency_summary": {
+    "p50": 5375.0,
+    "p95": 30881.399999999976,
+    "mean": 10283.48,
+    "max": 57727
+  },
+  "provider_attempts_total": 26,
+  "provider_retries": 0,
+  "tokens_estimate": {
+    "input": 51258,
+    "output": 4133
+  }
+}

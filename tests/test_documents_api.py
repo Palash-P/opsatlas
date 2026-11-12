@@ -1,16 +1,17 @@
-from uuid import uuid4
+from uuid import UUID, uuid4
 
 from fastapi.testclient import TestClient
 
 from app.main import app
 
 client = TestClient(app)
+TEST_TENANT_ID = UUID("11111111-1111-4111-8111-111111111111")
 
 
 def test_ingest_endpoint_returns_ingestion_result(monkeypatch) -> None:
     from app.api import documents
 
-    tenant_id = uuid4()
+    tenant_id = TEST_TENANT_ID
     expected = {
         "document_id": str(uuid4()),
         "version_id": str(uuid4()),
@@ -47,7 +48,7 @@ def test_ingest_endpoint_rejects_empty_content() -> None:
     response = client.post(
         "/api/v1/documents/ingest",
         json={
-            "tenant_id": str(uuid4()),
+            "tenant_id": str(TEST_TENANT_ID),
             "source_key": "empty.md",
             "title": "Empty document",
             "source_type": "markdown",

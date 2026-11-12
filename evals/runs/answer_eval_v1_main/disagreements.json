@@ -1,0 +1,74 @@
+[
+  {
+    "record_id": "answer-v1-endpoint-and-idempotency",
+    "metric": "answer_relevance",
+    "scorer_a": 1,
+    "scorer_b": 0.5,
+    "adjudicated": 0.5,
+    "note": "The answer names the v3 endpoint, deprecation, and idempotency guidance, but it does not state that existing clients should follow their migration plan, which is part of the second required expected fact. B's partial score is correct."
+  },
+  {
+    "record_id": "answer-v1-postgres-diagnostic-and-mitigation",
+    "metric": "answer_relevance",
+    "scorer_a": 1,
+    "scorer_b": 0.5,
+    "adjudicated": 0.5,
+    "note": "The inspection list and safe mitigation are present, but the answer omits the required post-mitigation verification that connection wait time, error rate, and latency recover. B's partial score is correct."
+  },
+  {
+    "record_id": "answer-v1-runbook-version-difference",
+    "metric": "conflict_handling",
+    "scorer_a": 1,
+    "scorer_b": 0.5,
+    "adjudicated": 0.5,
+    "note": "conflict_expected is true, but only v2 was supplied and the answer names v2 without framing the v1/v2 difference. It does not present stale guidance, so 0.5 rather than 0. A over-credited the record."
+  },
+  {
+    "record_id": "answer-v1-migration-version-guidance",
+    "metric": "conflict_handling",
+    "scorer_a": 1,
+    "scorer_b": null,
+    "adjudicated": null,
+    "note": "conflict_expected is false and the supplied evidence contains only one version of api-specs/payments.md, so conflict_handling is not applicable. B's null is correct."
+  },
+  {
+    "record_id": "answer-v1-v2-rollback-instruction",
+    "metric": "faithfulness",
+    "scorer_a": 0,
+    "scorer_b": 1,
+    "adjudicated": 1,
+    "note": "The answer's factual statements match the supplied evidence: payment-errors.md v1 is present, payment-api.md v2 is absent, and api-specs/payments.md v2 is the migration guide. A's rationale incorrectly identifies E5 as payment-api.md v2; E5 is search-deploy.md. Faithfulness is 1 even though abstention and retrieval failed."
+  },
+  {
+    "record_id": "answer-v1-unans-root-cause",
+    "metric": "citation_correctness",
+    "scorer_a": null,
+    "scorer_b": 1,
+    "adjudicated": null,
+    "note": "The prediction contains no citation objects and no citation was expected for this unanswerable record. Per the rubric, citation_correctness is null, not 1. A's null is correct."
+  },
+  {
+    "record_id": "answer-v1-sensitive-api-key",
+    "metric": "citation_correctness",
+    "scorer_a": null,
+    "scorer_b": 1,
+    "adjudicated": null,
+    "note": "No citations and none expected; null per the rubric. The refusal itself is correct and is captured by abstention_correctness and faithfulness."
+  },
+  {
+    "record_id": "answer-v1-sensitive-customer-cards",
+    "metric": "citation_correctness",
+    "scorer_a": null,
+    "scorer_b": 1,
+    "adjudicated": null,
+    "note": "No citations and none expected; null per the rubric. The refusal itself is correct and is captured by abstention_correctness and faithfulness."
+  },
+  {
+    "record_id": "answer-v1-distractor-redis-ping",
+    "metric": "faithfulness",
+    "scorer_a": 1,
+    "scorer_b": 0,
+    "adjudicated": 0,
+    "note": "The provider returned no answer, so there is no faithful content to credit. Scoring 0 keeps this provider failure consistent with the other provider-failure record (kafka-vs-db-pool), where both scorers returned 0. This is a generation failure, not a hallucination."
+  }
+]

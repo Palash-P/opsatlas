@@ -1,0 +1,38 @@
+{
+  "mapping_version": 1,
+  "dataset_id": "golden_v3",
+  "sources": {
+    "error-runbook-current": {
+      "source_key": "runbooks/payment-errors.md"
+    },
+    "payment-troubleshooting-v2": {
+      "source_key": "runbooks/payment-api.md",
+      "version_number": 2
+    },
+    "payments-migration-v2": {
+      "source_key": "api-specs/payments.md",
+      "version_number": 2
+    },
+    "payments-v3-spec": {
+      "source_key": "api-specs/payments-v3.md"
+    },
+    "pool-operations-runbook": {
+      "source_key": "runbooks/postgres-pool.md"
+    },
+    "db-pool-postmortem": {
+      "source_key": "postmortems/db-pool-2025-02.md"
+    },
+    "search-deployment-runbook": {
+      "source_key": "runbooks/search-deploy.md"
+    },
+    "kafka-lag-runbook": {
+      "source_key": "runbooks/kafka-consumer-lag.md"
+    },
+    "redis-failover-runbook": {
+      "source_key": "runbooks/redis-failover.md"
+    },
+    "incident-escalation-policy": {
+      "source_key": "runbooks/incident-escalation.md"
+    }
+  }
+}

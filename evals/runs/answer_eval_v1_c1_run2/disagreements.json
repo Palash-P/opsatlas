@@ -1,0 +1,50 @@
+[
+  {
+    "record_id": "answer-v1-deploy-outage-escalation",
+    "metric": "answer_relevance",
+    "scorer_a": 1,
+    "scorer_b": 0.5,
+    "adjudicated": 1.0,
+    "note": "Both required facts are present: the v2 runbook review/rollback guidance and the payment on-call escalation. The disputed E5 citation is a citation-correctness issue, not a missing required fact."
+  },
+  {
+    "record_id": "answer-v1-deploy-outage-escalation",
+    "metric": "citation_correctness",
+    "scorer_a": 1,
+    "scorer_b": 0.5,
+    "adjudicated": 0.5,
+    "note": "The PAY-503 checklist is attributed to E1/E5, but E5 is the PAY-400/409 chunk and does not contain the PAY-503 checks. One attribution is weak."
+  },
+  {
+    "record_id": "answer-v1-postgres-diagnostic-and-mitigation",
+    "metric": "answer_relevance",
+    "scorer_a": 1,
+    "scorer_b": 0.5,
+    "adjudicated": 0.5,
+    "note": "The inspection list and safe concurrency reduction are present, but the required post-mitigation verification of connection wait time, error rate, and latency recovery is omitted."
+  },
+  {
+    "record_id": "answer-v1-runbook-version-difference",
+    "metric": "answer_relevance",
+    "scorer_a": 1,
+    "scorer_b": 0.5,
+    "adjudicated": 0.5,
+    "note": "Identifies v2 and the database-connectivity step, but cannot state the required change from v1 because v1 was not supplied. The answer explicitly explains that limitation, so it is partial rather than incorrect."
+  },
+  {
+    "record_id": "answer-v1-runbook-version-difference",
+    "metric": "conflict_handling",
+    "scorer_a": 1,
+    "scorer_b": 0.5,
+    "adjudicated": 1.0,
+    "note": "Names v2, attributes the step only to v2, and explicitly states that no earlier revision was supplied. No stale guidance is presented as current; the missing v1 is an evidence limitation, not a version-attribution defect."
+  },
+  {
+    "record_id": "answer-v1-unans-root-cause",
+    "metric": "faithfulness",
+    "scorer_a": 1,
+    "scorer_b": null,
+    "adjudicated": 0.0,
+    "note": "Generation failed before producing an abstention or answer, so there is no content to credit as faithful. This matches the prior failure-record policy and keeps faithfulness from rewarding missing output."
+  }
+]

@@ -1,0 +1,23 @@
+{
+  "records_total": 6,
+  "records_ok": 6,
+  "records_error": 0,
+  "provider_failure_rate": 0.0,
+  "abstained": 0,
+  "abstention_rate": 0.0,
+  "conflicts": 1,
+  "provider_attempts_total": 6,
+  "provider_retries": 0,
+  "latency_ms": {
+    "p50": 12269.5,
+    "p95": 22083.25,
+    "mean": 13448.5,
+    "max": 23233
+  },
+  "tokens_estimate": {
+    "input": 12533,
+    "output": 1052
+  },
+  "provider_usage_reported": 0,
+  "error_types": []
+}

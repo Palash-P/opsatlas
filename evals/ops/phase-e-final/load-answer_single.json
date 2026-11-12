@@ -1,0 +1,112 @@
+{
+  "generated_at": "2026-11-10T11:38:11.750285+00:00",
+  "duration_seconds": 2.744,
+  "throughput_rps": 10.93,
+  "successful_throughput_rps": 10.93,
+  "counts": {
+    "total": 30,
+    "ok": 30,
+    "errors": 0,
+    "client_errors": 0,
+    "canary_violations": 0
+  },
+  "error_rate": 0.0,
+  "status_counts": {
+    "200": 30
+  },
+  "latency_ms": {
+    "count": 30,
+    "p50_ms": 89.03,
+    "p95_ms": 105.3,
+    "p99_ms": 112.08,
+    "mean_ms": 91.4,
+    "min_ms": 80.1,
+    "max_ms": 114.61
+  },
+  "successful_latency_ms": {
+    "count": 30,
+    "p50_ms": 89.03,
+    "p95_ms": 105.3,
+    "p99_ms": 112.08,
+    "mean_ms": 91.4,
+    "min_ms": 80.1,
+    "max_ms": 114.61
+  },
+  "by_label": {
+    "a": {
+      "count": 30,
+      "ok": 30,
+      "error_rate": 0.0,
+      "latency": {
+        "count": 30,
+        "p50_ms": 89.03,
+        "p95_ms": 105.3,
+        "p99_ms": 112.08,
+        "mean_ms": 91.4,
+        "min_ms": 80.1,
+        "max_ms": 114.61
+      }
+    }
+  },
+  "config": {
+    "base_url": "http://127.0.0.1:8010",
+    "scenario": "answer",
+    "inner_scenario": "answer",
+    "requests": 30,
+    "concurrency": 1,
+    "warmup": 2,
+    "timeout_s": 30.0,
+    "request_prefix": "ov-answer-single-",
+    "labels": [
+      "a"
+    ]
+  },
+  "error_samples": [],
+  "stage_latency_ms": {
+    "matched_requests": 30,
+    "recorded_requests": 30,
+    "non_json_log_lines": 0,
+    "retrieval": {
+      "count": 30,
+      "p50_ms": 78.0,
+      "p95_ms": 92.55,
+      "p99_ms": 100.1,
+      "mean_ms": 80.53,
+      "min_ms": 72.0,
+      "max_ms": 103.0
+    },
+    "evidence": {
+      "count": 30,
+      "p50_ms": 0.0,
+      "p95_ms": 0.0,
+      "p99_ms": 0.0,
+      "mean_ms": 0.0,
+      "min_ms": 0.0,
+      "max_ms": 0.0
+    },
+    "generation": {
+      "count": 30,
+      "p50_ms": 0.0,
+      "p95_ms": 0.0,
+      "p99_ms": 0.0,
+      "mean_ms": 0.0,
+      "min_ms": 0.0,
+      "max_ms": 0.0
+    },
+    "total": {
+      "count": 30,
+      "p50_ms": 81.0,
+      "p95_ms": 97.1,
+      "p99_ms": 104.39,
+      "mean_ms": 84.0,
+      "min_ms": 74.0,
+      "max_ms": 107.0
+    }
+  },
+  "log_validation": {
+    "passed": true,
+    "expectations_checked": 30,
+    "failures": 0,
+    "forbidden_hits": 0
+  }
+}

@@ -1,16 +1,17 @@
-from uuid import uuid4
+from uuid import UUID, uuid4
 
 from fastapi.testclient import TestClient
 
 from app.main import app
 
 client = TestClient(app)
+TEST_TENANT_ID = UUID("11111111-1111-4111-8111-111111111111")
 
 
 def test_search_endpoint_returns_results(monkeypatch) -> None:
     from app.api import search
 
-    tenant_id = uuid4()
+    tenant_id = TEST_TENANT_ID
     expected = [{
         "chunk_id": uuid4(),
         "document_id": uuid4(),
@@ -51,7 +52,7 @@ def test_search_endpoint_returns_results(monkeypatch) -> None:
 def test_search_endpoint_rejects_blank_query() -> None:
     response = client.post(
         "/api/v1/search",
-        json={"tenant_id": str(uuid4()), "query": "   "},
+        json={"tenant_id": str(TEST_TENANT_ID), "query": "   "},
     )
 
     assert response.status_code == 422
@@ -61,7 +62,7 @@ def test_search_endpoint_rejects_limit_above_maximum() -> None:
     response = client.post(
         "/api/v1/search",
         json={
-            "tenant_id": str(uuid4()),
+            "tenant_id": str(TEST_TENANT_ID),
             "query": "payment errors",
             "limit": 21,
         },
@@ -81,7 +82,7 @@ def test_search_endpoint_maps_embedding_service_failure(monkeypatch) -> None:
 
     response = client.post(
         "/api/v1/search",
-        json={"tenant_id": str(uuid4()), "query": "payment errors"},
+        json={"tenant_id": str(TEST_TENANT_ID), "query": "payment errors"},
     )
 
     assert response.status_code == 503
@@ -91,7 +92,7 @@ def test_search_endpoint_maps_embedding_service_failure(monkeypatch) -> None:
 def test_hybrid_search_endpoint_returns_fused_results(monkeypatch) -> None:
     from app.api import search
 
-    tenant_id = uuid4()
+    tenant_id = TEST_TENANT_ID
     expected = [{
         "chunk_id": uuid4(),
         "document_id": uuid4(),
@@ -138,7 +139,7 @@ def test_hybrid_search_endpoint_returns_fused_results(monkeypatch) -> None:
 def test_hybrid_search_endpoint_rejects_blank_query() -> None:
     response = client.post(
         "/api/v1/search/hybrid",
-        json={"tenant_id": str(uuid4()), "query": "   "},
+        json={"tenant_id": str(TEST_TENANT_ID), "query": "   "},
     )
 
     assert response.status_code == 422
@@ -148,7 +149,7 @@ def test_hybrid_search_endpoint_rejects_limit_above_maximum() -> None:
     response = client.post(
         "/api/v1/search/hybrid",
         json={
-            "tenant_id": str(uuid4()),
+            "tenant_id": str(TEST_TENANT_ID),
             "query": "payment errors",
             "limit": 21,
         },
@@ -168,7 +169,7 @@ def test_hybrid_search_endpoint_maps_embedding_service_failure(monkeypatch) -> N
 
     response = client.post(
         "/api/v1/search/hybrid",
-        json={"tenant_id": str(uuid4()), "query": "payment errors"},
+        json={"tenant_id": str(TEST_TENANT_ID), "query": "payment errors"},
     )
 
     assert response.status_code == 503

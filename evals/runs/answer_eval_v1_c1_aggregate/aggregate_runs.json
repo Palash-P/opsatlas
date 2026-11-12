@@ -1,0 +1,661 @@
+{
+  "run_count": 3,
+  "comparability": {
+    "frozen_configuration_held": true,
+    "deviations": {},
+    "note": "Runs with different dataset hashes, corpus fingerprints, prompt versions, or retrieval configurations are reported but are not directly comparable."
+  },
+  "metric_summary": {
+    "answer_relevance": {
+      "n": 3,
+      "mean": 0.9167,
+      "min": 0.8846,
+      "max": 0.9423,
+      "stdev": 0.0294
+    },
+    "faithfulness": {
+      "n": 3,
+      "mean": 0.9359,
+      "min": 0.9231,
+      "max": 0.9615,
+      "stdev": 0.0222
+    },
+    "citation_correctness": {
+      "n": 3,
+      "mean": 0.925,
+      "min": 0.875,
+      "max": 0.975,
+      "stdev": 0.05
+    },
+    "citation_completeness": {
+      "n": 3,
+      "mean": 1.0,
+      "min": 1.0,
+      "max": 1.0,
+      "stdev": 0.0
+    },
+    "abstention_correctness": {
+      "n": 3,
+      "mean": 0.9487,
+      "min": 0.9231,
+      "max": 0.9615,
+      "stdev": 0.0222
+    },
+    "conflict_handling": {
+      "n": 3,
+      "mean": 1.0,
+      "min": 1.0,
+      "max": 1.0,
+      "stdev": 0.0
+    }
+  },
+  "provider_failure": {
+    "total_records": 78,
+    "total_errors": 4,
+    "total_provider_failures": 0,
+    "total_generation_contract_failures": 4,
+    "overall_rate": 0.0,
+    "generation_contract_rate": 0.0513,
+    "per_run": {
+      "20261105T202032Z": {
+        "records": 26,
+        "errors": 2,
+        "provider_failures": 0,
+        "generation_contract_failures": 2,
+        "rate": 0.0,
+        "attempts": 26,
+        "retries": 0
+      },
+      "20261106T112007Z": {
+        "records": 26,
+        "errors": 1,
+        "provider_failures": 0,
+        "generation_contract_failures": 1,
+        "rate": 0.0,
+        "attempts": 26,
+        "retries": 0
+      },
+      "20261107T083709Z": {
+        "records": 26,
+        "errors": 1,
+        "provider_failures": 0,
+        "generation_contract_failures": 1,
+        "rate": 0.0,
+        "attempts": 26,
+        "retries": 0
+      }
+    }
+  },
+  "latency_ms": {
+    "p50": {
+      "n": 3,
+      "mean": 6963.8333,
+      "min": 5375.0,
+      "max": 9128.5,
+      "stdev": 1941.875
+    },
+    "p95": {
+      "n": 3,
+      "mean": 32179.6333,
+      "min": 30881.4,
+      "max": 33193.0,
+      "stdev": 1181.8356
+    },
+    "mean": {
+      "n": 3,
+      "mean": 11338.4033,
+      "min": 10283.48,
+      "max": 11959.48,
+      "stdev": 918.3742
+    },
+    "max": {
+      "n": 3,
+      "mean": 66883.0,
+      "min": 47964.0,
+      "max": 94958.0,
+      "stdev": 24798.856
+    }
+  },
+  "tokens_estimate": {
+    "input_total": 151730,
+    "output_total": 13291,
+    "per_run": {
+      "20261105T202032Z": {
+        "input": 49271,
+        "output": 4497
+      },
+      "20261106T112007Z": {
+        "input": 51258,
+        "output": 4133
+      },
+      "20261107T083709Z": {
+        "input": 51201,
+        "output": 4661
+      }
+    }
+  },
+  "failure_counts": {
+    "citation_mismatch": {
+      "total": 9,
+      "per_run": {
+        "20261105T202032Z": 5,
+        "20261106T112007Z": 1,
+        "20261107T083709Z": 3
+      }
+    },
+    "incomplete_generation": {
+      "total": 7,
+      "per_run": {
+        "20261105T202032Z": 2,
+        "20261106T112007Z": 3,
+        "20261107T083709Z": 2
+      }
+    }
+  },
+  "scorer_disagreements": {
+    "total": 21,
+    "per_run": {
+      "20261105T202032Z": 8,
+      "20261106T112007Z": 6,
+      "20261107T083709Z": 7
+    }
+  },
+  "scorer_models": {
+    "20261105T202032Z": {
+      "actual": {
+        "scorer_a": "opencode/glm-5.3-flash-free",
+        "scorer_b": "opencode/mimo-v2.6-flash-free"
+      },
+      "configured": {
+        "scorer_a": "opencode/glm-5.3-flash-free",
+        "scorer_b": "opencode/flint-40b-free"
+      },
+      "deviations": [
+        {
+          "scorer_id": "scorer_b",
+          "configured": "opencode/flint-40b-free",
+          "used": "opencode/mimo-v2.6-flash-free"
+        }
+      ]
+    },
+    "20261106T112007Z": {
+      "actual": {
+        "scorer_a": "opencode/glm-5.3-flash-free",
+        "scorer_b": "opencode/mimo-v2.6-flash-free"
+      },
+      "configured": {
+        "scorer_a": "opencode/glm-5.3-flash-free",
+        "scorer_b": "opencode/flint-40b-free"
+      },
+      "deviations": [
+        {
+          "scorer_id": "scorer_b",
+          "configured": "opencode/flint-40b-free",
+          "used": "opencode/mimo-v2.6-flash-free"
+        }
+      ]
+    },
+    "20261107T083709Z": {
+      "actual": {
+        "scorer_a": "opencode/glm-5.3-flash-free",
+        "scorer_b": "opencode/mimo-v2.6-flash-free"
+      },
+      "configured": {
+        "scorer_a": "opencode/glm-5.3-flash-free",
+        "scorer_b": "opencode/flint-40b-free"
+      },
+      "deviations": [
+        {
+          "scorer_id": "scorer_b",
+          "configured": "opencode/flint-40b-free",
+          "used": "opencode/mimo-v2.6-flash-free"
+        }
+      ]
+    }
+  },
+  "runs": [
+    {
+      "run_id": "20261105T202032Z",
+      "run_directory": "evals\\runs\\answer_eval_v1_c1_run1",
+      "status": "completed",
+      "dataset_sha256": "68fcd05c7a289d6bf476ec7e29a0ff3d9dfb2f334f052224f18735999f121350",
+      "corpus_fingerprint": "c5cb44a83cd37560f004692ec4c702d509dde3f958a42966545480ca23fe6408",
+      "prompt_version": "grounded_answer_v2",
+      "pipeline_sha256": "12dfb5d42adf0394b43c4fefc1fc8bba386b43dc626735a450a1b31940e31f50",
+      "resume": null,
+      "retrieval_config": {
+        "strategy": "hybrid",
+        "keyword_strategy": "and",
+        "fusion_strategy": "chunk",
+        "semantic_weight": 1.0,
+        "lexical_weight": 1.0,
+        "rrf_k": 60,
+        "limit": 5,
+        "embedding_model": "sentence-transformers/all-MiniLM-L6-v2",
+        "embedding_dimensions": 384,
+        "identifier_weight": 2.0
+      },
+      "generation": {
+        "provider": "opencode_cli",
+        "model": "opencode/deepseek-v4.1-flash-free",
+        "requested_model": "opencode/deepseek-v4.1-flash-free",
+        "observed_models": [
+          "opencode/deepseek-v4.1-flash-free"
+        ],
+        "observed_providers": [
+          "opencode_cli"
+        ],
+        "temperature": 0.0,
+        "temperature_enforced": false,
+        "max_output_tokens": 700,
+        "max_output_tokens_enforced": "soft prompt limit only",
+        "provider_capabilities": {
+          "temperature": "not_enforced",
+          "max_output_tokens": "soft_prompt_limit",
+          "token_usage": "reported_when_available",
+          "model_verification": "reported_when_available",
+          "deterministic": false
+        }
+      },
+      "records": 26,
+      "records_ok": 24,
+      "records_error": 2,
+      "provider_failures": 0,
+      "generation_contract_failures": 2,
+      "provider_failure_rate": 0.0,
+      "provider_attempts_total": 26,
+      "provider_retries": 0,
+      "metrics": {
+        "answer_relevance": 0.8846,
+        "faithfulness": 0.9231,
+        "citation_correctness": 0.875,
+        "citation_completeness": 1.0,
+        "abstention_correctness": 0.9231,
+        "conflict_handling": 1.0
+      },
+      "latency_ms": {
+        "p50": 9128.5,
+        "p95": 32464.49999999996,
+        "mean": 11772.25,
+        "max": 47964
+      },
+      "tokens_estimate": {
+        "input": 49271,
+        "output": 4497
+      },
+      "provider_usage_reported": 1,
+      "failure_counts": {
+        "citation_mismatch": 5,
+        "incomplete_generation": 2
+      },
+      "scorer_models": {
+        "scorer_a": "opencode/glm-5.3-flash-free",
+        "scorer_b": "opencode/mimo-v2.6-flash-free"
+      },
+      "configured_scorer_models": {
+        "scorer_a": "opencode/glm-5.3-flash-free",
+        "scorer_b": "opencode/flint-40b-free"
+      },
+      "scorer_model_deviations": [
+        {
+          "scorer_id": "scorer_b",
+          "configured": "opencode/flint-40b-free",
+          "used": "opencode/mimo-v2.6-flash-free"
+        }
+      ],
+      "scorer_disagreements": 8,
+      "inter_scorer_agreement": {
+        "records": 156,
+        "exact": 148,
+        "exact_rate": 0.9487,
+        "per_metric": {
+          "answer_relevance": {
+            "records": 26,
+            "exact": 24,
+            "exact_rate": 0.9231,
+            "both_scored": 26,
+            "null_mismatch": 0,
+            "mean_absolute_difference": 0.0385
+          },
+          "faithfulness": {
+            "records": 26,
+            "exact": 24,
+            "exact_rate": 0.9231,
+            "both_scored": 26,
+            "null_mismatch": 0,
+            "mean_absolute_difference": 0.0769
+          },
+          "citation_correctness": {
+            "records": 26,
+            "exact": 23,
+            "exact_rate": 0.8846,
+            "both_scored": 20,
+            "null_mismatch": 0,
+            "mean_absolute_difference": 0.075
+          },
+          "citation_completeness": {
+            "records": 26,
+            "exact": 26,
+            "exact_rate": 1.0,
+            "both_scored": 20,
+            "null_mismatch": 0,
+            "mean_absolute_difference": 0.0
+          },
+          "abstention_correctness": {
+            "records": 26,
+            "exact": 26,
+            "exact_rate": 1.0,
+            "both_scored": 26,
+            "null_mismatch": 0,
+            "mean_absolute_difference": 0.0
+          },
+          "conflict_handling": {
+            "records": 26,
+            "exact": 25,
+            "exact_rate": 0.9615,
+            "both_scored": 2,
+            "null_mismatch": 0,
+            "mean_absolute_difference": 0.25
+          }
+        }
+      }
+    },
+    {
+      "run_id": "20261106T112007Z",
+      "run_directory": "evals\\runs\\answer_eval_v1_c1_run2",
+      "status": "completed",
+      "dataset_sha256": "68fcd05c7a289d6bf476ec7e29a0ff3d9dfb2f334f052224f18735999f121350",
+      "corpus_fingerprint": "c5cb44a83cd37560f004692ec4c702d509dde3f958a42966545480ca23fe6408",
+      "prompt_version": "grounded_answer_v2",
+      "pipeline_sha256": "12dfb5d42adf0394b43c4fefc1fc8bba386b43dc626735a450a1b31940e31f50",
+      "resume": null,
+      "retrieval_config": {
+        "strategy": "hybrid",
+        "keyword_strategy": "and",
+        "fusion_strategy": "chunk",
+        "semantic_weight": 1.0,
+        "lexical_weight": 1.0,
+        "rrf_k": 60,
+        "limit": 5,
+        "embedding_model": "sentence-transformers/all-MiniLM-L6-v2",
+        "embedding_dimensions": 384,
+        "identifier_weight": 2.0
+      },
+      "generation": {
+        "provider": "opencode_cli",
+        "model": "opencode/deepseek-v4.1-flash-free",
+        "requested_model": "opencode/deepseek-v4.1-flash-free",
+        "observed_models": [
+          "opencode/deepseek-v4.1-flash-free"
+        ],
+        "observed_providers": [
+          "opencode_cli"
+        ],
+        "temperature": 0.0,
+        "temperature_enforced": false,
+        "max_output_tokens": 700,
+        "max_output_tokens_enforced": "soft prompt limit only",
+        "provider_capabilities": {
+          "temperature": "not_enforced",
+          "max_output_tokens": "soft_prompt_limit",
+          "token_usage": "reported_when_available",
+          "model_verification": "reported_when_available",
+          "deterministic": false
+        }
+      },
+      "records": 26,
+      "records_ok": 25,
+      "records_error": 1,
+      "provider_failures": 0,
+      "generation_contract_failures": 1,
+      "provider_failure_rate": 0.0,
+      "provider_attempts_total": 26,
+      "provider_retries": 0,
+      "metrics": {
+        "answer_relevance": 0.9231,
+        "faithfulness": 0.9615,
+        "citation_correctness": 0.975,
+        "citation_completeness": 1.0,
+        "abstention_correctness": 0.9615,
+        "conflict_handling": 1.0
+      },
+      "latency_ms": {
+        "p50": 5375.0,
+        "p95": 30881.399999999976,
+        "mean": 10283.48,
+        "max": 57727
+      },
+      "tokens_estimate": {
+        "input": 51258,
+        "output": 4133
+      },
+      "provider_usage_reported": 0,
+      "failure_counts": {
+        "citation_mismatch": 1,
+        "incomplete_generation": 3
+      },
+      "scorer_models": {
+        "scorer_a": "opencode/glm-5.3-flash-free",
+        "scorer_b": "opencode/mimo-v2.6-flash-free"
+      },
+      "configured_scorer_models": {
+        "scorer_a": "opencode/glm-5.3-flash-free",
+        "scorer_b": "opencode/flint-40b-free"
+      },
+      "scorer_model_deviations": [
+        {
+          "scorer_id": "scorer_b",
+          "configured": "opencode/flint-40b-free",
+          "used": "opencode/mimo-v2.6-flash-free"
+        }
+      ],
+      "scorer_disagreements": 6,
+      "inter_scorer_agreement": {
+        "records": 156,
+        "exact": 150,
+        "exact_rate": 0.9615,
+        "per_metric": {
+          "answer_relevance": {
+            "records": 26,
+            "exact": 23,
+            "exact_rate": 0.8846,
+            "both_scored": 26,
+            "null_mismatch": 0,
+            "mean_absolute_difference": 0.0577
+          },
+          "faithfulness": {
+            "records": 26,
+            "exact": 25,
+            "exact_rate": 0.9615,
+            "both_scored": 25,
+            "null_mismatch": 1,
+            "mean_absolute_difference": 0.0
+          },
+          "citation_correctness": {
+            "records": 26,
+            "exact": 25,
+            "exact_rate": 0.9615,
+            "both_scored": 20,
+            "null_mismatch": 0,
+            "mean_absolute_difference": 0.025
+          },
+          "citation_completeness": {
+            "records": 26,
+            "exact": 26,
+            "exact_rate": 1.0,
+            "both_scored": 20,
+            "null_mismatch": 0,
+            "mean_absolute_difference": 0.0
+          },
+          "abstention_correctness": {
+            "records": 26,
+            "exact": 26,
+            "exact_rate": 1.0,
+            "both_scored": 26,
+            "null_mismatch": 0,
+            "mean_absolute_difference": 0.0
+          },
+          "conflict_handling": {
+            "records": 26,
+            "exact": 25,
+            "exact_rate": 0.9615,
+            "both_scored": 2,
+            "null_mismatch": 0,
+            "mean_absolute_difference": 0.25
+          }
+        }
+      }
+    },
+    {
+      "run_id": "20261107T083709Z",
+      "run_directory": "evals\\runs\\answer_eval_v1_c1_run3",
+      "status": "completed",
+      "dataset_sha256": "68fcd05c7a289d6bf476ec7e29a0ff3d9dfb2f334f052224f18735999f121350",
+      "corpus_fingerprint": "c5cb44a83cd37560f004692ec4c702d509dde3f958a42966545480ca23fe6408",
+      "prompt_version": "grounded_answer_v2",
+      "pipeline_sha256": "12dfb5d42adf0394b43c4fefc1fc8bba386b43dc626735a450a1b31940e31f50",
+      "resume": {
+        "enabled": true,
+        "previous_run_id": "20261107T083458Z",
+        "reused_records": 11,
+        "rerun_records": 15
+      },
+      "retrieval_config": {
+        "strategy": "hybrid",
+        "keyword_strategy": "and",
+        "fusion_strategy": "chunk",
+        "semantic_weight": 1.0,
+        "lexical_weight": 1.0,
+        "rrf_k": 60,
+        "limit": 5,
+        "embedding_model": "sentence-transformers/all-MiniLM-L6-v2",
+        "embedding_dimensions": 384,
+        "identifier_weight": 2.0
+      },
+      "generation": {
+        "provider": "opencode_cli",
+        "model": "opencode/deepseek-v4.1-flash-free",
+        "requested_model": "opencode/deepseek-v4.1-flash-free",
+        "observed_models": [
+          "opencode/deepseek-v4.1-flash-free"
+        ],
+        "observed_providers": [
+          "opencode_cli"
+        ],
+        "temperature": 0.0,
+        "temperature_enforced": false,
+        "max_output_tokens": 700,
+        "max_output_tokens_enforced": "soft prompt limit only",
+        "provider_capabilities": {
+          "temperature": "not_enforced",
+          "max_output_tokens": "soft_prompt_limit",
+          "token_usage": "reported_when_available",
+          "model_verification": "reported_when_available",
+          "deterministic": false
+        }
+      },
+      "records": 26,
+      "records_ok": 25,
+      "records_error": 1,
+      "provider_failures": 0,
+      "generation_contract_failures": 1,
+      "provider_failure_rate": 0.0,
+      "provider_attempts_total": 26,
+      "provider_retries": 0,
+      "metrics": {
+        "answer_relevance": 0.9423,
+        "faithfulness": 0.9231,
+        "citation_correctness": 0.925,
+        "citation_completeness": 1.0,
+        "abstention_correctness": 0.9615,
+        "conflict_handling": 1.0
+      },
+      "latency_ms": {
+        "p50": 6388.0,
+        "p95": 33192.999999999956,
+        "mean": 11959.48,
+        "max": 94958
+      },
+      "tokens_estimate": {
+        "input": 51201,
+        "output": 4661
+      },
+      "provider_usage_reported": 0,
+      "failure_counts": {
+        "citation_mismatch": 3,
+        "incomplete_generation": 2
+      },
+      "scorer_models": {
+        "scorer_a": "opencode/glm-5.3-flash-free",
+        "scorer_b": "opencode/mimo-v2.6-flash-free"
+      },
+      "configured_scorer_models": {
+        "scorer_a": "opencode/glm-5.3-flash-free",
+        "scorer_b": "opencode/flint-40b-free"
+      },
+      "scorer_model_deviations": [
+        {
+          "scorer_id": "scorer_b",
+          "configured": "opencode/flint-40b-free",
+          "used": "opencode/mimo-v2.6-flash-free"
+        }
+      ],
+      "scorer_disagreements": 7,
+      "inter_scorer_agreement": {
+        "records": 156,
+        "exact": 149,
+        "exact_rate": 0.9551,
+        "per_metric": {
+          "answer_relevance": {
+            "records": 26,
+            "exact": 25,
+            "exact_rate": 0.9615,
+            "both_scored": 26,
+            "null_mismatch": 0,
+            "mean_absolute_difference": 0.0192
+          },
+          "faithfulness": {
+            "records": 26,
+            "exact": 22,
+            "exact_rate": 0.8462,
+            "both_scored": 25,
+            "null_mismatch": 1,
+            "mean_absolute_difference": 0.06
+          },
+          "citation_correctness": {
+            "records": 26,
+            "exact": 24,
+            "exact_rate": 0.9231,
+            "both_scored": 20,
+            "null_mismatch": 0,
+            "mean_absolute_difference": 0.05
+          },
+          "citation_completeness": {
+            "records": 26,
+            "exact": 26,
+            "exact_rate": 1.0,
+            "both_scored": 20,
+            "null_mismatch": 0,
+            "mean_absolute_difference": 0.0
+          },
+          "abstention_correctness": {
+            "records": 26,
+            "exact": 26,
+            "exact_rate": 1.0,
+            "both_scored": 26,
+            "null_mismatch": 0,
+            "mean_absolute_difference": 0.0
+          },
+          "conflict_handling": {
+            "records": 26,
+            "exact": 26,
+            "exact_rate": 1.0,
+            "both_scored": 2,
+            "null_mismatch": 0,
+            "mean_absolute_difference": 0.0
+          }
+        }
+      }
+    }
+  ]
+}

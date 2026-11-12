@@ -1,0 +1,95 @@
+{
+  "scorer_a": {
+    "model": "opencode/glm-5.3-flash-free",
+    "aggregate": {
+      "answer_relevance": 0.8846,
+      "faithfulness": 0.9231,
+      "citation_correctness": 0.85,
+      "citation_completeness": 0.8947,
+      "abstention_correctness": 0.8846,
+      "conflict_handling": 1.0,
+      "n": 26
+    },
+    "claim_coverage": {
+      "claims": 65,
+      "supported": 64,
+      "unsupported": 0,
+      "uncited": 1,
+      "coverage": 0.9846
+    }
+  },
+  "scorer_b": {
+    "model": "opencode/mimo-v2.6-flash-free",
+    "aggregate": {
+      "answer_relevance": 0.8462,
+      "faithfulness": 0.9231,
+      "citation_correctness": 0.8696,
+      "citation_completeness": 0.8947,
+      "abstention_correctness": 0.8846,
+      "conflict_handling": 0.75,
+      "n": 26
+    },
+    "claim_coverage": {
+      "claims": 64,
+      "supported": 64,
+      "unsupported": 0,
+      "uncited": 0,
+      "coverage": 1.0
+    }
+  },
+  "inter_scorer_agreement": {
+    "records": 156,
+    "exact": 147,
+    "exact_rate": 0.9423,
+    "per_metric": {
+      "answer_relevance": {
+        "records": 26,
+        "exact": 24,
+        "exact_rate": 0.9231,
+        "both_scored": 26,
+        "null_mismatch": 0,
+        "mean_absolute_difference": 0.0385
+      },
+      "faithfulness": {
+        "records": 26,
+        "exact": 24,
+        "exact_rate": 0.9231,
+        "both_scored": 26,
+        "null_mismatch": 0,
+        "mean_absolute_difference": 0.0769
+      },
+      "citation_correctness": {
+        "records": 26,
+        "exact": 23,
+        "exact_rate": 0.8846,
+        "both_scored": 20,
+        "null_mismatch": 3,
+        "mean_absolute_difference": 0.0
+      },
+      "citation_completeness": {
+        "records": 26,
+        "exact": 26,
+        "exact_rate": 1.0,
+        "both_scored": 19,
+        "null_mismatch": 0,
+        "mean_absolute_difference": 0.0
+      },
+      "abstention_correctness": {
+        "records": 26,
+        "exact": 26,
+        "exact_rate": 1.0,
+        "both_scored": 26,
+        "null_mismatch": 0,
+        "mean_absolute_difference": 0.0
+      },
+      "conflict_handling": {
+        "records": 26,
+        "exact": 24,
+        "exact_rate": 0.9231,
+        "both_scored": 2,
+        "null_mismatch": 1,
+        "mean_absolute_difference": 0.25
+      }
+    }
+  }
+}

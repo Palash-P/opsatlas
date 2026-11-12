@@ -1,0 +1,22 @@
+
+{
+  "mapping_version": 1,
+  "dataset_id": "golden_v0",
+  "sources": {
+    "runbook-payments-errors-v1": {
+      "source_key": "runbooks/payment-errors.md"
+    },
+    "postmortem-db-pool-2025-02": {
+      "source_key": "postmortems/db-pool-2025-02.md"
+    },
+    "runbook-postgres-pool-v2": {
+      "source_key": "runbooks/postgres-pool.md"
+    },
+    "api-payments-v3": {
+      "source_key": "api-specs/payments-v3.md"
+    },
+    "runbook-search-deploy-v1": {
+      "source_key": "runbooks/search-deploy.md"
+    }
+  }
+}
