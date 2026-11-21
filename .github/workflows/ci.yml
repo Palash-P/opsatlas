@@ -1,0 +1,201 @@
+name: CI
+
+on:
+  push:
+    branches: ["**"]
+  pull_request:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  PYTHON_VERSION: "3.13"
+  PIP_DISABLE_PIP_VERSION_CHECK: "1"
+  PIP_NO_CACHE_DIR: "1"
+
+jobs:
+  lint:
+    name: Lint
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+          cache: pip
+          cache-dependency-path: requirements.lock
+      - name: Install locked dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install --constraint requirements.lock ".[dev]"
+          pip check
+      - name: Ruff
+        run: ruff check .
+
+  unit:
+    name: Offline test suite
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+          cache: pip
+          cache-dependency-path: requirements.lock
+      - name: Install locked dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install --constraint requirements.lock ".[dev]"
+      - name: Version metadata agrees
+        run: |
+          python - <<'PY'
+          from importlib.metadata import version
+          from app.version import APP_VERSION
+          from app.main import app
+          assert version("opsatlas") == APP_VERSION, (version("opsatlas"), APP_VERSION)
+          assert app.version == APP_VERSION
+          print("application version:", APP_VERSION)
+          PY
+      - name: Offline suite (live tests report as skipped)
+        env:
+          OPSATLAS_LIVE_TESTS: "0"
+        run: python -m pytest -o addopts="" -ra --tb=short
+
+  integration:
+    name: PostgreSQL + Redis integration
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: pgvector/pgvector:0.8.0-pg16
+        env:
+          POSTGRES_USER: opsatlas
+          POSTGRES_PASSWORD: opsatlas_ci_password
+          POSTGRES_DB: opsatlas_ci
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U opsatlas -d opsatlas_ci"
+          --health-interval 5s
+          --health-timeout 3s
+          --health-retries 20
+      redis:
+        image: redis:7.4.2-alpine
+        ports:
+          - 6379:6379
+        options: >-
+          --health-cmd "redis-cli ping"
+          --health-interval 5s
+          --health-timeout 3s
+          --health-retries 20
+    env:
+      APP_ENV: local
+      DATABASE_URL: postgresql+psycopg://opsatlas:opsatlas_ci_password@localhost:5432/opsatlas_ci
+      OPSATLAS_TEST_DATABASE_URL: postgresql+psycopg://opsatlas:opsatlas_ci_password@localhost:5432/opsatlas_ci
+      REDIS_URL: redis://localhost:6379/0
+      CELERY_BROKER_URL: redis://localhost:6379/1
+      EMBEDDING_URL: http://127.0.0.1:8091
+      OPSATLAS_LIVE_TESTS: "1"
+      OPSATLAS_REQUIRE_POSTGRES: "1"
+      OPSATLAS_REQUIRE_REDIS: "1"
+      OPSATLAS_TEST_TENANT_ID: "11111111-1111-4111-8111-111111111111"
+      OPSATLAS_TEST_API_TOKEN: "ci-live-api-token-0123456789abcdef0123456789abcdef"
+      AUTH_LOG_TENANT_SALT: "ci-only-tenant-log-salt"
+      RATE_LIMIT_BACKEND: redis
+      LOG_LEVEL: INFO
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+          cache: pip
+          cache-dependency-path: requirements.lock
+      - name: Install PostgreSQL client tools
+        run: sudo apt-get update && sudo apt-get install -y postgresql-client
+      - name: Install locked dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install --constraint requirements.lock ".[dev]"
+          pip check
+      - name: Fresh database migration bootstrap
+        run: |
+          python -m app.db.migrations
+          # A second run proves the runner is idempotent and records no new work.
+          python -m app.db.migrations
+          python -m app.db.schema_validation
+      - name: Seed live tenant metadata
+        run: |
+          python - <<'PY'
+          import os
+          from sqlalchemy import create_engine, text
+          engine = create_engine(os.environ["DATABASE_URL"])
+          with engine.begin() as connection:
+              connection.execute(
+                  text(
+                      "INSERT INTO tenants (id, name) VALUES (:id, :name) "
+                      "ON CONFLICT (id) DO NOTHING"
+                  ),
+                  {
+                      "id": os.environ["OPSATLAS_TEST_TENANT_ID"],
+                      "name": "ci-integration-tenant",
+                  },
+              )
+          PY
+      - name: Live integration suite with deterministic embeddings
+        run: |
+          set -euo pipefail
+          python scripts/ops/fake_embedding_service.py --port 8091 > fake-embedding.log 2>&1 &
+          FAKE_PID=$!
+          trap 'kill "$FAKE_PID" 2>/dev/null || true' EXIT
+          for _ in $(seq 1 50); do
+            if curl -fsS http://127.0.0.1:8091/health >/dev/null; then break; fi
+            sleep 0.2
+          done
+          curl -fsS http://127.0.0.1:8091/health
+          python scripts/seed_synthetic_corpus.py \
+            --tenant-id "$OPSATLAS_TEST_TENANT_ID" --apply --materialize-observe
+          python -m pytest -o addopts="" -ra --tb=short
+      - name: API import, startup, liveness, and readiness
+        run: |
+          set -euo pipefail
+          uvicorn app.main:app --host 127.0.0.1 --port 8010 > api.log 2>&1 &
+          API_PID=$!
+          trap 'kill "$API_PID" 2>/dev/null || true' EXIT
+          for _ in $(seq 1 60); do
+            if curl -fsS http://127.0.0.1:8010/health >/dev/null; then break; fi
+            sleep 1
+          done
+          curl -fsS http://127.0.0.1:8010/health
+          curl -fsS http://127.0.0.1:8010/ready
+      - name: Upload logs on failure
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: integration-logs
+          path: |
+            api.log
+            fake-embedding.log
+          if-no-files-found: ignore
+
+  docker:
+    name: Container build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Compose configuration
+        run: docker compose config --quiet
+      - name: Build application image
+        run: docker build -t opsatlas-ci:${{ github.sha }} .
+      - name: Import and version metadata inside the image
+        run: |
+          docker run --rm --entrypoint python opsatlas-ci:${{ github.sha }} -c "
+          from importlib.metadata import version
+          from app.version import APP_VERSION
+          from app.main import app
+          assert version('opsatlas') == APP_VERSION, (version('opsatlas'), APP_VERSION)
+          assert app.version == APP_VERSION, (app.version, APP_VERSION)
+          print('container application version:', APP_VERSION)
+          "

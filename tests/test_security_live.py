@@ -65,6 +65,11 @@ def tenant_b_document():
                 {"id": tenant_b, "name": f"security-live-{tenant_b}"},
             )
         ingest_document(
+            principal=Principal(
+                tenant_id=tenant_b,
+                subject="security-live-seed",
+                roles=frozenset({"document_writer"}),
+            ),
             tenant_id=tenant_b,
             source_key=source_key,
             title="Tenant B canary runbook",
@@ -115,10 +120,7 @@ def test_live_tenant_a_retrieval_cannot_see_tenant_b_document(
             limit=20,
             principal=principal,
         )
-        assert all(
-            result["source_key"] != tenant_b_document["source_key"]
-            for result in results
-        )
+        assert all(result["source_key"] != tenant_b_document["source_key"] for result in results)
 
 
 def test_live_tenant_a_answer_cannot_retrieve_or_cite_tenant_b_document(
@@ -138,13 +140,9 @@ def test_live_tenant_a_answer_cannot_retrieve_or_cite_tenant_b_document(
 
     assert response.status_code == 200, response.text
     body = response.json()
+    assert all(item["source_key"] != tenant_b_document["source_key"] for item in body["evidence"])
     assert all(
-        item["source_key"] != tenant_b_document["source_key"]
-        for item in body["evidence"]
-    )
-    assert all(
-        citation["source_key"] != tenant_b_document["source_key"]
-        for citation in body["citations"]
+        citation["source_key"] != tenant_b_document["source_key"] for citation in body["citations"]
     )
     assert tenant_b_document["source_key"] not in response.text
     # The response echoes the question, so assert on supplied evidence and

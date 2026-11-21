@@ -1,17 +1,31 @@
 # Project Status
 
-> Last updated: 2026-11-10. This status describes the repository, not a
+> Last updated: 2026-11-18. This status describes the repository, not a
 > production deployment. The corpus is synthetic.
 
-## Current milestone
+## Current status
 
-Phase E: the Phase D stack has been load-tested and failure-tested on the local
-machine. One uvicorn worker, the seeded synthetic tenant, and the local
-embedding service were measured under single-user, concurrent, multi-tenant,
-near-rate-limit, over-concurrency, and mixed workloads. PostgreSQL, Redis, the
-embedding service, the LLM provider, the DB pool, and client cancellation were
-fault-injected in a controlled, fully restored run. Results, thresholds, and
-limitations are in `docs/OPERATIONAL_VALIDATION.md`; artifacts are in
+The engineering slice is feature-complete for local release preparation:
+synchronous and asynchronous ingestion, versioned PostgreSQL storage,
+semantic/lexical/hybrid retrieval, grounded answer generation, bearer-token
+authentication with optional per-request expiry, ACL-scoped retrieval, a shared
+Redis-backed per-tenant rate limiter, background Celery processing with bounded
+retries, dead letters, execution leases, and periodic reconciliation, a
+checksum-verified migration runner, operational backup/restore/retention
+tooling, and CI covering lint, the offline suite, a PostgreSQL + Redis
+integration job, and a container build with locked dependencies.
+
+This document separates **completed engineering work** (implemented and covered
+by the test suite) from **production deployment prerequisites** (operator work
+this repository does not provide). It is not a production readiness claim.
+
+Phase E remains the most recent measured operational validation. One uvicorn
+worker, the seeded synthetic tenant, and the local embedding service were
+measured under single-user, concurrent, multi-tenant, near-rate-limit,
+over-concurrency, and mixed workloads. PostgreSQL, Redis, the embedding service,
+the LLM provider, the DB pool, and client cancellation were fault-injected in a
+controlled, fully restored run. Results, thresholds, and limitations are in
+`docs/OPERATIONAL_VALIDATION.md`; artifacts are in
 `evals/ops/phase-e-final/`.
 
 Key measured results (one worker, `extractive` provider, synthetic corpus):
@@ -91,6 +105,62 @@ POST /api/v1/answer
 - Measured `answer_eval_v1` reports for three runs under
   `evals/runs/answer_eval_v1_c1_run{1,2,3}/`, plus a cross-run aggregate, all with
   `status: "completed"`.
+
+### Background ingestion and reconciliation
+
+- `POST /api/v1/documents/ingest/async` commits a durable `ingestion_jobs` row
+  and a non-current target version before publishing a Celery task that contains
+  only the job ID. `GET /api/v1/documents/jobs/{job_id}` returns tenant-scoped
+  job state. Redis is the broker; PostgreSQL remains authoritative and no Celery
+  result backend is configured.
+- Ingestion and reconciliation consume disjoint queues (`ingestion`,
+  `reconciliation`) on separate workers, so recovery cannot be starved by an
+  ingestion backlog.
+- Bounded retries apply only to transient dependency failures and a small
+  unexpected-exception budget. Permanent deployment/validation failures are not
+  retried, and dead letters remain inspectable with
+  `scripts/ops/inspect_dead_letters.py`.
+- Execution leases and a fencing token prevent a replaced worker from activating
+  or failing a job it no longer owns. Periodic and manual reconciliation recover
+  orphaned jobs (`scripts/reconcile_ingestion_jobs.py`). See
+  `docs/BACKGROUND_INGESTION.md`.
+
+### Migrations and schema integrity
+
+- One runner applies immutable `sql/001`–`005` files, records
+  version/filename/SHA-256/timestamp in `schema_migrations`, serializes runners
+  with a PostgreSQL advisory lock, and validates the full live schema before a
+  history row commits.
+- Existing history is contiguous and never rewritten. Adoption requires the
+  complete expected schema for a migration; partial signatures fail closed.
+  `python -m app.db.migrations --check` and
+  `python -m app.db.schema_validation` verify without writing. See
+  `docs/DATABASE_MIGRATIONS.md`.
+
+### Security and reliability controls
+
+- Optional ISO-8601 `expires_at` on a configured token is parsed at startup and
+  re-checked on every request, so a token stops authenticating at the configured
+  instant without a restart. Rotation is an overlap across a restart; revocation
+  is removal plus restart. Production rejects an empty map, tokens below 32
+  characters, documented placeholders, and a map with no usable unexpired entry.
+- Compose and CI use the Redis-backed per-tenant sliding-window limiter, shared
+  across API replicas. The in-memory backend remains the test default. Redis loss
+  degrades to per-process enforcement by default and can fail closed instead.
+- Backup, restore, retention cleanup, dead-letter inspection, and reconciliation
+  scripts live under `scripts/ops/` and are documented in
+  `docs/OPERATIONS_RUNBOOK.md`.
+
+### Build, CI, and reproducibility
+
+- `.github/workflows/ci.yml` runs Ruff, the offline suite, a PostgreSQL/pgvector
+  + Redis integration job that bootstraps migrations twice and runs the live
+  suite, and a Docker build.
+- The image installs with `pip install --constraint requirements.lock .` on
+  `python:3.13.9-slim-bookworm`, runs as a non-root user, and is checked for
+  version/import consistency after build.
+- `app/version.py` is the only application version; `requirements.lock` pins the
+  complete runtime and development closure for Python 3.13.
 
 ## Measured answer evaluation (Phase C.1)
 
@@ -176,9 +246,23 @@ the `extractive` provider. Full tables and failure cases are in
 
 ## Verification status
 
-- Offline suite: **389 passed, 35 skipped** (Phase E run, 2026-11-12). The
-  skips are the opt-in live tests.
+- Offline suite (2026-11-18, fresh virtual environment installed from
+  `requirements.lock`, `OPSATLAS_LIVE_TESTS=0`, no PostgreSQL/Redis service):
+  **548 passed, 200 skipped** in 9.63 s. The skips are the opt-in live suites plus
+  tests that require a running PostgreSQL, Redis, or PostgreSQL client tools; CI
+  supplies those services in its integration job.
 - Ruff over `app`, `evals`, `scripts`, and `tests`: **all checks passed**.
+- Background processing is covered by `tests/test_ingestion_worker.py`,
+  `tests/test_ingestion_jobs.py`, `tests/test_ingestion_task_unit.py`,
+  `tests/test_reconciliation.py`, `tests/test_sync_fencing.py`, and
+  `tests/test_ingestion_activation.py`.
+- Migrations and schema are covered by `tests/test_migrations.py`,
+  `tests/test_schema_readiness.py`, and `tests/test_operations_scripts.py`.
+- Security, configuration, and deployment are covered by
+  `tests/test_auth_lifecycle.py`, `tests/test_production_config.py`,
+  `tests/test_rate_limit_redis.py`, `tests/test_compose_deployment.py`, and
+  `tests/test_embedding_url_modes.py` (host versus container embedding
+  addresses).
 - Phase D adversarial suite in `tests/test_security_phase_d.py` covers missing
   and invalid tokens, body-tenant forgery, cross-tenant ingestion, retrieval row
   isolation, ACL SQL scope, forged version metadata, provider-error leakage,
@@ -216,18 +300,24 @@ the `extractive` provider. Full tables and failure cases are in
 - The answer endpoint is stateless. No query run is persisted, and the existing
   `query_runs` table is not used.
 - Authentication is a local bearer-token map in configuration, not an identity
-  provider. There is no rotation endpoint, SSO, token expiry, or revocation API.
-  A token change requires a configuration reload. The endpoint still must not be
-  exposed publicly without a real identity boundary.
+  provider. Optional ISO-8601 `expires_at` is enforced per request, rotation is
+  an overlapping-entry restart, and revocation is removal plus restart. There is
+  no SSO, OAuth, JWT refresh, or online revocation API, and a token without
+  `expires_at` stays valid until the configuration changes and the process
+  restarts. The endpoint still must not be exposed publicly without a real
+  identity boundary.
 - ACLs are allow-list augmentation, not default-deny. Documents with no ACL rows
   are visible to every authenticated member of their tenant. The schema has no
   deny rows, no inheritance, and no per-document deny override.
 - Tenant and ACL filtering is enforced before evidence assembly and citations,
   but the corpus and test fixtures are synthetic. No production access-control
   audit or penetration test has been performed.
-- Rate and concurrency limiting are process-local. Running N API processes
-  allows up to N times the configured rate, and the limiter state is lost on
-  restart. Redis is optional for serving but is not used for quotas.
+- The rate limit is shared through Redis when `RATE_LIMIT_BACKEND=redis`
+  (Compose and CI) and process-local when the memory backend is used (the test
+  default). The concurrency slot is always per process. Redis loss degrades to
+  per-process enforcement by default unless
+  `RATE_LIMIT_REDIS_FALLBACK_TO_LOCAL=false`. Limiter state expires with the
+  window; it is not a durable quota.
 - Request telemetry is written to the process log stream. Retention, shipping,
   sampling, and alerting are not implemented.
 - Provider and DB timeouts are bounded. Phase E measured load, latency, and
@@ -271,22 +361,29 @@ the `extractive` provider. Full tables and failure cases are in
 - Phase C.1 pipeline SHA-256:
   `12dfb5d42adf0394b43c4fefc1fc8bba386b43dc626735a450a1b31940e31f50`.
 
-## Immediate next step
+## Production deployment prerequisites
 
-Phase E closed the "no load/failure measurements" gap for one local worker. The
-remaining boundaries are:
+Completed engineering work is summarized under "Current status". The following
+are operator or product prerequisites that this repository does not supply; none
+is required to run the local stack.
 
-1. Re-measure with a real provider that enforces temperature/output limits and
-   reports token usage; the load numbers here exclude model inference.
-2. Run the opt-in live pytest suite as part of CI-visible release checks; it
-   passed locally on 2026-11-12 (35 tests) but is still skipped by default.
-3. Replace the configuration token map with a real identity provider or a
-   managed secret store, including rotation and revocation.
-4. Decide whether documents should be default-deny and add deny/inheritance
-   semantics only with an explicit schema migration.
-5. Add human spot-checks on a sample of answer records; two model scorers are not
-   a substitute for domain review.
-6. Add distributed rate limiting, server-side cancellation, and log
-   retention/shipping before exposing the service or persisting answer runs.
+1. Measured quality and latency on a provider that enforces temperature/output
+   limits and reports token usage. Current numbers use the `extractive` provider
+   and an evaluation-only CLI adapter and exclude real model inference.
+2. A real identity boundary. The configured bearer-token map supports optional
+   expiry, overlapping rotation, and removal-plus-restart revocation, but it is
+   not SSO/OAuth and has no online revocation API or persisted user table.
+3. A default-deny ACL model, if required. Current ACLs are allow-list
+   augmentation; deny rows and inheritance would need an explicit schema
+   migration.
+4. Human spot-checks on a sample of answer records; two model scorers are not a
+   substitute for domain review.
+5. Observability and retention: distributed tracing, a metrics/alerting backend,
+   log shipping, and a documented retention policy.
+6. Deployment hardening: TLS termination, private datastores with no published
+   ports, secret-manager injection, multi-instance rate-limit verification, and
+   a measured multi-worker/multi-instance profile.
 
-No production deployment or SLO claim is supported by the current evidence.
+CI already runs the opt-in live suite in its PostgreSQL + Redis integration job;
+the offline job reports live tests as skipped. No production deployment or SLO
+claim is supported by the current evidence.

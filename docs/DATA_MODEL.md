@@ -1,6 +1,6 @@
 # Data Model Notes
 
-The first SQL schema is a proposal, not a final migration system. It is loaded when the local PostgreSQL data volume is created for the first time.
+The schema is defined by immutable, versioned SQL files under `sql/` and applied by the single migration runner (`python -m app.db.migrations`). Docker Compose no longer loads a bootstrap file through `docker-entrypoint-initdb.d`; the one-shot `migrate` service applies the same migrations as a host run. See `docs/DATABASE_MIGRATIONS.md`.
 
 - `tenants`: organization boundary.
 - `users`: identity mapped to a tenant; production authentication provider integration comes later.
@@ -16,5 +16,5 @@ The first SQL schema is a proposal, not a final migration system. It is loaded w
 1. Every tenant-owned row carries `tenant_id` where practical, and queries must enforce tenant boundaries explicitly.
 2. Chunks belong to a specific document version. Never silently mutate old chunks into a new version.
 3. Only switch `documents.current_version_id` after the replacement version has been fully processed.
-4. The embedding dimension `1536` is provisional. Confirm the chosen embedding model's dimensions before generating embeddings; change schema/migration if needed.
-5. The SQL bootstrap file is suitable only for a fresh local database. Later schema changes must use versioned migrations (planned: Alembic).
+4. The embedding dimension is fixed at `384` (`vector(384)`) by migration 002 and the application contract. Only 384-dimensional embeddings are currently supported.
+5. Do not run `sql/*.sql` files manually on a migrated database. Use the migration runner, which verifies existing state, records checksums, and fails closed on partial or changed migrations.

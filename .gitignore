@@ -1,5 +1,9 @@
+# Local environment files. Only the example belongs in version control.
 .env
+.env.*
+!.env.example
 .venv/
+.venv-verify/
 __pycache__/
 *.py[cod]
 .pytest_cache/
@@ -13,6 +17,9 @@ htmlcov/
 
 # Additional virtual environments
 .venv-embed-test/
+
+# Local database backups (never commit dumps or manifests)
+backups/
 
 # Generated package metadata
 *.egg-info/

@@ -436,3 +436,85 @@ def test_seeder_cli_rejects_an_invalid_manifest_without_touching_the_database(
 
     assert exit_code == 2
     assert "Corpus manifest is invalid" in capsys.readouterr().err
+
+
+def test_verify_settled_accepts_absent_observe_documents_on_a_fresh_database(
+    manifest,
+    monkeypatch,
+) -> None:
+    """Observe-only documents are never written, so absence must count as settled."""
+
+    from evals.corpus_plan import PlanAction
+    from scripts import seed_synthetic_corpus as seeder
+
+    actions = (
+        PlanAction(
+            kind="skip_current",
+            source_key="runbooks/payment-api.md",
+            intended_version=1,
+            current_version=1,
+        ),
+        PlanAction(
+            kind="observe_missing",
+            source_key="api-specs/payments-v3.md",
+            intended_version=1,
+            current_version=None,
+        ),
+    )
+    monkeypatch.setattr(seeder, "read_inventory", lambda tenant_id: {})
+    monkeypatch.setattr(seeder, "plan_corpus", lambda manifest, inventory: actions)
+
+    assert seeder.verify_settled(manifest, uuid4()) == {}
+
+
+def test_verify_settled_still_rejects_an_unresolved_write(manifest, monkeypatch) -> None:
+    from evals.corpus_plan import PlanAction
+    from scripts import seed_synthetic_corpus as seeder
+
+    actions = (
+        PlanAction(
+            kind="create_versions",
+            source_key="runbooks/kafka-consumer-lag.md",
+            intended_version=1,
+            current_version=None,
+            versions_to_ingest=(1,),
+        ),
+    )
+    monkeypatch.setattr(seeder, "read_inventory", lambda tenant_id: {})
+    monkeypatch.setattr(seeder, "plan_corpus", lambda manifest, inventory: actions)
+
+    with pytest.raises(RuntimeError, match="create_versions"):
+        seeder.verify_settled(manifest, uuid4())
+
+
+def test_materialize_observe_creates_only_absent_observed_documents(manifest) -> None:
+    from evals.corpus_plan import PlanAction
+    from scripts.seed_synthetic_corpus import materialize_observed_actions
+
+    actions = (
+        PlanAction(
+            kind="observe_missing",
+            source_key="runbooks/search-deploy.md",
+            intended_version=1,
+            current_version=None,
+        ),
+        PlanAction(
+            kind="observe_drift",
+            source_key="runbooks/postgres-pool.md",
+            intended_version=1,
+            current_version=1,
+        ),
+        PlanAction(
+            kind="skip_current",
+            source_key="runbooks/payment-api.md",
+            intended_version=1,
+            current_version=1,
+        ),
+    )
+
+    extras = materialize_observed_actions(manifest, actions)
+
+    assert [action.source_key for action in extras] == ["runbooks/search-deploy.md"]
+    assert extras[0].kind == "create_versions"
+    assert extras[0].versions_to_ingest == (1,)
+    assert extras[0].is_write is True

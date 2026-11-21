@@ -151,10 +151,15 @@ constant `401`; tenant mismatches and forbidden actions return a constant `403`.
 **Reason:** the project needs an enforceable request identity without adding an
 external identity provider, runtime dependency, or schema migration.
 
-**Consequences and limits:** this is a local deployment boundary. There is no
-token expiry, rotation API, revocation list, SSO, or persisted user table. Roles
-and groups are asserted by configuration, not by an authorization service. A
-real deployment must replace this map with a managed identity/secret boundary.
+**Consequences and limits:** this is a local deployment boundary. Token
+configuration now supports an optional ISO-8601 `expires_at` (checked per
+request), rotation by overlapping entries across a restart, and revocation by
+removing an entry and restarting. There is still no SSO, OAuth, JWT refresh,
+revocation API, or persisted user table. Production startup rejects an empty map,
+tokens shorter than 32 characters, documented placeholders, and a map with no
+usable unexpired entry; malformed entries fail startup everywhere. See ADR-026.
+Roles and groups are asserted by configuration, not by an authorization service.
+A real deployment must replace this map with a managed identity/secret boundary.
 
 ## ADR-012: The authenticated tenant is authoritative
 
@@ -223,9 +228,10 @@ distributed tracing are not implemented.
 
 ## ADR-015: Rate/concurrency limits are in-process; readiness distinguishes required and optional dependencies
 
-**Status:** Accepted (Phase D)
+**Status:** Superseded by ADR-018 for rate limiting. Concurrency and readiness
+semantics remain accepted.
 
-Rate limiting uses a per-tenant in-process sliding window. Concurrency uses a
+Rate limiting used a per-tenant in-process sliding window. Concurrency uses a
 process-wide bounded semaphore. Both return `429` with `Retry-After` when
 exceeded. Redis is optional for serving: `/ready` returns `200 degraded` when
 only Redis fails and `503 not_ready` when PostgreSQL fails.
@@ -361,3 +367,148 @@ retry policy itself was already correct.
 **Consequence:** telemetry-only change; status mapping, retry counts for retried
 errors, and API contracts are unchanged. The offline test
 `test_invalid_provider_envelope_is_not_retried` locks the behavior.
+
+## ADR-023: Ingestion writes require an explicit role or document `manage` grant
+
+**Status:** Accepted (Phase F, Step 7)
+
+Tenant membership is not a document-write permission. The existing
+`document_acl` vocabulary already includes `manage`, which is the document-scoped
+write permission. The table cannot express a tenant-level create capability
+before a document exists, so the smallest safe extension is one configured role:
+
+- creating a document, or updating a document with no ACL rows, requires the
+  explicit `document_writer` role asserted by `AUTH_TOKENS`;
+- updating a document with any ACL row requires a matching `manage` grant; a
+  `read` grant or the tenant-wide writer role does not override it;
+- both synchronous and asynchronous ingestion run this policy inside their
+  transaction before writing a job, document, version, or chunk;
+- job status applies the existing document `read`/`manage` predicate. A job with
+  no linked document yet remains tenant-scoped and exposes no source key,
+  content, or execution token; missing, cross-tenant, and ACL-denied jobs all
+  return the same `404`.
+
+**Reason:** the alternative was a new tenant-scoped ACL table or a default-deny
+redesign. Neither is needed for the required policy, and both would create a
+second permission model beside `document_acl`. A role for the pre-document
+capability plus the existing `manage` grant keeps one document ACL model and adds
+no schema migration.
+
+**Consequence and limits:** existing tokens configured with only `member` lose
+ingestion write access until an operator adds `document_writer`. Documents
+created before this change with no ACL rows are writable by configured writers,
+not by every tenant member. Per-document ownership is not tracked; an explicit
+`manage` grant is the durable way to delegate a restricted document. New
+deployments must configure the role deliberately. The worker still completes an
+already-authorized durable job by job ID and receives no user credentials, so a
+revocation after submission does not cancel committed work.
+
+## ADR-024: Serialize ingestion authorization and ACL mutation with per-document advisory locks
+
+**Status:** Accepted (Phase F, F-03 remediation)
+
+The write-authorization read and the document/version/chunk/job writes happen in
+one transaction (TX2), but PostgreSQL's default read-committed snapshot does not
+prevent a concurrent `document_acl` grant or revocation from committing after the
+ACL read and before those writes. A revocation could therefore be bypassed by a
+request that had already observed the old grant, and a new restriction could be
+missed.
+
+The fix uses the existing schema and a PostgreSQL transaction-scoped advisory
+lock, keyed per document:
+
+- key = first 64 bits of `SHA-256("opsatlas:document_acl:v1" || document UUID
+  bytes)` as a signed big integer; stable across processes, unlike Python `hash()`;
+- both ingestion authorization checks take the lock before reading `document_acl`
+  and hold it through the job/document/version/chunk writes in that transaction;
+- every ACL mutation takes the same lock before changing ACL rows; the only
+  non-test writer, `scripts/ops/run_validation.py`, uses the shared helper;
+- bulk mutations acquire locks in sorted UUID order;
+- lock order is ACL lock → ingestion job row → document row → version/chunk
+  writes. Activation and failure transactions take only job/document row locks,
+  so they cannot deadlock against an ACL mutation.
+
+**Reason:** an advisory lock adds no table, no migration, no second permission
+model, and no Redis dependency. It is enforced by the database for every process.
+
+**Consequence and limits:** a revocation that commits while an authorization
+transaction is open waits for that transaction, so the in-flight request keeps
+the permission it was granted for that attempt. A revocation that commits after
+TX2 does not undo the already-written target; synchronous activation and the
+worker's already-authorized job still complete. The next authorization observes
+the committed ACL state. A detected deadlock aborts the entire transaction, so no
+decision or write from the aborted attempt survives. Public ACL-mutation
+endpoints still do not exist; any future writer must call
+`app.db.advisory_locks.acquire_document_acl_lock` in the same transaction as its
+ACL change. New-document creation remains role-gated; if a concurrent creator
+wins the document upsert, authorization is re-evaluated under the lock before any
+version or chunk is written.
+
+## ADR-025: The per-tenant rate limit can be shared through Redis
+
+**Status:** Accepted (F-12 remediation)
+
+`RATE_LIMIT_BACKEND=redis` implements one atomic sliding window per tenant in a
+Lua script over a Redis sorted set, keyed by
+`<prefix>:<salted SHA-256(tenant UUID)>`. Multiple API replicas therefore enforce
+one configured rate. Redis server time is used for scores, so clock skew between
+API hosts does not create separate windows. `memory` remains the default for
+tests and single-process local runs; production rejects it, and Compose sets
+`redis`.
+
+**Reason:** the prior limiter multiplied the effective quota by the number of
+replicas. Redis is already required for ingestion and reconciliation, so reusing
+it adds no datastore. A tenant UUID or bearer token must never be written to a
+Redis key, hence the salted digest.
+
+**Consequence and limits:** the concurrency semaphore is still process-local.
+When Redis is unreachable, the default `RATE_LIMIT_REDIS_FALLBACK_TO_LOCAL=true`
+keeps enforcing a per-process limit and emits one sanitized degradation event;
+setting it to false returns `503`. The fallback can briefly allow one extra
+window's worth of requests per process after a failover, but it never becomes
+unlimited. Redis limiter state expires with the window and is not a durable
+quota.
+
+## ADR-026: Token lifecycle is validated at startup, expiring per request
+
+**Status:** Accepted (F-13 remediation)
+
+`AUTH_TOKENS` entries may include an optional ISO-8601 `expires_at`. It is parsed
+at startup and checked again on every request, so a token stops authenticating at
+the configured instant without a restart. Rotation is an overlap: add the new
+token, restart/redeploy, move clients, remove the old entry, restart again.
+Revocation is removal plus restart. Production rejects an empty map, tokens below
+32 characters, documented placeholder values, and a map with no usable unexpired
+entry. Structural errors (unknown fields, invalid UUIDs or timestamps) fail
+startup in every environment. Validation errors identify an entry by position and
+field only.
+
+**Reason:** a configuration-only lifecycle is the smallest mechanism that gives
+operators expiry, rotation, and revocation without adding an identity provider,
+token database, or admin API.
+
+**Consequence and limits:** there is still no OAuth, SSO, JWT refresh, per-request
+online revocation, or persisted user table. Removing or expiring a token does not
+cancel ingestion work already committed by that principal; the worker completes
+the authorized durable job. Startup is the deployment boundary for config
+changes, except that `expires_at` takes effect on its own.
+
+## ADR-027: One application version and one pinned dependency lock
+
+**Status:** Accepted (F-14 remediation)
+
+`app/version.py` is the only application version. `pyproject.toml` derives the
+distribution version from it; FastAPI/OpenAPI metadata and `/health` read it
+directly. `requirements.lock` pins every resolved runtime and development
+dependency for Python 3.13, and the Docker image installs with
+`pip install --constraint requirements.lock .`.
+
+**Reason:** the previous hardcoded versions disagreed (`pyproject` 0.1.0,
+FastAPI 0.5.0, evaluation default 0.4.0), and unpinned transitive installs made
+builds non-reproducible.
+
+**Consequence and limits:** dependency updates require regenerating and reviewing
+the lock, then running the full suite and image build (see
+`docs/DEPENDENCIES.md`). The lock is universal and includes the `dev` extra; the
+Docker build ignores it for project extras. PostgreSQL, Redis, pgvector, and the
+Python major version are deliberately unchanged by a lock refresh.

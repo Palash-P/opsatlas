@@ -7,11 +7,11 @@ OpsAtlas answers engineering questions using approved internal knowledge: runboo
 ## Initial architecture
 
 - **API layer:** FastAPI; request validation, bearer-token authentication, server-side tenant resolution, query orchestration, bounded request limits, health/readiness.
-- **Ingestion worker:** Celery + Redis (next milestone); parse, normalize, chunk, embed, persist, and reconcile documents.
+- **Ingestion worker:** Celery + Redis; synchronous and asynchronous ingestion with durable PostgreSQL job state, bounded retries, dead letters, execution leases, and periodic reconciliation.
 - **Persistence:** PostgreSQL with pgvector; tenant-aware relational metadata, document versions, ACLs, chunks, and query audit metadata.
 - **Retrieval:** metadata/permission filtering before candidate text is passed to reranking or generation; hybrid lexical + dense retrieval; optional reranking after baseline measurement.
 - **Generation:** provider abstraction, bounded timeouts/retries, evidence-only context, citations, and abstention for insufficient evidence.
-- **Evaluation:** versioned golden sets for retrieval and a design-only answer evaluation; retrieval metrics run in tests/CI, answer metrics await a scored run.
+- **Evaluation:** versioned golden sets for retrieval and answer evaluation; retrieval metrics run in tests/CI, and three scored answer-evaluation runs are published under `evals/runs/`.
 - **Observability:** request IDs and stage timings; redact secrets and avoid unrestricted prompt/document logging.
 
 ## Query path
@@ -141,6 +141,13 @@ endpoint remains stateless.
   `WWW-Authenticate: Bearer`. A tenant mismatch or forbidden action returns the
   same `403 {"detail":"Forbidden"}` regardless of whether the target tenant
   exists, so the response does not disclose tenant existence.
+- An entry may carry an optional ISO-8601 `expires_at`. Expiry is re-checked on
+  every request, so the token stops authenticating at that instant. Rotation uses
+  an overlap of old and new entries across a restart; removal plus restart is
+  revocation. A malformed entry never authenticates and fails startup. Production
+  rejects an empty map, tokens shorter than 32 characters, documented
+  placeholders, and a map with no usable unexpired entry. Validation errors do not
+  include token values or identities.
 
 ### Tenant and ACL enforcement
 
@@ -159,8 +166,85 @@ is skipped when a row omits `tenant_id`, which only occurs in older unit fixture
 
 The tenant predicate is unconditional. ACL augmentation is applied whenever a
 principal is supplied; every HTTP route supplies the authenticated principal,
-while direct evaluation/service callers may omit it. Do not add an unauthenticated
-HTTP path that omits the principal.
+while direct evaluation/retrieval callers may omit it. Do not add an
+unauthenticated HTTP path that omits the principal.
+
+### Ingestion write authorization and job access
+
+Ingestion writes are authorized before any document, version, chunk, or job row
+is written. The policy reuses the existing ACL vocabulary and adds one explicit
+tenant-level capability:
+
+- creating a document requires the configured `document_writer` role; tenant
+  membership alone is not a write permission;
+- updating a document that has no ACL rows requires the same `document_writer`
+  role;
+- updating a document that has any ACL row requires a matching `manage` grant.
+  A `read` grant, a tenant-wide writer role, or tenant membership cannot override
+  an explicit document restriction.
+
+Both `POST /documents/ingest` and `POST /documents/ingest/async` call the same
+policy inside the job-resolution and target-preparation transactions. Duplicate
+and idempotent submissions therefore re-check current permission instead of
+reusing an earlier decision, and an unauthorized request creates no job or
+version. The asynchronous path publishes only the durable job ID; the submitted
+principal is never written to the job row or sent through Redis. The worker
+completes an already-authorized target as a trusted internal operation.
+
+`GET /documents/jobs/{job_id}` is always tenant-scoped. A job linked to a
+document follows the same document `read`/`manage` predicate as retrieval; a job
+that has no linked document yet is visible to authenticated members of its
+tenant and exposes no source key, title, content, or execution token. Missing,
+cross-tenant, and ACL-denied jobs all return the same `404`.
+
+### ACL concurrency and authorization serialization
+
+An ingestion authorization decision and a concurrent `document_acl` mutation are
+serialized per document with a PostgreSQL transaction-scoped advisory lock.
+
+**Locks, not process state.** Every write-authorization check takes
+`pg_advisory_xact_lock` for the document before reading `document_acl`, and keeps
+it until the surrounding transaction commits or rolls back. Every ACL mutator
+takes the same lock in its own transaction before changing ACL rows. The lock is
+held by PostgreSQL, so it is valid across API processes, workers, and scripts; no
+Redis lock or process-local mutex is involved.
+
+**Key derivation.** The lock key is the first 64 bits of
+`SHA-256("opsatlas:document_acl:v1" || document_uuid_bytes)`, interpreted as a
+signed big integer. The domain separator is versioned and shared by all readers
+and writers. Python's process-randomized `hash()` is not used. The key is the
+document UUID, so tenant isolation is unchanged and there is no tenant-wide lock.
+
+**Lock order.** Ingestion uses document ACL advisory lock → ingestion job row →
+document row → version/chunk writes. ACL mutation takes the document ACL lock
+before touching `document_acl`, whose foreign key check takes a `KEY SHARE` lock
+on the document row. Bulk ACL changes acquire locks in sorted UUID order.
+Activation/success/failure transactions take only the job and document row locks,
+never the ACL lock, so they cannot form a cycle with an ACL mutation.
+
+**Races closed.** Authorization is re-run in both TX1 (job resolution) and TX2
+(target preparation). A revocation or grant that starts while an authorization
+transaction is open blocks until that transaction ends, so it cannot commit
+between the ACL read and the document/version/chunk/job writes the read
+authorized. A mutation that commits first is observed by the next authorization.
+For a new document, creation is gated by the `document_writer` role and no ACL row
+can reference the document before it commits; if a concurrent creator wins the
+document upsert, authorization is re-evaluated under the lock before any version
+or chunk is written.
+
+**Boundary and limits.** There is no public ACL mutation endpoint. The only
+non-test ACL writer is `scripts/ops/run_validation.py`, which calls the shared
+lock helper. ACL rows are otherwise removed only by the existing
+`ON DELETE CASCADE` when a tenant or document is deleted; there is no
+document-delete API, and cleanup removes a whole disposable tenant rather than
+racing a live ingestion for one document. Any future ACL writer must use
+`app.db.advisory_locks.acquire_document_acl_lock` (or the sorted bulk helper) in
+the same transaction as its write. A revocation that commits after TX2 does not
+retroactively cancel that already-authorized target: synchronous ingestion still
+completes activation, and a queued worker still completes its already-authorized
+job. A PostgreSQL deadlock or serialization failure aborts the whole transaction,
+so no write or authorization decision from the aborted attempt survives; it is
+never retried by bypassing the lock.
 
 Citations, version-analysis entries, and conflicts are validated against the
 server-assembled evidence bundle. The model may name an evidence ID only; it
@@ -190,16 +274,18 @@ non-retryable provider response error now records `retry_count: 0` rather than
 
 | Control | Behavior |
 | --- | --- |
-| Rate limit | Per authenticated tenant, sliding window, `429` + `Retry-After` |
-| Concurrency | `BoundedSemaphore`, `429` + `Retry-After` when no slot is available |
+| Rate limit | Per authenticated tenant, sliding window; shared atomically in Redis when `RATE_LIMIT_BACKEND=redis`, otherwise per process; `429` + `Retry-After` |
+| Concurrency | `BoundedSemaphore` per process, `429` + `Retry-After` when no slot is available |
 | Provider timeout/retry | Bounded by settings; retries only timeout/rate-limit/retryable errors |
 | DB pool | Bounded pool, pre-ping, pool timeout, recycle, connect and statement timeouts |
-| Redis | Optional for serving; `/ready` returns `200 degraded` on Redis-only failure |
+| Redis | Optional for serving; `/ready` returns `200 degraded` on Redis-only failure. If Redis is also the required rate-limit backend and is unreachable, the limiter falls back per process or returns `503` when fallback is disabled |
 | PostgreSQL | Required; `/ready` returns `503 not_ready` on failure |
 
-Rate and concurrency limits are process-local, not a distributed quota. Running
-multiple processes multiplies the effective limit. Provider and DB failures map
-to constant, non-leaking error details.
+Concurrency limits are process-local, not a distributed quota: N processes permit
+up to N simultaneous in-flight requests. The request rate is shared across API
+replicas when the Redis backend is selected. Redis limiter keys contain only a
+salted digest of the tenant UUID; tokens and raw tenant IDs never appear in keys
+or logs. Provider and DB failures map to constant, non-leaking error details.
 
 Measured failure latency and recovery (one local worker, Phase E; details in
 `docs/OPERATIONAL_VALIDATION.md`):

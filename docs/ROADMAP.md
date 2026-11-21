@@ -6,11 +6,19 @@
 
 ## Current position
 
-Phase E is complete. The Phase D answer slice now has a local operational
-validation: load, isolation, rate/concurrency, and controlled failure-injection
-runs on one uvicorn worker, summarized in `docs/OPERATIONAL_VALIDATION.md` with
-artifacts in `evals/ops/phase-e-final/`. Rate limits, concurrency admission, and
-the measured throughput are all process-local; nothing here is a production SLO.
+Foundation, ingestion, retrieval, grounded answering, security, background
+ingestion, and CI are implemented on the current tree; the authoritative summary
+is `docs/PROJECT_STATUS.md` and the milestone view is `docs/MILESTONES.md`.
+
+Phase E remains the local operational validation: load, isolation,
+rate/concurrency, and controlled failure-injection runs on one uvicorn worker,
+summarized in `docs/OPERATIONAL_VALIDATION.md` with artifacts in
+`evals/ops/phase-e-final/`. Background ingestion now runs through Celery with
+durable PostgreSQL job state, bounded retries, dead letters, execution leases,
+and periodic reconciliation. CI runs Ruff, the offline suite, a PostgreSQL +
+Redis integration job, and a container build. Rate limits, concurrency
+admission, and the measured throughput are all process-local; nothing here is a
+production SLO.
 
 Phase C.1 remains the measured quality baseline: three `answer_eval_v1` runs with
 a frozen configuration, summarized in `docs/ANSWER_EVALUATION_V1.md`. Prior
@@ -186,25 +194,33 @@ subset, and supplied-version comparisons are scored.
 offline suite meets this. Remaining risk: ACLs are allow-list augmentation, not
 default-deny, and the token map is not an identity provider.
 
-### 9. Ingestion reliability
+### 9. Ingestion reliability — complete
 
-- Add background ingestion, retry/backoff, dead-letter handling, and stuck-job
-  reconciliation.
-- Keep the last known-good version on failure.
+- [x] Add background ingestion, retry/backoff, dead-letter handling, and
+  stuck-job reconciliation.
+- [x] Keep the last known-good version on failure.
+- [x] Add durable job state, execution leases, and a fencing token so a replaced
+  worker cannot activate a job it no longer owns.
+- Implementation: `app/tasks/ingestion.py`, `app/tasks/reconciliation.py`,
+  `app/services/{ingestion,dead_letters,reconciliation}.py`, and migrations
+  003–005. Details: `docs/BACKGROUND_INGESTION.md`.
 
 **Exit:** worker termination and provider errors do not corrupt current document
-state.
+state. Met; covered by the ingestion worker, reconciliation, and fencing tests.
 
-### 10. CI and release gates
+### 10. CI and release gates — mostly complete
 
-- Run tests and Ruff on every change.
-- Fail on golden-dataset drift and on retrieval-baseline regression beyond a
+- [x] Run tests and Ruff on every change.
+- [x] Validate migrations and the live schema from a clean database, then build
+  the container image with locked dependencies.
+- [x] Keep the Ruff baseline at zero findings.
+- [ ] Fail on golden-dataset drift and on retrieval-baseline regression beyond a
   documented threshold.
-- Run the reproducible evaluation command and publish the report artifact.
-- Keep the Ruff baseline at zero findings; Phase D cleared the prior two.
+- [ ] Run the reproducible evaluation command in CI and publish the report
+  artifact.
 
-**Exit:** a clean checkout reproduces tests and evaluation from documented
-instructions.
+**Exit:** a clean checkout reproduces tests from documented instructions. The
+evaluation-gate and report-artifact half is still open.
 
 ## Deliberately deferred
 

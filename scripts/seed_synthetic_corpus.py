@@ -8,7 +8,8 @@ Safety properties:
 
 - Only documents declared with ``manage: "create"`` or
   ``manage: "repair_current"`` can be written. ``manage: "observe"`` never
-  writes.
+  writes unless ``--materialize-observe`` is passed explicitly for a disposable
+  test database, and then only when the observed document is entirely absent.
 - A document whose intended content already exists as an older version is
   refused. Re-running the seeder can never make an older version current.
 - No document, version, chunk, or embedding is ever deleted. Stored version
@@ -57,6 +58,14 @@ def build_parser() -> argparse.ArgumentParser:
         action="store_true",
         help="Apply the planned writes. Without this flag the seeder is read-only.",
     )
+    parser.add_argument(
+        "--materialize-observe",
+        action="store_true",
+        help=(
+            "Also create absent 'observe' documents. Intended only for disposable "
+            "test/CI databases that must reproduce the full evaluation corpus."
+        ),
+    )
     return parser
 
 
@@ -67,9 +76,10 @@ def read_inventory(tenant_id: UUID) -> dict[str, tuple[ExistingVersion, ...]]:
     from app.db.connections import get_engine
 
     with get_engine().connect() as connection:
-        rows = connection.execute(
-            text(
-                """
+        rows = (
+            connection.execute(
+                text(
+                    """
                 SELECT
                     d.source_key,
                     dv.version_number,
@@ -85,9 +95,12 @@ def read_inventory(tenant_id: UUID) -> dict[str, tuple[ExistingVersion, ...]]:
                 WHERE d.tenant_id = :tenant_id
                 ORDER BY d.source_key, dv.version_number
                 """
-            ),
-            {"tenant_id": tenant_id},
-        ).mappings().all()
+                ),
+                {"tenant_id": tenant_id},
+            )
+            .mappings()
+            .all()
+        )
 
     inventory: dict[str, list[ExistingVersion]] = {}
     for row in rows:
@@ -100,10 +113,7 @@ def read_inventory(tenant_id: UUID) -> dict[str, tuple[ExistingVersion, ...]]:
                 status=row["status"],
             )
         )
-    return {
-        source_key: tuple(versions)
-        for source_key, versions in inventory.items()
-    }
+    return {source_key: tuple(versions) for source_key, versions in inventory.items()}
 
 
 def tenant_exists(tenant_id: UUID) -> bool:
@@ -122,9 +132,7 @@ def tenant_exists(tenant_id: UUID) -> bool:
 
 
 def _format_action(action: PlanAction) -> str:
-    current = (
-        "absent" if action.current_version is None else f"v{action.current_version}"
-    )
+    current = "absent" if action.current_version is None else f"v{action.current_version}"
     ingest = (
         "-"
         if not action.versions_to_ingest
@@ -143,7 +151,14 @@ def apply_actions(
     tenant_id: UUID,
 ) -> None:
     """Execute non-blocked actions through the existing ingestion service."""
+    from app.core.auth import Principal
     from app.services.ingestion import ingest_document
+
+    principal = Principal(
+        tenant_id=tenant_id,
+        subject="seed-synthetic-corpus",
+        roles=frozenset({"document_writer"}),
+    )
 
     for action in actions:
         if not action.is_write:
@@ -156,6 +171,7 @@ def apply_actions(
             version = document.version(version_number)
             content = version.path.read_text(encoding="utf-8")
             result = ingest_document(
+                principal=principal,
                 tenant_id=tenant_id,
                 source_key=document.source_key,
                 title=document.title,
@@ -184,15 +200,46 @@ def verify_settled(
     """Re-read the inventory and prove every document settled on its intent."""
     inventory = read_inventory(tenant_id)
     remaining = plan_corpus(manifest, inventory)
-    unexpected = [action for action in remaining if action.kind != "skip_current"]
+    # ``observe`` documents are intentionally never written, so on a fresh
+    # database they are legitimately absent. Everything else must have settled.
+    settled_kinds = {"skip_current", "observe_missing"}
+    unexpected = [action for action in remaining if action.kind not in settled_kinds]
     if unexpected:
         raise RuntimeError(
             "Corpus did not settle after apply; re-planning still reports: "
-            + "; ".join(
-                f"{action.source_key}={action.kind}" for action in unexpected
-            )
+            + "; ".join(f"{action.source_key}={action.kind}" for action in unexpected)
         )
     return inventory
+
+
+def materialize_observed_actions(
+    manifest: CorpusManifest,
+    actions: tuple[PlanAction, ...],
+) -> tuple[PlanAction, ...]:
+    """Create absent ``observe`` documents for disposable test fixtures.
+
+    Production seeding must never write observed documents. CI and fresh local
+    test databases, however, need the complete evaluation corpus that the live
+    retrieval tests assert against. Only a document that is entirely absent is
+    materialized; existing observed content is never rewritten or replaced.
+    """
+
+    extras: list[PlanAction] = []
+    for action in actions:
+        if action.kind != "observe_missing":
+            continue
+        document = manifest.by_source_key[action.source_key]
+        extras.append(
+            PlanAction(
+                kind="create_versions",
+                source_key=action.source_key,
+                intended_version=document.intended_current_version,
+                current_version=None,
+                versions_to_ingest=(document.intended_current_version,),
+                reason="materializing an absent observe document for a test fixture",
+            )
+        )
+    return tuple(extras)
 
 
 def main(argv: list[str] | None = None) -> int:
@@ -216,6 +263,8 @@ def main(argv: list[str] | None = None) -> int:
 
     inventory = read_inventory(tenant_id)
     actions = plan_corpus(manifest, inventory)
+    if args.materialize_observe:
+        actions = actions + materialize_observed_actions(manifest, actions)
 
     print(f"Corpus: {manifest.corpus_id} v{manifest.corpus_version}")
     print(f"Tenant: {tenant_id}")

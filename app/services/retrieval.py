@@ -12,7 +12,14 @@ from sqlalchemy import text
 
 from app.core.auth import Principal, acl_filter_sql, acl_parameters
 from app.db.connections import get_engine
-from app.services.embedding_client import EXPECTED_MODEL, embed_texts
+from app.services.embedding_client import (
+    embed_texts,
+    expected_dimensions,
+    expected_model,
+    validate_embeddings,
+    vector_literal,
+    vector_sql_type,
+)
 
 MAX_RESULTS = 20
 RRF_K = 60
@@ -55,9 +62,7 @@ _API_VERSION_RE = re.compile(r"(?i)(?<![A-Za-z0-9])v([1-9]\d*)(?![A-Za-z0-9])")
 
 # Version intent detection. These patterns only decide scoping and ranking; the
 # SQL still enforces tenant and active-document boundaries.
-_VERSION_PHRASE_RE = re.compile(
-    r"(?i)\b(?:version|revision|rev|release)\s+(\d+)\b"
-)
+_VERSION_PHRASE_RE = re.compile(r"(?i)\b(?:version|revision|rev|release)\s+(\d+)\b")
 _VERSION_TOKEN_RE = re.compile(r"(?i)(?<![A-Za-z0-9/])v(\d+)\b")
 _HISTORICAL_MARKER_RE = re.compile(
     r"(?i)\b(?:deprecated|historical|older|previous|prior|legacy|stale|"
@@ -67,9 +72,7 @@ _HISTORICAL_MARKER_RE = re.compile(
     r"differs?|difference|compare|contrast)\b"
 )
 _REVISION_COMPARISON_RE = re.compile(r"(?i)\brevision\b")
-_CURRENT_MARKER_RE = re.compile(
-    r"(?i)\b(?:current|latest|newest|today|now|as\s+of)\b"
-)
+_CURRENT_MARKER_RE = re.compile(r"(?i)\b(?:current|latest|newest|today|now|as\s+of)\b")
 
 
 @dataclass(frozen=True)
@@ -90,9 +93,7 @@ class VersionRequest:
 
     def __post_init__(self) -> None:
         if self.scope not in VERSION_SCOPES:
-            raise ValueError(
-                "version scope must be one of: " + ", ".join(VERSION_SCOPES)
-            )
+            raise ValueError("version scope must be one of: " + ", ".join(VERSION_SCOPES))
         for value in (*self.version_numbers, *self.filter_numbers):
             if isinstance(value, bool) or not isinstance(value, int) or value < 1:
                 raise ValueError("version numbers must be positive integers")
@@ -103,7 +104,7 @@ def _extract_version_numbers(query: str) -> tuple[int, ...]:
 
     numbers: set[int] = set()
     for match in _VERSION_PHRASE_RE.finditer(query):
-        prefix = query[max(0, match.start() - 4): match.start()].lower()
+        prefix = query[max(0, match.start() - 4) : match.start()].lower()
         phrase = match.group(0).lower()
         # "API version 3" names the API contract, not a document revision.
         if prefix.endswith("api ") or phrase.startswith("api "):
@@ -114,7 +115,7 @@ def _extract_version_numbers(query: str) -> tuple[int, ...]:
         # A version token inside a path such as /api/v3 is an API contract.
         if match.start() > 0 and query[match.start() - 1] == "/":
             continue
-        prefix = query[max(0, match.start() - 4): match.start()].lower()
+        prefix = query[max(0, match.start() - 4) : match.start()].lower()
         if prefix.endswith("api "):
             continue
         numbers.add(int(match.group(1)))
@@ -190,9 +191,7 @@ def resolve_version_request(
         )
     if mode == "explicit_filter":
         if not numbers:
-            raise ValueError(
-                "explicit_filter mode requires at least one version number"
-            )
+            raise ValueError("explicit_filter mode requires at least one version number")
         return VersionRequest(
             scope="explicit",
             version_numbers=numbers,
@@ -315,11 +314,8 @@ def _verify_tenant_scope(
                 "retrieval returned a row with an invalid tenant identifier"
             ) from exc
         if row_tenant != tenant_id:
-            raise TenantIsolationError(
-                "retrieval returned a row outside the requested tenant"
-            )
+            raise TenantIsolationError("retrieval returned a row outside the requested tenant")
     return rows
-
 
 
 @dataclass(frozen=True)
@@ -465,9 +461,7 @@ def fuse_ranked_results(
                 candidates[chunk_id] = entry
 
             entry[rank_field] = rank
-            score = result.get(
-                "similarity" if rank_field == "semantic_rank" else "keyword_score"
-            )
+            score = result.get("similarity" if rank_field == "semantic_rank" else "keyword_score")
             if score is None and rank_field == "keyword_rank":
                 # The OR lexical strategy reports lexical_score instead of
                 # keyword_score. Preserve it in the same metadata slot so fused
@@ -590,9 +584,7 @@ def fuse_weighted_ranked_results(
                 candidates[chunk_id] = entry
 
             entry[rank_field] = rank
-            score = result.get(
-                "similarity" if rank_field == "semantic_rank" else "keyword_score"
-            )
+            score = result.get("similarity" if rank_field == "semantic_rank" else "keyword_score")
             if score is None and rank_field == "keyword_rank":
                 score = result.get("lexical_score")
             entry[score_field] = score
@@ -851,12 +843,8 @@ def fuse_source_ranked_results(
                 "keyword_rank": entry["keyword_chunk_rank"],
                 "semantic_source_rank": entry["semantic_source_rank"],
                 "keyword_source_rank": entry["keyword_source_rank"],
-                "semantic_source_chunk_count": entry[
-                    "semantic_source_chunk_count"
-                ],
-                "keyword_source_chunk_count": entry[
-                    "keyword_source_chunk_count"
-                ],
+                "semantic_source_chunk_count": entry["semantic_source_chunk_count"],
+                "keyword_source_chunk_count": entry["keyword_source_chunk_count"],
                 "semantic_similarity": entry["semantic_similarity"],
                 "keyword_score": entry["keyword_score"],
             }
@@ -908,8 +896,17 @@ def semantic_search(
     )
     acl_sql, acl_params = _acl_scope(principal)
 
-    vector = embed_texts([query])[0]
-    vector_text = "[" + ",".join(str(value) for value in vector) + "]"
+    # Validate again here even though the HTTP client already does: tests and
+    # future callers may substitute the embedding function. A query vector that
+    # does not match the stored column dimension must fail before PostgreSQL
+    # sees it, rather than surfacing as an operator error mid-retrieval.
+    vector = validate_embeddings(
+        embed_texts([query]),
+        expected_count=1,
+        expected_dimensions=expected_dimensions(),
+    )[0]
+    vector_text = vector_literal(vector)
+    vector_type = vector_sql_type()
 
     statement = text(
         f"""
@@ -924,7 +921,7 @@ def semantic_search(
             dv.authority_level,
             c.chunk_index,
             c.content,
-            c.embedding <=> CAST(:query_embedding AS vector(384)) AS distance
+            c.embedding <=> CAST(:query_embedding AS {vector_type}) AS distance
         FROM chunks AS c
         JOIN documents AS d
           ON d.id = c.document_id
@@ -937,7 +934,7 @@ def semantic_search(
           {acl_sql}
           AND c.embedding IS NOT NULL
           AND c.embedding_model = :model
-        ORDER BY {version_order}c.embedding <=> CAST(:query_embedding AS vector(384)), c.id
+        ORDER BY {version_order}c.embedding <=> CAST(:query_embedding AS {vector_type}), c.id
         LIMIT :result_limit
         """
     )
@@ -945,7 +942,7 @@ def semantic_search(
     params: dict[str, Any] = {
         "tenant_id": tenant_id,
         "query_embedding": vector_text,
-        "model": EXPECTED_MODEL,
+        "model": expected_model(),
         "result_limit": limit,
         **_version_params(
             rank_numbers=rank_numbers,
@@ -1110,9 +1107,7 @@ def lexical_search(
         return []
 
     identifier_values = [identifier.value for identifier in prepared.identifiers]
-    identifier_patterns = [
-        identifier.sql_pattern for identifier in prepared.identifiers
-    ]
+    identifier_patterns = [identifier.sql_pattern for identifier in prepared.identifiers]
 
     version_filter = _version_filter_sql(
         include_historical=include_historical,
@@ -1359,14 +1354,10 @@ def hybrid_search(
         raise ValueError("rrf_k must be at least 1")
 
     if keyword_strategy not in KEYWORD_STRATEGIES:
-        raise ValueError(
-            "keyword_strategy must be one of: " + ", ".join(KEYWORD_STRATEGIES)
-        )
+        raise ValueError("keyword_strategy must be one of: " + ", ".join(KEYWORD_STRATEGIES))
 
     if fusion_strategy not in FUSION_STRATEGIES:
-        raise ValueError(
-            "fusion_strategy must be one of: " + ", ".join(FUSION_STRATEGIES)
-        )
+        raise ValueError("fusion_strategy must be one of: " + ", ".join(FUSION_STRATEGIES))
 
     if not (semantic_weight > 0) or not (lexical_weight > 0):
         raise ValueError("semantic_weight and lexical_weight must be greater than 0")
@@ -1396,9 +1387,7 @@ def hybrid_search(
         principal=principal,
         **version_kwargs,
     )
-    keyword_retriever = (
-        keyword_search if keyword_strategy == "and" else lexical_search
-    )
+    keyword_retriever = keyword_search if keyword_strategy == "and" else lexical_search
     keyword_results = keyword_retriever(
         tenant_id=tenant_id,
         query=query,

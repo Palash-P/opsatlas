@@ -12,6 +12,8 @@ import json
 from pathlib import Path
 from typing import Any
 
+from app.version import APP_VERSION
+
 EVALS_DIR = Path(__file__).resolve().parent
 DATASET_PATH = EVALS_DIR / "datasets" / "answer_eval_v1.jsonl"
 PROFILE_PATH = EVALS_DIR / "datasets" / "answer_eval_v1.profile.json"
@@ -341,7 +343,7 @@ def _empty_metric_block() -> dict[str, Any]:
 def build_report_template(
     *,
     system_name: str = "OpsAtlas",
-    system_version: str = "0.4.0",
+    system_version: str = APP_VERSION,
     retrieval_config: dict[str, Any] | None = None,
     generation_config: dict[str, Any] | None = None,
     prompt_version: str | None = None,

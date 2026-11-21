@@ -25,9 +25,21 @@ from fastapi import Request
 from app.core.config import Settings
 
 LOGGER_NAME = "opsatlas.request"
+WORKER_LOGGER_NAME = "opsatlas.worker"
+RECONCILIATION_LOGGER_NAME = "opsatlas.reconciliation"
+SCHEMA_LOGGER_NAME = "opsatlas.schema"
+_OPERATIONAL_LOGGER_NAMES = (
+    LOGGER_NAME,
+    WORKER_LOGGER_NAME,
+    RECONCILIATION_LOGGER_NAME,
+    SCHEMA_LOGGER_NAME,
+)
 _REQUEST_ID_RE = re.compile(r"^[A-Za-z0-9._-]{8,64}$")
 
 logger = logging.getLogger(LOGGER_NAME)
+worker_logger = logging.getLogger(WORKER_LOGGER_NAME)
+reconciliation_logger = logging.getLogger(RECONCILIATION_LOGGER_NAME)
+schema_logger = logging.getLogger(SCHEMA_LOGGER_NAME)
 
 
 @dataclass
@@ -75,12 +87,13 @@ def set_error_category(category: str | None) -> None:
         telemetry.error_category = category
 
 
-def record_tenant_reference(tenant_id: UUID, settings: Settings | None = None) -> None:
-    """Record a stable, salted tenant reference instead of the raw UUID."""
+def tenant_reference(tenant_id: UUID, settings: Settings | None = None) -> str:
+    """Return a stable, salted tenant reference instead of the raw UUID.
 
-    telemetry = get_telemetry()
-    if telemetry is None:
-        return
+    Worker logs have no request context, so this helper is shared by HTTP
+    telemetry and background task events.
+    """
+
     if settings is None:
         from app.core.config import get_settings
 
@@ -90,7 +103,16 @@ def record_tenant_reference(tenant_id: UUID, settings: Settings | None = None) -
         str(tenant_id).encode("utf-8"),
         hashlib.sha256,
     ).hexdigest()
-    telemetry.tenant_ref = f"t_{digest[:16]}"
+    return f"t_{digest[:16]}"
+
+
+def record_tenant_reference(tenant_id: UUID, settings: Settings | None = None) -> None:
+    """Record a stable, salted tenant reference instead of the raw UUID."""
+
+    telemetry = get_telemetry()
+    if telemetry is None:
+        return
+    telemetry.tenant_ref = tenant_reference(tenant_id, settings)
 
 
 def _request_id(request: Request) -> str:
@@ -157,16 +179,45 @@ class JsonFormatter(logging.Formatter):
         return json.dumps(payload, sort_keys=True, default=str)
 
 
-def configure_logging(settings: Settings) -> None:
-    """Install one idempotent JSON handler for the request logger."""
-
-    logger.setLevel(settings.log_level.upper())
-    if not any(getattr(handler, "_opsatlas_json", False) for handler in logger.handlers):
+def _configure_json_logger(target: logging.Logger, level: str) -> None:
+    target.setLevel(level)
+    if not any(getattr(handler, "_opsatlas_json", False) for handler in target.handlers):
         handler = logging.StreamHandler()
         handler.setFormatter(JsonFormatter())
         handler._opsatlas_json = True  # type: ignore[attr-defined]
-        logger.addHandler(handler)
-    logger.propagate = False
+        target.addHandler(handler)
+    target.propagate = False
+
+
+def configure_logging(settings: Settings) -> None:
+    """Install one idempotent JSON handler for request and worker loggers."""
+
+    level = settings.log_level.upper()
+    for name in _OPERATIONAL_LOGGER_NAMES:
+        _configure_json_logger(logging.getLogger(name), level)
+
+
+def emit_operational_event(
+    target: logging.Logger,
+    event: str,
+    *,
+    level: int = logging.INFO,
+    message: str = "operational event",
+    **fields: Any,
+) -> None:
+    """Emit one sanitized JSON event without prompts, content, or secrets.
+
+    Callers pass only bounded identifiers and counters. This helper exists so
+    API-side operational events (for example an async ingestion submission) use
+    the same shape as worker events instead of ad-hoc log strings.
+    """
+
+    payload: dict[str, Any] = {"event": event}
+    telemetry = get_telemetry()
+    if telemetry is not None:
+        payload["request_id"] = telemetry.request_id
+    payload.update(fields)
+    target.log(level, message, extra={"event_data": payload})
 
 
 def emit_request_log(telemetry: RequestTelemetry) -> None:

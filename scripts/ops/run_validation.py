@@ -354,7 +354,12 @@ def create_temp_tenant() -> TempTenant:
         content=f"{restricted_canary} requires the validation-allowed group.",
     )
 
+    from app.db.advisory_locks import acquire_document_acl_lock
+
     with engine.begin() as connection:
+        # Every document_acl writer takes the per-document ACL lock so the grant
+        # cannot commit between an ingestion authorization read and its writes.
+        acquire_document_acl_lock(connection, restricted["document_id"])
         connection.execute(
             text(
                 """

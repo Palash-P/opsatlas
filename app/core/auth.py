@@ -20,13 +20,22 @@ import hashlib
 import hmac
 from collections.abc import Mapping
 from dataclasses import dataclass
+from datetime import datetime
 from typing import Any
 from uuid import UUID
 
 from fastapi import Request
 
+from app.core.auth_tokens import parse_expires_at, token_is_expired
 from app.core.config import Settings, get_settings
 from app.core.observability import record_tenant_reference
+
+# Explicit tenant-level document-write capability. Tenant membership alone is
+# deliberately insufficient: a token must be configured with one of these roles
+# to create a document or to update a document that has no ACL rows. Documents
+# with ACL rows are governed by the existing ``manage`` grant instead, so an
+# explicit document restriction always overrides a tenant-wide writer role.
+DOCUMENT_WRITE_ROLES = frozenset({"document_writer"})
 
 
 class AuthenticationError(Exception):
@@ -46,6 +55,9 @@ class Principal:
     user_id: UUID | None = None
     roles: frozenset[str] = frozenset()
     groups: frozenset[str] = frozenset()
+    # Optional absolute expiry from the token entry. ``None`` means the token
+    # does not expire and is revoked by removing the entry and restarting.
+    expires_at: datetime | None = None
 
     @property
     def acl_user_ids(self) -> tuple[str, ...]:
@@ -68,11 +80,7 @@ def _string_set(value: Any) -> frozenset[str]:
         values = list(value)
     else:
         return frozenset()
-    return frozenset(
-        item.strip()
-        for item in values
-        if isinstance(item, str) and item.strip()
-    )
+    return frozenset(item.strip() for item in values if isinstance(item, str) and item.strip())
 
 
 def _parse_principal(raw: Any) -> Principal | None:
@@ -106,12 +114,20 @@ def _parse_principal(raw: Any) -> Principal | None:
         except ValueError:
             return None
 
+    try:
+        expires_at = parse_expires_at(raw.get("expires_at"))
+    except ValueError:
+        # Startup validation rejects this configuration; a malformed entry must
+        # never authenticate even if it reaches request handling.
+        return None
+
     return Principal(
         tenant_id=tenant_id,
         subject=subject.strip(),
         user_id=user_id,
         roles=_string_set(raw.get("roles")),
         groups=_string_set(raw.get("groups")),
+        expires_at=expires_at,
     )
 
 
@@ -137,7 +153,14 @@ def resolve_token(token: str, settings: Settings | None = None) -> Principal | N
 
     if matched is None:
         return None
-    return _parse_principal(matched)
+    principal = _parse_principal(matched)
+    if principal is None:
+        return None
+    if token_is_expired(principal.expires_at):
+        # Expiry is checked at request time so a long-running process stops
+        # accepting a token at its configured instant without a restart.
+        return None
+    return principal
 
 
 def _extract_bearer_token(header_value: str | None) -> str | None:
@@ -179,10 +202,7 @@ def resolve_request_tenant(
     as an equality assertion, and never as proof of authorization.
     """
 
-    if (
-        requested_tenant_id is not None
-        and requested_tenant_id != identity.tenant_id
-    ):
+    if requested_tenant_id is not None and requested_tenant_id != identity.tenant_id:
         raise AuthorizationError("requested tenant does not match identity")
 
     record_tenant_reference(identity.tenant_id)
@@ -197,6 +217,43 @@ def acl_parameters(principal: Principal) -> dict[str, Any]:
         "acl_groups": sorted(principal.groups),
         "acl_roles": sorted(principal.roles),
     }
+
+
+def has_document_write_role(principal: Principal) -> bool:
+    """Return ``True`` when the token was configured with a writer role."""
+
+    return bool(principal.roles & DOCUMENT_WRITE_ROLES)
+
+
+def acl_principal_match_sql(alias: str = "acl") -> str:
+    """Return the principal-match predicate for one ``document_acl`` row.
+
+    The caller must supply the ``acl_user_ids``, ``acl_groups``, and ``acl_roles``
+    parameters from :func:`acl_parameters`. This fragment is shared by the
+    retrieval read predicate and by the ingestion write/status checks so the
+    principal-matching rules cannot drift between them.
+    """
+
+    return f"""
+                        (
+                            {alias}.principal_type = 'user'
+                            AND {alias}.principal_id = ANY(
+                                CAST(:acl_user_ids AS text[])
+                            )
+                        )
+                        OR (
+                            {alias}.principal_type = 'group'
+                            AND {alias}.principal_id = ANY(
+                                CAST(:acl_groups AS text[])
+                            )
+                        )
+                        OR (
+                            {alias}.principal_type = 'role'
+                            AND {alias}.principal_id = ANY(
+                                CAST(:acl_roles AS text[])
+                            )
+                        )
+    """
 
 
 def acl_filter_sql(document_alias: str = "d") -> str:
@@ -227,26 +284,7 @@ def acl_filter_sql(document_alias: str = "d") -> str:
                   FROM document_acl AS acl
                   WHERE acl.document_id = {document_alias}.id
                     AND acl.permission IN ('read', 'manage')
-                    AND (
-                        (
-                            acl.principal_type = 'user'
-                            AND acl.principal_id = ANY(
-                                CAST(:acl_user_ids AS text[])
-                            )
-                        )
-                        OR (
-                            acl.principal_type = 'group'
-                            AND acl.principal_id = ANY(
-                                CAST(:acl_groups AS text[])
-                            )
-                        )
-                        OR (
-                            acl.principal_type = 'role'
-                            AND acl.principal_id = ANY(
-                                CAST(:acl_roles AS text[])
-                            )
-                        )
-                    )
+                    AND ({acl_principal_match_sql("acl")})
               )
           )
     """
