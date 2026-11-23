@@ -29,7 +29,8 @@ build/
 dist/
 
 # Generated evaluation reports
-evals/reports/
+evals/reports/*
+!evals/reports/golden_v0_semantic_vs_hybrid.json
 
 # Generated evaluation run payloads
 evals/runs/**/predictions.jsonl

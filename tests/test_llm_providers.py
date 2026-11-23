@@ -384,6 +384,7 @@ def test_opencode_provider_classifies_rate_limit_and_sanitizes_stderr(monkeypatc
             model="opencode/test-model",
             task_text="hello",
             timeout_seconds=5,
+            executable="mock-opencode",
         )
 
     message = str(excinfo.value)
@@ -406,6 +407,7 @@ def test_opencode_provider_marks_non_rate_limit_exit_retryable(monkeypatch) -> N
             model="opencode/test-model",
             task_text="hello",
             timeout_seconds=5,
+            executable="mock-opencode",
         )
 
     assert excinfo.value.retryable is True

@@ -1,0 +1,870 @@
+{
+  "aggregate": {
+    "delta": {
+      "all_expected_at_5_delta": 0.0,
+      "any_hit_at_5_delta": 0.0,
+      "mrr_delta": 0.0,
+      "ndcg_at_5_delta": null,
+      "recall_at_5_delta": 0.0
+    },
+    "hybrid": {
+      "all_expected_at_5": 1.0,
+      "any_hit_at_5": 1.0,
+      "metric_scope": "answerable queries only",
+      "mrr": 1.0,
+      "ndcg_at_5": null,
+      "ndcg_status": "not_applicable_binary_relevance_only",
+      "query_count": 4,
+      "recall_at_5": 1.0
+    },
+    "scored_query_count": 4,
+    "semantic": {
+      "all_expected_at_5": 1.0,
+      "any_hit_at_5": 1.0,
+      "metric_scope": "answerable queries only",
+      "mrr": 1.0,
+      "ndcg_at_5": null,
+      "ndcg_status": "not_applicable_binary_relevance_only",
+      "query_count": 4,
+      "recall_at_5": 1.0
+    }
+  },
+  "dataset": {
+    "answerable_count": 4,
+    "id": "golden_v0",
+    "path": "evals/datasets/golden_v0.jsonl",
+    "record_count": 6,
+    "sha256": "85146dcfa0d97480907cccc05b29dfd5958d30ea33f43cc9d110096faab956a2",
+    "unanswerable_count": 2
+  },
+  "limitations": [
+    "This report evaluates retrieval rankings only.",
+    "nDCG@5 is not reported for binary, ungraded golden_v0 labels.",
+    "Retrieval is current-version-only, so historical-version ranking is not evaluated.",
+    "At most five returned chunks are considered; multiple chunks from one source collapse to one source unit and can reduce the number of unique sources observed.",
+    "No abstention, secret-handling, citation-correctness, faithfulness, or prompt-injection evaluation is performed.",
+    "No retrieved document content is included in this report."
+  ],
+  "metric_definitions": {
+    "all_expected_at_5": "Macro-average over answerable queries of 1 when every expected source is in the top 5, else 0.",
+    "any_hit_at_5": "Macro-average over answerable queries of 1 when at least one expected source is in the top 5, else 0.",
+    "mrr": "Macro-average over answerable queries of 1 / rank of the first expected source among the top 5 unique returned sources; 0 if no expected source is returned.",
+    "ndcg_at_5": "Not applicable to golden_v0: expected_source_ids is a binary, unordered relevant set with no graded relevance labels.",
+    "recall_at_5": "Macro-average over answerable queries of |top-5 unique matched sources \u2229 expected sources| / |expected sources|.",
+    "unanswerable_records": "Excluded from all retrieval-quality metrics and not scored for abstention."
+  },
+  "queries": [
+    {
+      "answerable": true,
+      "category": "exact_identifier",
+      "comparison": {
+        "all_expected_at_5_delta": 0,
+        "any_hit_at_5_delta": 0,
+        "mrr_delta": 0.0,
+        "ndcg_at_5_delta": null,
+        "recall_at_5_delta": 0.0
+      },
+      "expected_source_ids": [
+        "runbook-payments-errors-v1"
+      ],
+      "id": "exact-error-001",
+      "question": "What does PAY-503 mean and which runbook covers it?",
+      "retrievers": {
+        "hybrid": {
+          "matched_source_ids": [
+            "runbook-payments-errors-v1"
+          ],
+          "metrics": {
+            "all_expected_at_5": 1,
+            "any_hit_at_5": 1,
+            "mrr": 1.0,
+            "ndcg_at_5": null,
+            "ndcg_status": "not_applicable_binary_relevance_only",
+            "recall_at_5": 1.0
+          },
+          "missing_source_ids": [],
+          "ranked_source_ids": [
+            "runbook-payments-errors-v1",
+            "api-payments-v3",
+            "postmortem-db-pool-2025-02"
+          ],
+          "result_count": 5,
+          "results": [
+            {
+              "chunk_id": "f95c8466-b806-44d8-b61a-374b2929ad74",
+              "document_id": "98d0085a-ab9e-47b0-9d84-6f982fc67c88",
+              "mapped_source_id": "runbook-payments-errors-v1",
+              "mapping_status": "matched",
+              "rank": 1,
+              "score": 0.01639344262295082,
+              "score_field": "hybrid_score",
+              "source_key": "runbooks/payment-errors.md",
+              "version_id": "467ebd0d-1849-434a-9fd9-c6ce9b574fc4",
+              "version_number": 1
+            },
+            {
+              "chunk_id": "93d69878-23b8-4147-8f95-0f0242e58da8",
+              "document_id": "c243000d-e86c-4cbd-a1e7-bd37a5d3a1c2",
+              "mapped_source_id": "api-payments-v3",
+              "mapping_status": "matched",
+              "rank": 2,
+              "score": 0.016129032258064516,
+              "score_field": "hybrid_score",
+              "source_key": "api-specs/payments-v3.md",
+              "version_id": "85dd418c-c8bf-4f9f-99f1-523d5b40993c",
+              "version_number": 1
+            },
+            {
+              "chunk_id": "488fbca1-dab6-4285-a4de-f8a74ede8052",
+              "document_id": "98d0085a-ab9e-47b0-9d84-6f982fc67c88",
+              "mapped_source_id": "runbook-payments-errors-v1",
+              "mapping_status": "matched",
+              "rank": 3,
+              "score": 0.015873015873015872,
+              "score_field": "hybrid_score",
+              "source_key": "runbooks/payment-errors.md",
+              "version_id": "467ebd0d-1849-434a-9fd9-c6ce9b574fc4",
+              "version_number": 1
+            },
+            {
+              "chunk_id": "fc8d5377-1647-436a-9291-d3e0bec50fe8",
+              "document_id": "79cbdc59-0ffc-4c10-9b9b-3f9bc15e7a4d",
+              "mapped_source_id": null,
+              "mapping_status": "unmapped",
+              "rank": 4,
+              "score": 0.015625,
+              "score_field": "hybrid_score",
+              "source_key": "runbooks/payment-api.md",
+              "version_id": "4f7d53be-35b8-45cc-8e75-67efc6cd206e",
+              "version_number": 1
+            },
+            {
+              "chunk_id": "34ad234d-11cc-4c2c-bedb-38059e8223d0",
+              "document_id": "17b59701-209d-45ba-a7a8-6e6a6cef95de",
+              "mapped_source_id": "postmortem-db-pool-2025-02",
+              "mapping_status": "matched",
+              "rank": 5,
+              "score": 0.015384615384615385,
+              "score_field": "hybrid_score",
+              "source_key": "postmortems/db-pool-2025-02.md",
+              "version_id": "30abf955-5d9b-499e-b75a-14b6be6c4644",
+              "version_number": 1
+            }
+          ],
+          "unmapped_source_keys": [
+            "runbooks/payment-api.md"
+          ],
+          "version_mismatch_source_keys": []
+        },
+        "semantic": {
+          "matched_source_ids": [
+            "runbook-payments-errors-v1"
+          ],
+          "metrics": {
+            "all_expected_at_5": 1,
+            "any_hit_at_5": 1,
+            "mrr": 1.0,
+            "ndcg_at_5": null,
+            "ndcg_status": "not_applicable_binary_relevance_only",
+            "recall_at_5": 1.0
+          },
+          "missing_source_ids": [],
+          "ranked_source_ids": [
+            "runbook-payments-errors-v1",
+            "api-payments-v3",
+            "postmortem-db-pool-2025-02"
+          ],
+          "result_count": 5,
+          "results": [
+            {
+              "chunk_id": "f95c8466-b806-44d8-b61a-374b2929ad74",
+              "document_id": "98d0085a-ab9e-47b0-9d84-6f982fc67c88",
+              "mapped_source_id": "runbook-payments-errors-v1",
+              "mapping_status": "matched",
+              "rank": 1,
+              "score": 0.3568264629348247,
+              "score_field": "similarity",
+              "source_key": "runbooks/payment-errors.md",
+              "version_id": "467ebd0d-1849-434a-9fd9-c6ce9b574fc4",
+              "version_number": 1
+            },
+            {
+              "chunk_id": "93d69878-23b8-4147-8f95-0f0242e58da8",
+              "document_id": "c243000d-e86c-4cbd-a1e7-bd37a5d3a1c2",
+              "mapped_source_id": "api-payments-v3",
+              "mapping_status": "matched",
+              "rank": 2,
+              "score": 0.34497938484076407,
+              "score_field": "similarity",
+              "source_key": "api-specs/payments-v3.md",
+              "version_id": "85dd418c-c8bf-4f9f-99f1-523d5b40993c",
+              "version_number": 1
+            },
+            {
+              "chunk_id": "488fbca1-dab6-4285-a4de-f8a74ede8052",
+              "document_id": "98d0085a-ab9e-47b0-9d84-6f982fc67c88",
+              "mapped_source_id": "runbook-payments-errors-v1",
+              "mapping_status": "matched",
+              "rank": 3,
+              "score": 0.2633764131812575,
+              "score_field": "similarity",
+              "source_key": "runbooks/payment-errors.md",
+              "version_id": "467ebd0d-1849-434a-9fd9-c6ce9b574fc4",
+              "version_number": 1
+            },
+            {
+              "chunk_id": "fc8d5377-1647-436a-9291-d3e0bec50fe8",
+              "document_id": "79cbdc59-0ffc-4c10-9b9b-3f9bc15e7a4d",
+              "mapped_source_id": null,
+              "mapping_status": "unmapped",
+              "rank": 4,
+              "score": 0.20005204081225192,
+              "score_field": "similarity",
+              "source_key": "runbooks/payment-api.md",
+              "version_id": "4f7d53be-35b8-45cc-8e75-67efc6cd206e",
+              "version_number": 1
+            },
+            {
+              "chunk_id": "34ad234d-11cc-4c2c-bedb-38059e8223d0",
+              "document_id": "17b59701-209d-45ba-a7a8-6e6a6cef95de",
+              "mapped_source_id": "postmortem-db-pool-2025-02",
+              "mapping_status": "matched",
+              "rank": 5,
+              "score": 0.19048961997032166,
+              "score_field": "similarity",
+              "source_key": "postmortems/db-pool-2025-02.md",
+              "version_id": "30abf955-5d9b-499e-b75a-14b6be6c4644",
+              "version_number": 1
+            }
+          ],
+          "unmapped_source_keys": [
+            "runbooks/payment-api.md"
+          ],
+          "version_mismatch_source_keys": []
+        }
+      }
+    },
+    {
+      "answerable": true,
+      "category": "multi_document",
+      "comparison": {
+        "all_expected_at_5_delta": 0,
+        "any_hit_at_5_delta": 0,
+        "mrr_delta": 0.0,
+        "ndcg_at_5_delta": null,
+        "recall_at_5_delta": 0.0
+      },
+      "expected_source_ids": [
+        "postmortem-db-pool-2025-02",
+        "runbook-postgres-pool-v2"
+      ],
+      "id": "incident-history-001",
+      "question": "Have we seen PostgreSQL connection pool exhaustion before, and what was the verified mitigation?",
+      "retrievers": {
+        "hybrid": {
+          "matched_source_ids": [
+            "postmortem-db-pool-2025-02",
+            "runbook-postgres-pool-v2"
+          ],
+          "metrics": {
+            "all_expected_at_5": 1,
+            "any_hit_at_5": 1,
+            "mrr": 1.0,
+            "ndcg_at_5": null,
+            "ndcg_status": "not_applicable_binary_relevance_only",
+            "recall_at_5": 1.0
+          },
+          "missing_source_ids": [],
+          "ranked_source_ids": [
+            "postmortem-db-pool-2025-02",
+            "runbook-postgres-pool-v2"
+          ],
+          "result_count": 5,
+          "results": [
+            {
+              "chunk_id": "fe379fc8-9478-473a-9527-96f94be4f5ce",
+              "document_id": "17b59701-209d-45ba-a7a8-6e6a6cef95de",
+              "mapped_source_id": "postmortem-db-pool-2025-02",
+              "mapping_status": "matched",
+              "rank": 1,
+              "score": 0.01639344262295082,
+              "score_field": "hybrid_score",
+              "source_key": "postmortems/db-pool-2025-02.md",
+              "version_id": "30abf955-5d9b-499e-b75a-14b6be6c4644",
+              "version_number": 1
+            },
+            {
+              "chunk_id": "b0536d7b-c100-4a0f-900c-7bad4dca2f11",
+              "document_id": "0f3b5dea-fa83-4cc7-a83a-4b367ab09d82",
+              "mapped_source_id": "runbook-postgres-pool-v2",
+              "mapping_status": "matched",
+              "rank": 2,
+              "score": 0.016129032258064516,
+              "score_field": "hybrid_score",
+              "source_key": "runbooks/postgres-pool.md",
+              "version_id": "0ab5b8fb-b15a-48f9-a59e-adfe478aa17e",
+              "version_number": 1
+            },
+            {
+              "chunk_id": "6f9d04ef-aa10-42f4-8e1c-09264553ea65",
+              "document_id": "0f3b5dea-fa83-4cc7-a83a-4b367ab09d82",
+              "mapped_source_id": "runbook-postgres-pool-v2",
+              "mapping_status": "matched",
+              "rank": 3,
+              "score": 0.015873015873015872,
+              "score_field": "hybrid_score",
+              "source_key": "runbooks/postgres-pool.md",
+              "version_id": "0ab5b8fb-b15a-48f9-a59e-adfe478aa17e",
+              "version_number": 1
+            },
+            {
+              "chunk_id": "34ad234d-11cc-4c2c-bedb-38059e8223d0",
+              "document_id": "17b59701-209d-45ba-a7a8-6e6a6cef95de",
+              "mapped_source_id": "postmortem-db-pool-2025-02",
+              "mapping_status": "matched",
+              "rank": 4,
+              "score": 0.015625,
+              "score_field": "hybrid_score",
+              "source_key": "postmortems/db-pool-2025-02.md",
+              "version_id": "30abf955-5d9b-499e-b75a-14b6be6c4644",
+              "version_number": 1
+            },
+            {
+              "chunk_id": "fc8d5377-1647-436a-9291-d3e0bec50fe8",
+              "document_id": "79cbdc59-0ffc-4c10-9b9b-3f9bc15e7a4d",
+              "mapped_source_id": null,
+              "mapping_status": "unmapped",
+              "rank": 5,
+              "score": 0.015384615384615385,
+              "score_field": "hybrid_score",
+              "source_key": "runbooks/payment-api.md",
+              "version_id": "4f7d53be-35b8-45cc-8e75-67efc6cd206e",
+              "version_number": 1
+            }
+          ],
+          "unmapped_source_keys": [
+            "runbooks/payment-api.md"
+          ],
+          "version_mismatch_source_keys": []
+        },
+        "semantic": {
+          "matched_source_ids": [
+            "postmortem-db-pool-2025-02",
+            "runbook-postgres-pool-v2"
+          ],
+          "metrics": {
+            "all_expected_at_5": 1,
+            "any_hit_at_5": 1,
+            "mrr": 1.0,
+            "ndcg_at_5": null,
+            "ndcg_status": "not_applicable_binary_relevance_only",
+            "recall_at_5": 1.0
+          },
+          "missing_source_ids": [],
+          "ranked_source_ids": [
+            "postmortem-db-pool-2025-02",
+            "runbook-postgres-pool-v2"
+          ],
+          "result_count": 5,
+          "results": [
+            {
+              "chunk_id": "fe379fc8-9478-473a-9527-96f94be4f5ce",
+              "document_id": "17b59701-209d-45ba-a7a8-6e6a6cef95de",
+              "mapped_source_id": "postmortem-db-pool-2025-02",
+              "mapping_status": "matched",
+              "rank": 1,
+              "score": 0.7466436926551232,
+              "score_field": "similarity",
+              "source_key": "postmortems/db-pool-2025-02.md",
+              "version_id": "30abf955-5d9b-499e-b75a-14b6be6c4644",
+              "version_number": 1
+            },
+            {
+              "chunk_id": "b0536d7b-c100-4a0f-900c-7bad4dca2f11",
+              "document_id": "0f3b5dea-fa83-4cc7-a83a-4b367ab09d82",
+              "mapped_source_id": "runbook-postgres-pool-v2",
+              "mapping_status": "matched",
+              "rank": 2,
+              "score": 0.6895297354740074,
+              "score_field": "similarity",
+              "source_key": "runbooks/postgres-pool.md",
+              "version_id": "0ab5b8fb-b15a-48f9-a59e-adfe478aa17e",
+              "version_number": 1
+            },
+            {
+              "chunk_id": "6f9d04ef-aa10-42f4-8e1c-09264553ea65",
+              "document_id": "0f3b5dea-fa83-4cc7-a83a-4b367ab09d82",
+              "mapped_source_id": "runbook-postgres-pool-v2",
+              "mapping_status": "matched",
+              "rank": 3,
+              "score": 0.5841337094227259,
+              "score_field": "similarity",
+              "source_key": "runbooks/postgres-pool.md",
+              "version_id": "0ab5b8fb-b15a-48f9-a59e-adfe478aa17e",
+              "version_number": 1
+            },
+            {
+              "chunk_id": "34ad234d-11cc-4c2c-bedb-38059e8223d0",
+              "document_id": "17b59701-209d-45ba-a7a8-6e6a6cef95de",
+              "mapped_source_id": "postmortem-db-pool-2025-02",
+              "mapping_status": "matched",
+              "rank": 4,
+              "score": 0.530335275510832,
+              "score_field": "similarity",
+              "source_key": "postmortems/db-pool-2025-02.md",
+              "version_id": "30abf955-5d9b-499e-b75a-14b6be6c4644",
+              "version_number": 1
+            },
+            {
+              "chunk_id": "fc8d5377-1647-436a-9291-d3e0bec50fe8",
+              "document_id": "79cbdc59-0ffc-4c10-9b9b-3f9bc15e7a4d",
+              "mapped_source_id": null,
+              "mapping_status": "unmapped",
+              "rank": 5,
+              "score": 0.5191987133981331,
+              "score_field": "similarity",
+              "source_key": "runbooks/payment-api.md",
+              "version_id": "4f7d53be-35b8-45cc-8e75-67efc6cd206e",
+              "version_number": 1
+            }
+          ],
+          "unmapped_source_keys": [
+            "runbooks/payment-api.md"
+          ],
+          "version_mismatch_source_keys": []
+        }
+      }
+    },
+    {
+      "answerable": true,
+      "category": "version_conflict",
+      "comparison": {
+        "all_expected_at_5_delta": 0,
+        "any_hit_at_5_delta": 0,
+        "mrr_delta": 0.0,
+        "ndcg_at_5_delta": null,
+        "recall_at_5_delta": 0.0
+      },
+      "expected_source_ids": [
+        "api-payments-v3"
+      ],
+      "id": "version-conflict-001",
+      "question": "Which endpoint should new payment clients use?",
+      "retrievers": {
+        "hybrid": {
+          "matched_source_ids": [
+            "api-payments-v3"
+          ],
+          "metrics": {
+            "all_expected_at_5": 1,
+            "any_hit_at_5": 1,
+            "mrr": 1.0,
+            "ndcg_at_5": null,
+            "ndcg_status": "not_applicable_binary_relevance_only",
+            "recall_at_5": 1.0
+          },
+          "missing_source_ids": [],
+          "ranked_source_ids": [
+            "api-payments-v3",
+            "runbook-payments-errors-v1",
+            "runbook-search-deploy-v1"
+          ],
+          "result_count": 5,
+          "results": [
+            {
+              "chunk_id": "93d69878-23b8-4147-8f95-0f0242e58da8",
+              "document_id": "c243000d-e86c-4cbd-a1e7-bd37a5d3a1c2",
+              "mapped_source_id": "api-payments-v3",
+              "mapping_status": "matched",
+              "rank": 1,
+              "score": 0.03278688524590164,
+              "score_field": "hybrid_score",
+              "source_key": "api-specs/payments-v3.md",
+              "version_id": "85dd418c-c8bf-4f9f-99f1-523d5b40993c",
+              "version_number": 1
+            },
+            {
+              "chunk_id": "f95c8466-b806-44d8-b61a-374b2929ad74",
+              "document_id": "98d0085a-ab9e-47b0-9d84-6f982fc67c88",
+              "mapped_source_id": "runbook-payments-errors-v1",
+              "mapping_status": "matched",
+              "rank": 2,
+              "score": 0.016129032258064516,
+              "score_field": "hybrid_score",
+              "source_key": "runbooks/payment-errors.md",
+              "version_id": "467ebd0d-1849-434a-9fd9-c6ce9b574fc4",
+              "version_number": 1
+            },
+            {
+              "chunk_id": "fc8d5377-1647-436a-9291-d3e0bec50fe8",
+              "document_id": "79cbdc59-0ffc-4c10-9b9b-3f9bc15e7a4d",
+              "mapped_source_id": null,
+              "mapping_status": "unmapped",
+              "rank": 3,
+              "score": 0.015873015873015872,
+              "score_field": "hybrid_score",
+              "source_key": "runbooks/payment-api.md",
+              "version_id": "4f7d53be-35b8-45cc-8e75-67efc6cd206e",
+              "version_number": 1
+            },
+            {
+              "chunk_id": "488fbca1-dab6-4285-a4de-f8a74ede8052",
+              "document_id": "98d0085a-ab9e-47b0-9d84-6f982fc67c88",
+              "mapped_source_id": "runbook-payments-errors-v1",
+              "mapping_status": "matched",
+              "rank": 4,
+              "score": 0.015625,
+              "score_field": "hybrid_score",
+              "source_key": "runbooks/payment-errors.md",
+              "version_id": "467ebd0d-1849-434a-9fd9-c6ce9b574fc4",
+              "version_number": 1
+            },
+            {
+              "chunk_id": "d26fa87d-c0b4-4097-8a5f-7d3228b9fb89",
+              "document_id": "298b3976-449e-446e-b20b-444737add4b2",
+              "mapped_source_id": "runbook-search-deploy-v1",
+              "mapping_status": "matched",
+              "rank": 5,
+              "score": 0.015384615384615385,
+              "score_field": "hybrid_score",
+              "source_key": "runbooks/search-deploy.md",
+              "version_id": "9b995d7d-7d28-4b3b-8e93-bfbe4e05b486",
+              "version_number": 1
+            }
+          ],
+          "unmapped_source_keys": [
+            "runbooks/payment-api.md"
+          ],
+          "version_mismatch_source_keys": []
+        },
+        "semantic": {
+          "matched_source_ids": [
+            "api-payments-v3"
+          ],
+          "metrics": {
+            "all_expected_at_5": 1,
+            "any_hit_at_5": 1,
+            "mrr": 1.0,
+            "ndcg_at_5": null,
+            "ndcg_status": "not_applicable_binary_relevance_only",
+            "recall_at_5": 1.0
+          },
+          "missing_source_ids": [],
+          "ranked_source_ids": [
+            "api-payments-v3",
+            "runbook-payments-errors-v1",
+            "runbook-search-deploy-v1"
+          ],
+          "result_count": 5,
+          "results": [
+            {
+              "chunk_id": "93d69878-23b8-4147-8f95-0f0242e58da8",
+              "document_id": "c243000d-e86c-4cbd-a1e7-bd37a5d3a1c2",
+              "mapped_source_id": "api-payments-v3",
+              "mapping_status": "matched",
+              "rank": 1,
+              "score": 0.45922500138133837,
+              "score_field": "similarity",
+              "source_key": "api-specs/payments-v3.md",
+              "version_id": "85dd418c-c8bf-4f9f-99f1-523d5b40993c",
+              "version_number": 1
+            },
+            {
+              "chunk_id": "f95c8466-b806-44d8-b61a-374b2929ad74",
+              "document_id": "98d0085a-ab9e-47b0-9d84-6f982fc67c88",
+              "mapped_source_id": "runbook-payments-errors-v1",
+              "mapping_status": "matched",
+              "rank": 2,
+              "score": 0.2672670622308818,
+              "score_field": "similarity",
+              "source_key": "runbooks/payment-errors.md",
+              "version_id": "467ebd0d-1849-434a-9fd9-c6ce9b574fc4",
+              "version_number": 1
+            },
+            {
+              "chunk_id": "fc8d5377-1647-436a-9291-d3e0bec50fe8",
+              "document_id": "79cbdc59-0ffc-4c10-9b9b-3f9bc15e7a4d",
+              "mapped_source_id": null,
+              "mapping_status": "unmapped",
+              "rank": 3,
+              "score": 0.24994054437038082,
+              "score_field": "similarity",
+              "source_key": "runbooks/payment-api.md",
+              "version_id": "4f7d53be-35b8-45cc-8e75-67efc6cd206e",
+              "version_number": 1
+            },
+            {
+              "chunk_id": "488fbca1-dab6-4285-a4de-f8a74ede8052",
+              "document_id": "98d0085a-ab9e-47b0-9d84-6f982fc67c88",
+              "mapped_source_id": "runbook-payments-errors-v1",
+              "mapping_status": "matched",
+              "rank": 4,
+              "score": 0.20694819605968195,
+              "score_field": "similarity",
+              "source_key": "runbooks/payment-errors.md",
+              "version_id": "467ebd0d-1849-434a-9fd9-c6ce9b574fc4",
+              "version_number": 1
+            },
+            {
+              "chunk_id": "d26fa87d-c0b4-4097-8a5f-7d3228b9fb89",
+              "document_id": "298b3976-449e-446e-b20b-444737add4b2",
+              "mapped_source_id": "runbook-search-deploy-v1",
+              "mapping_status": "matched",
+              "rank": 5,
+              "score": 0.17314130583826626,
+              "score_field": "similarity",
+              "source_key": "runbooks/search-deploy.md",
+              "version_id": "9b995d7d-7d28-4b3b-8e93-bfbe4e05b486",
+              "version_number": 1
+            }
+          ],
+          "unmapped_source_keys": [
+            "runbooks/payment-api.md"
+          ],
+          "version_mismatch_source_keys": []
+        }
+      }
+    },
+    {
+      "answerable": true,
+      "category": "prompt_injection_in_document",
+      "comparison": {
+        "all_expected_at_5_delta": 0,
+        "any_hit_at_5_delta": 0,
+        "mrr_delta": 0.0,
+        "ndcg_at_5_delta": null,
+        "recall_at_5_delta": 0.0
+      },
+      "expected_source_ids": [
+        "runbook-search-deploy-v1"
+      ],
+      "id": "prompt-injection-001",
+      "question": "Summarize the deployment runbook for the search service.",
+      "retrievers": {
+        "hybrid": {
+          "matched_source_ids": [
+            "runbook-search-deploy-v1"
+          ],
+          "metrics": {
+            "all_expected_at_5": 1,
+            "any_hit_at_5": 1,
+            "mrr": 1.0,
+            "ndcg_at_5": null,
+            "ndcg_status": "not_applicable_binary_relevance_only",
+            "recall_at_5": 1.0
+          },
+          "missing_source_ids": [],
+          "ranked_source_ids": [
+            "runbook-search-deploy-v1",
+            "postmortem-db-pool-2025-02",
+            "runbook-postgres-pool-v2"
+          ],
+          "result_count": 5,
+          "results": [
+            {
+              "chunk_id": "e8e6b467-9c95-4cad-91b0-9e0d510b9253",
+              "document_id": "298b3976-449e-446e-b20b-444737add4b2",
+              "mapped_source_id": "runbook-search-deploy-v1",
+              "mapping_status": "matched",
+              "rank": 1,
+              "score": 0.01639344262295082,
+              "score_field": "hybrid_score",
+              "source_key": "runbooks/search-deploy.md",
+              "version_id": "9b995d7d-7d28-4b3b-8e93-bfbe4e05b486",
+              "version_number": 1
+            },
+            {
+              "chunk_id": "d26fa87d-c0b4-4097-8a5f-7d3228b9fb89",
+              "document_id": "298b3976-449e-446e-b20b-444737add4b2",
+              "mapped_source_id": "runbook-search-deploy-v1",
+              "mapping_status": "matched",
+              "rank": 2,
+              "score": 0.016129032258064516,
+              "score_field": "hybrid_score",
+              "source_key": "runbooks/search-deploy.md",
+              "version_id": "9b995d7d-7d28-4b3b-8e93-bfbe4e05b486",
+              "version_number": 1
+            },
+            {
+              "chunk_id": "34ad234d-11cc-4c2c-bedb-38059e8223d0",
+              "document_id": "17b59701-209d-45ba-a7a8-6e6a6cef95de",
+              "mapped_source_id": "postmortem-db-pool-2025-02",
+              "mapping_status": "matched",
+              "rank": 3,
+              "score": 0.015873015873015872,
+              "score_field": "hybrid_score",
+              "source_key": "postmortems/db-pool-2025-02.md",
+              "version_id": "30abf955-5d9b-499e-b75a-14b6be6c4644",
+              "version_number": 1
+            },
+            {
+              "chunk_id": "b0536d7b-c100-4a0f-900c-7bad4dca2f11",
+              "document_id": "0f3b5dea-fa83-4cc7-a83a-4b367ab09d82",
+              "mapped_source_id": "runbook-postgres-pool-v2",
+              "mapping_status": "matched",
+              "rank": 4,
+              "score": 0.015625,
+              "score_field": "hybrid_score",
+              "source_key": "runbooks/postgres-pool.md",
+              "version_id": "0ab5b8fb-b15a-48f9-a59e-adfe478aa17e",
+              "version_number": 1
+            },
+            {
+              "chunk_id": "6f9d04ef-aa10-42f4-8e1c-09264553ea65",
+              "document_id": "0f3b5dea-fa83-4cc7-a83a-4b367ab09d82",
+              "mapped_source_id": "runbook-postgres-pool-v2",
+              "mapping_status": "matched",
+              "rank": 5,
+              "score": 0.015384615384615385,
+              "score_field": "hybrid_score",
+              "source_key": "runbooks/postgres-pool.md",
+              "version_id": "0ab5b8fb-b15a-48f9-a59e-adfe478aa17e",
+              "version_number": 1
+            }
+          ],
+          "unmapped_source_keys": [],
+          "version_mismatch_source_keys": []
+        },
+        "semantic": {
+          "matched_source_ids": [
+            "runbook-search-deploy-v1"
+          ],
+          "metrics": {
+            "all_expected_at_5": 1,
+            "any_hit_at_5": 1,
+            "mrr": 1.0,
+            "ndcg_at_5": null,
+            "ndcg_status": "not_applicable_binary_relevance_only",
+            "recall_at_5": 1.0
+          },
+          "missing_source_ids": [],
+          "ranked_source_ids": [
+            "runbook-search-deploy-v1",
+            "postmortem-db-pool-2025-02",
+            "runbook-postgres-pool-v2"
+          ],
+          "result_count": 5,
+          "results": [
+            {
+              "chunk_id": "e8e6b467-9c95-4cad-91b0-9e0d510b9253",
+              "document_id": "298b3976-449e-446e-b20b-444737add4b2",
+              "mapped_source_id": "runbook-search-deploy-v1",
+              "mapping_status": "matched",
+              "rank": 1,
+              "score": 0.6682422358845344,
+              "score_field": "similarity",
+              "source_key": "runbooks/search-deploy.md",
+              "version_id": "9b995d7d-7d28-4b3b-8e93-bfbe4e05b486",
+              "version_number": 1
+            },
+            {
+              "chunk_id": "d26fa87d-c0b4-4097-8a5f-7d3228b9fb89",
+              "document_id": "298b3976-449e-446e-b20b-444737add4b2",
+              "mapped_source_id": "runbook-search-deploy-v1",
+              "mapping_status": "matched",
+              "rank": 2,
+              "score": 0.4357117544326711,
+              "score_field": "similarity",
+              "source_key": "runbooks/search-deploy.md",
+              "version_id": "9b995d7d-7d28-4b3b-8e93-bfbe4e05b486",
+              "version_number": 1
+            },
+            {
+              "chunk_id": "34ad234d-11cc-4c2c-bedb-38059e8223d0",
+              "document_id": "17b59701-209d-45ba-a7a8-6e6a6cef95de",
+              "mapped_source_id": "postmortem-db-pool-2025-02",
+              "mapping_status": "matched",
+              "rank": 3,
+              "score": 0.32945868372917175,
+              "score_field": "similarity",
+              "source_key": "postmortems/db-pool-2025-02.md",
+              "version_id": "30abf955-5d9b-499e-b75a-14b6be6c4644",
+              "version_number": 1
+            },
+            {
+              "chunk_id": "b0536d7b-c100-4a0f-900c-7bad4dca2f11",
+              "document_id": "0f3b5dea-fa83-4cc7-a83a-4b367ab09d82",
+              "mapped_source_id": "runbook-postgres-pool-v2",
+              "mapping_status": "matched",
+              "rank": 4,
+              "score": 0.2829822897911072,
+              "score_field": "similarity",
+              "source_key": "runbooks/postgres-pool.md",
+              "version_id": "0ab5b8fb-b15a-48f9-a59e-adfe478aa17e",
+              "version_number": 1
+            },
+            {
+              "chunk_id": "6f9d04ef-aa10-42f4-8e1c-09264553ea65",
+              "document_id": "0f3b5dea-fa83-4cc7-a83a-4b367ab09d82",
+              "mapped_source_id": "runbook-postgres-pool-v2",
+              "mapping_status": "matched",
+              "rank": 5,
+              "score": 0.2620614767074585,
+              "score_field": "similarity",
+              "source_key": "runbooks/postgres-pool.md",
+              "version_id": "0ab5b8fb-b15a-48f9-a59e-adfe478aa17e",
+              "version_number": 1
+            }
+          ],
+          "unmapped_source_keys": [],
+          "version_mismatch_source_keys": []
+        }
+      }
+    }
+  ],
+  "report_version": 1,
+  "retrieval_configuration": {
+    "hybrid": {
+      "candidate_cap": 20,
+      "candidate_limit": 15,
+      "candidate_multiplier": 3,
+      "filters": [
+        "tenant_id",
+        "active_document",
+        "current_version",
+        "semantic_embedding_model_when_applicable"
+      ],
+      "function": "app.services.retrieval.hybrid_search",
+      "keyword_language": "english",
+      "rrf_k": 60,
+      "score_field": "hybrid_score"
+    },
+    "k": 5,
+    "semantic": {
+      "embedding_dimensions": 384,
+      "embedding_model": "sentence-transformers/all-MiniLM-L6-v2",
+      "filters": [
+        "tenant_id",
+        "active_document",
+        "current_version",
+        "embedding_not_null",
+        "embedding_model"
+      ],
+      "function": "app.services.retrieval.semantic_search",
+      "score_field": "similarity"
+    }
+  },
+  "source_map": {
+    "mapping_version": 1,
+    "path": "evals/datasets/golden_v0.source_map.json",
+    "sha256": "7c2407de425ee61aec3a9dc7385503d97676f4cf22b77c50c09df572cfe0462b"
+  },
+  "unanswerable": [
+    {
+      "answerable": false,
+      "category": "sensitive_unanswerable",
+      "id": "unanswerable-001",
+      "question": "What is the production database password?",
+      "reason": "Excluded from retrieval-quality metrics because the record has no relevant source set. This harness does not evaluate abstention, secret handling, citations, faithfulness, or prompt-injection resistance.",
+      "scored": false
+    },
+    {
+      "answerable": false,
+      "category": "insufficient_evidence",
+      "id": "insufficient-evidence-001",
+      "question": "Why did the service fail at 03:17 UTC yesterday?",
+      "reason": "Excluded from retrieval-quality metrics because the record has no relevant source set. This harness does not evaluate abstention, secret handling, citations, faithfulness, or prompt-injection resistance.",
+      "scored": false
+    }
+  ]
+}
